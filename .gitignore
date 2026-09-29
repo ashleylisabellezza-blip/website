@@ -1,0 +1,11 @@
+# Browser-testing scratch files
+.playwright-mcp/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS clutter
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,36 @@
+# Old WordPress URLs -> new static pages (301 = permanent).
+# This file format works as-is on Netlify and Cloudflare Pages.
+# On other hosts, recreate these rules in that host's redirect settings.
+
+/cancellation-policy          /policies.html               301
+/cancellation-policy/         /policies.html               301
+/portfolio-item/dermalogica/* /products-dermalogica.html   301
+/portfolio-item/ref/*         /products-ref.html           301
+/portfolio-item/lakme/*       /products-lakme.html         301
+/portfolio-item/voesh/*       /products-voesh.html         301
+/portfolio-item/olaplex/*     /products-olaplex.html       301
+/portfolio-item/smashbox/*    /products-smashbox.html      301
+/portfolio-item/olaplex-2/*   /products-calecim.html       301
+/portfolio-item/ecru-new-york/* /products-ecru-new-york.html 301
+/team-member/*                /our-team.html               301
+/jobs/*                       /jobs.html                   301
+/brides/*                     /brides.html                 301
+/salon/*                      /salon.html                  301
+/tips-and-toes/*              /tips-and-toes.html          301
+/massages/*                   /massages.html               301
+/makeup-and-eyes/*            /makeup-and-eyes.html        301
+/facials/*                    /facials.html                301
+/hair-removal/*               /hair-removal.html           301
+/spray-tans/*                 /spray-tans.html             301
+/mens-care/*                  /mens-care.html              301
+/slay-aesthetics/*            /slay-aesthetics.html        301
+/specials/*                   /specials.html               301
+/book-online/*                /book-online.html            301
+/products/*                   /products.html               301
+/our-team/*                   /our-team.html               301
+/join-our-team/*              /join-our-team.html          301
+/contact-us/*                 /contact-us.html             301
+/gift-cards/*                 /gift-cards.html             301
+/pick-up-orders/*             /pick-up-orders.html         301
+/wp-content/uploads/2020/04/Waxing-After-Care.pdf              /assets/docs/waxing-after-care.pdf            301
+/wp-content/uploads/2020/04/Before-and-After-Care-for-Tans.pdf /assets/docs/spray-tan-before-after-care.pdf  301
