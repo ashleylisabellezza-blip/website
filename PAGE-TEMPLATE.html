@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Copy this file to start a new page. Then:
+     1. add the page to tools/pages.json (title 45-60 chars, description 120-160),
+     2. write the content inside <main> (see docs/PAGE-GUIDE.md for components),
+     3. run: python tools/build.py
+     Leave the partial markers empty: the build fills them. -->
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PAGE TITLE | Bellezza &amp; Co.</title>
-<meta name="description" content="PAGE DESCRIPTION">
-<link rel="canonical" href="https://bellezzaspaonline.com/PAGE.html">
-<link rel="icon" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/styles.css">
+<!-- partial:head:start -->
+<!-- partial:head:end -->
 </head>
 <body>
-<div id="site-topbar"></div>
-<div id="site-header"></div>
-<main>
-  <section class="page-banner" style="background-image:url('assets/img/banner-interior.jpg')">
-    <h1>PAGE HEADING</h1>
-  </section>
+<!-- partial:top:start -->
+<!-- partial:top:end -->
+<main id="main" tabindex="-1">
+<!-- partial:breadcrumb:start -->
+<!-- partial:breadcrumb:end -->
 
-  <!-- PAGE BODY GOES HERE (see parts 2-4) -->
+<section class="page-head" aria-labelledby="page-h">
+  <div class="container grid-7-5">
+    <div>
+      <p class="eyebrow">Eyebrow label</p>
+      <h1 id="page-h">Page heading</h1>
+      <p class="lede">One or two sentences.</p>
+    </div>
+  </div>
+</section>
 
 </main>
-<button class="to-top" type="button" aria-label="Back to top">&#8593;</button>
-<div id="site-footer"></div>
-<script src="assets/js/site.js"></script>
+<!-- partial:bottom:start -->
+<!-- partial:bottom:end -->
 </body>
 </html>

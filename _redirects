@@ -1,19 +1,26 @@
-# Old WordPress URLs -> new static pages (301 = permanent).
-# This file format works as-is on Netlify and Cloudflare Pages.
-# On other hosts, recreate these rules in that host's redirect settings.
+# Old WordPress URLs -> new static pages (301 = permanent). Every rule points
+# straight at its final page (no chains). Works as-is on Netlify.
 
 /cancellation-policy          /policies.html               301
 /cancellation-policy/         /policies.html               301
-/portfolio-item/dermalogica/* /products-dermalogica.html   301
-/portfolio-item/ref/*         /products-ref.html           301
-/portfolio-item/lakme/*       /products-lakme.html         301
-/portfolio-item/voesh/*       /products-voesh.html         301
-/portfolio-item/olaplex/*     /products-olaplex.html       301
-/portfolio-item/smashbox/*    /products-smashbox.html      301
-/portfolio-item/olaplex-2/*   /products-calecim.html       301
+/portfolio-item/dermalogica/*   /products-dermalogica.html   301
+/portfolio-item/ref/*           /products-ref.html           301
+/portfolio-item/lakme/*         /products-lakme.html         301
+/portfolio-item/voesh/*         /products-voesh.html         301
+/portfolio-item/olaplex/*       /products-olaplex.html       301
+/portfolio-item/smashbox/*      /products-smashbox.html      301
+/portfolio-item/olaplex-2/*     /products-calecim.html       301
 /portfolio-item/ecru-new-york/* /products-ecru-new-york.html 301
-/team-member/*                /our-team.html               301
-/jobs/*                       /jobs.html                   301
+/portfolio-category/*         /products.html               301
+/team-member/ashley-basham/*  /our-team.html#ashley-basham 301
+/team-member/lisa-jeffries/*  /our-team.html#lisa-jeffries 301
+/team-member/alivia/*         /our-team.html#liv           301
+/team-member/taylor-2/*       /our-team.html#taylor-f      301
+/team-member/shannon-francis-cpn/* /slay-aesthetics.html   301
+/team-member/:name/*          /our-team.html#:name         301
+/jobs/*                       /join-our-team.html#apply    301
+/jobs.html                    /join-our-team.html#apply    301
+/about-me/*                   /about.html                  301
 /brides/*                     /brides.html                 301
 /salon/*                      /salon.html                  301
 /tips-and-toes/*              /tips-and-toes.html          301
@@ -34,3 +41,16 @@
 /pick-up-orders/*             /pick-up-orders.html         301
 /wp-content/uploads/2020/04/Waxing-After-Care.pdf              /assets/docs/waxing-after-care.pdf            301
 /wp-content/uploads/2020/04/Before-and-After-Care-for-Tans.pdf /assets/docs/spray-tan-before-after-care.pdf  301
+
+# Old WordPress/Yoast sitemap URLs that Search Console may still hold
+/sitemap_index.xml            /sitemap.xml                 301
+/wp-sitemap.xml               /sitemap.xml                 301
+
+# Build tooling and internal docs are not part of the public site.
+# '!' forces the rule: Netlify otherwise serves any file that exists (shadowing).
+/tools/*                      /404.html                    404!
+/docs/*                       /404.html                    404!
+/netlify.toml                 /404.html                    404!
+/IMAGE-MANIFEST.txt           /404.html                    404!
+/PAGE-TEMPLATE.html           /404.html                    404!
+/README.md                    /404.html                    404!

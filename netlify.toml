@@ -1,0 +1,11 @@
+# Netlify: publish the repo root. The build re-stamps every page (fresh © year,
+# holiday hours) and fails the deploy if tools/check.py finds a problem.
+[build]
+  publish = "."
+  command = "python3 tools/build.py --quiet"
+
+[build.environment]
+  PYTHON_VERSION = "3.12"
+
+# Keep the .html URLs canonical (Pretty URLs must stay OFF in
+# Site settings > Build & deploy > Post processing).
