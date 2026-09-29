@@ -114,14 +114,14 @@ LABELS = {
 SERVICES = [
     ('Hair', 'Hair', 'salon.html', 'range:salon.html#cuts-women', "Women's cuts "),
     ('Hair', "Men's", 'mens-care.html', 'from:salon.html#cuts-men', 'Cuts '),
-    ('Nails', 'Nails', 'tips-and-toes.html', 'range:tips-and-toes.html#classic-manicure', 'Manicures '),
-    ('Skin & Body', 'Facials', 'facials.html', 'from:facials.html#focus-facial', ''),
-    ('Skin & Body', 'Massage', 'massages.html', 'from:massages.html', ''),
-    ('Skin & Body', 'Waxing', 'hair-removal.html', 'from:hair-removal.html', ''),
-    ('Skin & Body', 'Brows, Lashes & Makeup', 'makeup-and-eyes.html', 'from:makeup-and-eyes.html#brows', ''),
-    ('Skin & Body', 'Spray Tans', 'spray-tans.html', 'from:spray-tans.html', ''),
-    ('Occasions & Medical', 'Bridal', 'brides.html', 'from:brides.html#bridal-hair-style', 'Bridal style '),
-    ('Occasions & Medical', 'Slay Aesthetics', 'slay-aesthetics.html', 'text:Medical aesthetics · Fridays', ''),
+    ('Hair', 'Bridal', 'brides.html', 'from:brides.html#bridal-hair-style', 'Bridal style '),
+    ('Nails & Skin', 'Nails', 'tips-and-toes.html', 'range:tips-and-toes.html#classic-manicure', 'Manicures '),
+    ('Nails & Skin', 'Facials', 'facials.html', 'from:facials.html#focus-facial', ''),
+    ('Nails & Skin', 'Waxing', 'hair-removal.html', 'from:hair-removal.html', ''),
+    ('Spa & Beauty', 'Massage', 'massages.html', 'from:massages.html', ''),
+    ('Spa & Beauty', 'Brows, Lashes & Makeup', 'makeup-and-eyes.html', 'from:makeup-and-eyes.html#brows', ''),
+    ('Spa & Beauty', 'Spray Tans', 'spray-tans.html', 'from:spray-tans.html', ''),
+    ('Medical', 'Slay Aesthetics', 'slay-aesthetics.html', 'text:Medical aesthetics · Fridays', ''),
 ]
 
 
@@ -337,8 +337,17 @@ def services_panel():
         cols.setdefault(col, []).append((label, file, nav_price(spec, prefix)))
     out = []
     for col, items in cols.items():
-        lis = ''.join(f'<li><a href="{f}">{esc(l)}<small>{esc(p)}</small></a></li>' for l, f, p in items)
-        out.append(f'<div><h2>{esc(col)}</h2><ul>{lis}</ul></div>')
+        if col == 'Medical':
+            continue  # shown in the feature column, apart from the beauty menu
+        lis = ''.join(f'<li><a href="{f}"><span>{esc(l)}</span><small>{esc(p)}</small></a></li>' for l, f, p in items)
+        out.append(f'<div class="panel-col"><h2>{esc(col)}</h2><ul>{lis}</ul></div>')
+    out.append('<div class="panel-feature"><h2>Not sure where to start?</h2>'
+               '<p>See every service and price on one page, or learn how our level pricing works before you book.</p>'
+               '<ul><li><a href="services.html"><span>All services &amp; prices</span></a></li>'
+               '<li><a href="new-guests.html"><span>Your first visit</span></a></li>'
+               '<li><a href="gift-cards.html"><span>Gift cards</span></a></li></ul>'
+               '<p class="panel-slay">Also in the building: <a href="slay-aesthetics.html">Slay Aesthetics</a>, '
+               'medical aesthetics by Shannon Francis, CNP, on Fridays.</p></div>')
     return ''.join(out)
 
 
@@ -372,7 +381,7 @@ def part_top(file, page):
 <nav class="nav-main" aria-label="Main">
 <ul>
 <li class="nav-services"><a href="services.html"{services_cur}>Services &amp; Prices</a><button class="chev" type="button" aria-expanded="false" aria-controls="nav-services" hidden>{icon('chevron')}<span class="sr-only">Show services</span></button>
-<div class="nav-panel" id="nav-services" hidden><div class="cols">{services_panel()}</div><p class="panel-foot"><a href="services.html">All services &amp; prices</a></p></div></li>
+<div class="nav-panel" id="nav-services" hidden><div class="container panel-grid">{services_panel()}</div></div></li>
 <li>{navlink('team', 'our-team.html', 'Meet the Team')}</li>
 <li>{navlink('guests', 'new-guests.html', 'New Guests')}</li>
 <li>{navlink('bridal', 'brides.html', 'Bridal')}</li>
@@ -406,7 +415,7 @@ def part_top(file, page):
 <address class="addr">{esc(ADDR['street'])}<br>{esc(ADDR['city'])}, {ADDR['region']} {ADDR['zip']}</address>
 {hours_table(caption=False)}
 <div class="badges"><a href="{U['ios']}"><img src="assets/img/badge-app-store.jpg" alt="Download the Bellezza app on the App Store" width="123" height="44" loading="lazy"></a><a href="{U['android']}"><img src="assets/img/badge-google-play.png" alt="Get the Bellezza app on Google Play" width="150" height="44" loading="lazy"></a></div>
-<div class="social" style="margin-top:16px"><a href="{U['instagram']}" aria-label="Instagram" style="color:var(--ink)">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Facebook" style="color:var(--ink)">{icon('facebook')}</a></div>
+<div class="social drawer-social"><a href="{U['instagram']}" aria-label="Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Facebook">{icon('facebook')}</a></div>
 </div>
 </dialog>'''
     return f'<a class="skip-link" href="#main">Skip to main content</a>\n{util}\n{header}\n{drawer}'
@@ -434,13 +443,17 @@ def part_bottom(file, page):
     band_call = '' if slay else f'<a class="btn btn--outline" href="{SITE["tel"]}" data-cta="call" data-placement="band">Call {SITE["phone"]}</a>'
     band_micro = ('<p class="microcopy">Booking opens the Slay Aesthetics website. Bellezza gift cards are not accepted at Slay Aesthetics.</p>'
                   if slay else booking_microcopy(True))
+    if ov and ov.get('cta') == 'gift':
+        band_h = f"Give time at Bellezza, or call {SITE['phone']}."
+        band_micro = ('<p class="microcopy">eGift cards are sold on our online gift card page (Meevo) and can&rsquo;t be used '
+                      'at Slay Aesthetics. <a href="policies.html#gift-cards">Gift card policy</a></p>')
     band = ''
     if file != '404.html':
         band = f'''<section class="cta-band dark" aria-labelledby="band-h" data-band>
 <div class="container">
 <p class="band-status" data-status="band" hidden></p>
 <h2 id="band-h">{band_h}</h2>
-<div class="band-facts"><p style="margin:0">Today: <span data-today-hours>see our <a href="contact-us.html#hours">hours</a></span></p><p style="margin:0"><a href="{esc(U['directions'])}" data-cta="directions" data-placement="band">{esc(ADDR_LINE)}</a></p></div>
+<div class="band-facts"><p>Today: <span data-today-hours>see our <a href="contact-us.html#hours">hours</a></span></p><p><a href="{esc(U['directions'])}" data-cta="directions" data-placement="band">{esc(ADDR_LINE)}</a></p></div>
 <div class="btn-row">{book_link(page, 'band', label=page['bookLabel'] if ov else 'Book an appointment')}{band_call}</div>
 {band_micro}
 </div>
@@ -455,8 +468,8 @@ def part_bottom(file, page):
 <p class="footer-lockup-tag">Est. 2009 • Salon • Spa • Boutique</p>
 <address><a href="{esc(U['directions'])}" data-cta="directions" data-placement="footer">{esc(ADDR['street'])}<br>{esc(ADDR['city'])}, {ADDR['region']} {ADDR['zip']}</a><br><a href="{SITE['tel']}" data-cta="call" data-placement="footer">{SITE['phone']}</a></address>
 {hours_table()}
-<p style="margin-top:12px"><a href="policies.html#holidays">Holiday hours</a></p>
-<p style="font-size:15px">Bridal inquiries: <a href="mailto:{SITE['bridalEmail']}">{SITE['bridalEmail']}</a></p>
+<p class="footer-holidays"><a href="policies.html#holidays">Holiday hours</a></p>
+<p class="footer-bridal">Bridal inquiries: <a href="mailto:{SITE['bridalEmail']}">{SITE['bridalEmail']}</a></p>
 </div>
 <nav class="footer-nav" id="footer-nav" aria-label="Footer">
 <div><h2>Services &amp; Prices</h2><ul>{svc_links}<li><a href="services.html">All services &amp; prices</a></li></ul></div>

@@ -14,8 +14,8 @@
   var $$ = function (sel, ctx) { return Array.prototype.slice.call((ctx || doc).querySelectorAll(sel)); };
   var mqDesktop = window.matchMedia('(min-width: 1024px)');
 
-  /* ---------- owner photo-slot view: ?photos=1 or localhost ---------- */
-  if (/[?&]photos=1\b/.test(location.search) || /^(localhost|127\.)/.test(location.hostname)) {
+  /* ---------- owner photo-slot view: add ?photos=1 to any URL ---------- */
+  if (/[?&]photos=1\b/.test(location.search)) {
     root.classList.add('show-ph');
   }
 
@@ -296,7 +296,7 @@
     var current = null;
     var io = new IntersectionObserver(function () {
       var line = window.innerHeight * 0.35, next = null;
-      targets.forEach(function (t) { if (t.getBoundingClientRect().top <= line) next = t.id; });
+      var best = -Infinity; targets.forEach(function (t) { var top = t.getBoundingClientRect().top; if (top <= line && top > best) { best = top; next = t.id; } });
       if (next === current) return;
       current = next;
       links.forEach(function (a) {
