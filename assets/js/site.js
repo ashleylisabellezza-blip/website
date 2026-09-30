@@ -328,6 +328,49 @@
     targets.forEach(function (t) { io.observe(t); });
   }
 
+  /* ---------- jump rows and team filters from 768px: one line when it fits (tightening the padding
+     first if that is enough); otherwise the row wraps into balanced, centered lines and the hairline
+     that would open a line is dropped. The line width goes to --chips-max. Re-measured on resize. ---------- */
+  function initChipFit() {
+    var rows = $$('.jump-chips .chips, .team-filters .chips');
+    if (!rows.length) return;
+    function lineCount(widths, max) {
+      var n = 1, used = 0;
+      widths.forEach(function (w) { if (used && used + w > max) { n++; used = w; } else used += w; });
+      return n;
+    }
+    function fit() {
+      rows.forEach(function (ul) {
+        ul.classList.remove('chips--tight', 'chips--wrap');
+        ul.style.removeProperty('--chips-max');
+        $$('.chips-line-start', ul).forEach(function (li) { li.classList.remove('chips-line-start'); });
+        if (window.innerWidth < 768 || ul.scrollWidth <= ul.clientWidth + 1) return;
+        ul.classList.add('chips--tight');
+        if (ul.scrollWidth <= ul.clientWidth + 1) return;
+        var avail = ul.clientWidth;
+        var widths = [].map.call(ul.children, function (li) { return li.getBoundingClientRect().width; });
+        var total = widths.reduce(function (a, b) { return a + b; }, 0);
+        var lines = lineCount(widths, avail);
+        /* the narrowest line width that still needs no more lines than the full width does */
+        var lo = Math.max.apply(null, widths.concat([total / lines])), hi = avail;
+        for (var k = 0; k < 20 && hi - lo > 1; k++) { var mid = (lo + hi) / 2; if (lineCount(widths, mid) <= lines) hi = mid; else lo = mid; }
+        ul.style.setProperty('--chips-max', Math.ceil(hi) + 2 + 'px');
+        ul.classList.add('chips--wrap');
+        var top = null;
+        [].forEach.call(ul.children, function (li) {
+          if (top !== null && li.offsetTop > top + 4) li.classList.add('chips-line-start');
+          top = li.offsetTop;
+        });
+      });
+      var nav = $('.jump-chips');
+      if (nav) root.style.setProperty('--chips-h', nav.offsetHeight + 'px');
+    }
+    fit();
+    var t;
+    window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 120); });
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(fit);
+  }
+
   /* ---------- map facade ---------- */
   function initMaps() {
     $$('[data-map]').forEach(function (btn) {
@@ -356,7 +399,7 @@
   function ready(fn) { if (doc.readyState !== 'loading') fn(); else doc.addEventListener('DOMContentLoaded', fn); }
   ready(function () {
     [applyStatus, applySeasons, initHeader, initServicesNav, initDrawer, initBookbar, initFocusClearance,
-      initDialogs, initTeamFilters, initScrollspy, initMaps, initAnalytics].forEach(function (fn) {
+      initDialogs, initTeamFilters, initScrollspy, initChipFit, initMaps, initAnalytics].forEach(function (fn) {
       try { fn(); } catch (err) { if (window.console) console.error(err); }
     });
   });

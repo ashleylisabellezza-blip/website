@@ -138,6 +138,7 @@ main>:is(.section,.page-head,.hero)+.section::before{content:"";position:absolut
 .split-title>:last-child,.page-head .grid-7-5:not(:has(> figure))>div>:last-child{margin-bottom:0}
 .split-title>.lede{font-size:var(--b-body);line-height:1.8}
 .st-line{display:block}
+@media (max-width:767.98px){.st-line{display:inline}}   /* stacked (left-aligned) titles flow as one phrase: "Visit us", not "Visit / us" */
 @media (max-width:767.98px){
   .split-title,.page-head .grid-7-5:not(:has(> figure))>div{display:block}
   .split-title::before,.page-head .grid-7-5:not(:has(> figure))>div::before{content:none}
@@ -162,6 +163,8 @@ main>:is(.section,.page-head,.hero)+.section::before{content:"";position:absolut
 :is(.cta-band,.site-footer) .btn--strong:hover{background:var(--plaster-lo);border-color:var(--plaster-lo);color:var(--umber-2)}
 .btn-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px}
 @media (max-width:479.98px){.btn-row>.btn{flex:1 1 100%}}
+/* phones: a little less air in the pill so four-word labels ("Book with Slay Aesthetics") stay on one line */
+@media (max-width:419.98px){.btn{padding-inline:18px 16px;letter-spacing:.08em}}
 .text-link{font-weight:600}
 .microcopy{margin-top:var(--sp-2);font-size:.875rem;line-height:1.65;color:var(--b-muted);max-width:52ch}
 .status{display:inline-flex;align-items:baseline;gap:10px;font-weight:600;color:var(--b-text)}
@@ -191,7 +194,8 @@ main>:is(.section,.page-head,.hero)+.section::before{content:"";position:absolut
   .nav-main>ul{display:flex;justify-content:space-between;align-items:center;margin:0;padding:0;list-style:none}
   .strip-book{min-height:36px;padding:7px 16px 7px 18px;font-size:.8125rem}
 }
-@media (min-width:1024px) and (max-height:31.25rem){.strip-book{min-height:34px}}
+/* short viewports: the strip is 44px, so Book is drawn 36px tall; on touch its ::before keeps the 48px hit area */
+@media (max-height:31.25rem){.strip-book{min-height:36px;padding-block:6px}}
 .nav-main>ul>li>a{position:relative;display:inline-flex;align-items:center;min-height:44px;color:var(--on-umber);font:600 var(--b-label)/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;white-space:nowrap}
 .nav-main>ul>li>a::after{content:"";position:absolute;left:0;right:.18em;bottom:11px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left center}
 .nav-main>ul>li>a:hover::after,.nav-main>ul>li>a[aria-current]::after{transform:scaleX(1)}
@@ -203,15 +207,16 @@ main>:is(.section,.page-head,.hero)+.section::before{content:"";position:absolut
 
 /* services mega panel: a plaster sheet directly under the strip */
 .nav-panel{position:absolute;left:0;right:0;top:100%;padding-block:44px 40px;background:var(--plaster-hi);color:var(--b-text);border-bottom:1px solid var(--hair);box-shadow:0 30px 50px -30px rgb(57 53 46/.45)}
-.panel-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-.panel-col{padding:0 clamp(16px,2.2vw,40px)}
+.panel-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:auto auto}
+/* the four heads share one row (subgrid), so a head that wraps to two lines keeps every 40px rule on one line */
+.panel-col{display:grid;grid-row:span 2;grid-template-rows:subgrid;padding:0 clamp(16px,2.2vw,40px)}
 .panel-col+.panel-col{border-left:1px solid var(--hair)}
-.panel-col h2{margin:0 0 18px;text-align:center;font:400 1.1875rem/1.3 var(--display);letter-spacing:.15em;text-transform:uppercase;color:var(--b-text)}
-.panel-col h2::after{content:"";display:block;width:40px;height:1px;margin:16px auto 0;background:var(--umber)}
+.panel-col h2{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;margin:0 0 18px;text-align:center;font:400 1.1875rem/1.3 var(--display);letter-spacing:.15em;text-transform:uppercase;color:var(--b-text)}
+.panel-col h2::after{content:"";display:block;flex:none;width:40px;height:1px;margin:16px auto 0;background:var(--umber)}
 .panel-col ul{list-style:none;margin:0;padding:0}
 .panel-col a{display:flex;flex-direction:column;gap:1px;padding:10px 0;color:var(--ink);font:400 1rem/1.35 var(--sans);letter-spacing:.01em;text-decoration:none}
 .panel-col a:hover .pl-name{text-decoration:underline;text-underline-offset:4px}
-.pl-range{font-size:var(--b-role);letter-spacing:.12em;color:var(--b-muted)}  /* written lowercase by the build */
+.pl-range{font-size:var(--b-role);letter-spacing:.12em;color:var(--b-muted);text-wrap:pretty}  /* written lowercase by the build */
 .panel-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:32px;padding-top:28px;border-top:1px solid var(--hair)}
 
 /* ==== logo row (tier 2, scrolls away) ==== */
@@ -273,10 +278,10 @@ main>:is(.section,.page-head,.hero)+.section::before{content:"";position:absolut
 /* ==== breadcrumb ==== */
 .breadcrumb{padding-top:var(--sp-3)}
 .breadcrumb ol{display:flex;flex-wrap:wrap;gap:2px 0;margin:0;padding:0;list-style:none;font:600 .75rem/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--b-muted)}
-.breadcrumb li+li::before{content:"/";margin:0 12px;color:var(--hair)}
+.breadcrumb li:not(:last-child)::after{content:"/";margin:0 12px;color:var(--hair)}   /* a wrapped trail ends a line with the slash, never opens one */
 .breadcrumb a{display:inline-flex;align-items:center;min-height:24px;color:var(--b-muted);text-decoration:none}
 .breadcrumb a:hover{color:var(--b-text);text-decoration:underline}
-.breadcrumb [aria-current]{color:var(--b-text)}
+.breadcrumb [aria-current]{display:inline-flex;align-items:center;min-height:24px;color:var(--b-text)}
 
 /* ==== framed prints (B4: photos hang like pictures on a wall) ==== */
 .frame-print{margin:0}
@@ -315,7 +320,9 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
   .hero .btn-row .btn--book,.hero .btn-row .btn--outline{flex:0 0 auto}
 }
 @media (min-width:1024px) and (max-width:1279.98px){.hero-copy{grid-column:1/7}.hero-frames{grid-column:7/13}}
-@media (min-width:1280px){.hero-copy{grid-column:1/5}}
+@media (min-width:1600px){.hero-copy{grid-column:1/5}}
+/* 1280-1599: four columns are too narrow for the kicker and the Book + Call pair; the copy takes five */
+@media (min-width:1280px) and (max-width:1599.98px){.hero-copy{grid-column:1/6}}
 @media (min-width:1024px) and (max-height:760px){.hero-frames .fp-img--tall{aspect-ratio:3/4.4}}
 @media (max-width:1023.98px){.hero .call-digits{position:static!important;width:auto;height:auto;margin:0;overflow:visible;clip:auto;white-space:nowrap}}
 @media (max-width:419.98px){.hero .btn-row>.btn{flex:1 1 100%}}
@@ -390,13 +397,18 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
   .bridal .bridal-frame{grid-column:1/5}
   .bridal .bridal-copy{grid-column:6/12}
 }
-@media (max-width:1023.98px){.bridal .bridal-frame{max-width:340px}}
+@media (min-width:768px) and (max-width:1023.98px){.bridal .b-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}}
+@media (max-width:767.98px){.bridal .bridal-frame{max-width:340px}}
 .bridal-copy p{max-width:52ch}
 .bridal-copy .btn-row{margin-top:28px}
 .visit-block .addr{margin-bottom:20px}
 .visit-row{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--sp-4) var(--gutter);max-width:var(--measure);margin:clamp(3rem,2rem + 3vw,5rem) auto 0;align-items:start}
-@media (min-width:900px){.visit-row{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:clamp(2.5rem,5vw,5rem)}}
+@media (min-width:768px){.visit-row{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:clamp(2rem,5vw,5rem)}}
 .visit-hours .hours{max-width:none}
+/* the hours and the map hang as one bone sheet on the wall (The Lane's "Say hello" card) */
+.visit-row{padding:clamp(24px,4vw,56px);background:var(--plaster-hi);box-shadow:0 1px 2px rgb(57 53 46/.08),0 44px 70px -52px rgb(57 53 46/.55)}
+.visit-row .map-facade{background-color:var(--plaster)}
+.visit-row .microcopy{margin-bottom:0}
 
 /* ==== hours, address, map ==== */
 .visit{display:grid;gap:var(--sp-4) var(--gutter)}
@@ -411,6 +423,12 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
 .holidays{width:100%;font-size:.9375rem;line-height:1.5}
 .holidays th,.holidays td{padding:9px 0;border-bottom:1px solid var(--hair);text-align:left;font-weight:400;color:var(--b-text)}
 .holidays td{padding-left:16px;text-align:right;color:var(--b-muted)}
+/* phones: the date keeps its line and the hours drop under it, right-aligned, instead of both wrapping */
+@media (max-width:479.98px){
+  .holidays tr{display:flex;flex-wrap:wrap;justify-content:space-between;column-gap:12px;padding:9px 0;border-bottom:1px solid var(--hair)}
+  .holidays th,.holidays td{padding:0;border:0}
+  .holidays td{margin-left:auto;white-space:nowrap}
+}
 .map-facade{display:grid;align-content:end;justify-items:start;gap:14px;aspect-ratio:16/9;min-width:0;padding:clamp(20px,3vw,36px);border:1px solid var(--hair);background-color:var(--plaster-hi);background-image:linear-gradient(rgb(80 74 64/.06) 1px,transparent 1px),linear-gradient(90deg,rgb(80 74 64/.06) 1px,transparent 1px);background-size:44px 44px}
 .map-facade>p{margin:0;color:var(--b-text);font-weight:600}
 .map-facade iframe{width:100%;height:100%;min-height:260px;border:0}
@@ -451,13 +469,21 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
 .footer-lockup-tag{margin:0;font:600 .75rem/1.5 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--on-umber-muted);max-width:none}
 .footer-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:40px var(--gutter);max-width:var(--measure);margin-inline:auto}
 .footer-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px var(--gutter)}
-@media (min-width:768px){.footer-grid{grid-template-columns:minmax(0,1fr) minmax(0,3fr)}.footer-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:768px){.footer-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1024px){.footer-grid{grid-template-columns:minmax(0,1fr) minmax(0,3fr)}}
+/* tablet: VISIT gets its own row, the address left and the hours table right */
+@media (min-width:768px) and (max-width:1023.98px){
+  .f-visit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--gutter);align-items:start}
+  .f-visit>h2{grid-column:1/-1}
+  .f-visit>:not(h2):not(.hours){grid-column:1}
+  .f-visit>.hours{grid-column:2;grid-row:2/span 3}
+}
 @media (max-width:767.98px){.footer-nav>div:first-child{grid-column:1/-1}.footer-nav>div:first-child ul{columns:2;column-gap:var(--gutter)}}
 .site-footer h2{margin:0 0 14px;font:600 var(--b-label)/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--on-umber)}
 .site-footer ul{list-style:none;margin:0;padding:0}
-.site-footer li a{display:inline-flex;align-items:baseline;gap:8px;min-height:32px;padding-block:3px}
+.site-footer li a{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;min-height:32px;padding-block:3px}
 @media (pointer:coarse){.site-footer li a{min-height:44px;align-items:center}}
-.site-footer li small{font-size:var(--b-role);letter-spacing:.12em;color:var(--on-umber-muted)}
+.site-footer li small{font-size:var(--b-role);letter-spacing:.12em;color:var(--on-umber-muted);white-space:nowrap}
 .site-footer address{margin-bottom:14px}
 .site-footer address a{text-decoration:underline;text-decoration-color:var(--hair-on-umber)}
 .site-footer .hours{max-width:17rem;font-size:.875rem}
@@ -570,9 +596,15 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
 .jump-chips .container{display:flex;justify-content:center}
 .chips-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;margin:0;padding:0;list-style:none}
-/* from 768px the row is one sticky line; a long row scrolls sideways instead of growing a second line */
+/* from 768px the row is one sticky line; site.js (initChipFit) wraps a row that does not fit, centered,
+   and drops the hairline that would open the new line. Without JS a long row scrolls sideways. */
 @media (min-width:768px){.jump-chips .chips{flex-wrap:nowrap;justify-content:safe center;min-width:0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--hair) transparent}}
-@media (min-width:768px) and (max-width:1279.98px){.jump-chips .chips{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 56px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 56px),transparent)}}
+@media (min-width:768px){
+  :is(.jump-chips,.team-filters) .chips.chips--tight :is(a,button){padding-inline:9px}
+  :is(.jump-chips,.team-filters) .chips.chips--tight :is(a,button)::after{left:9px;right:calc(9px + .16em)}
+  :is(.jump-chips,.team-filters) .chips.chips--wrap{flex-wrap:wrap;justify-content:center;max-width:var(--chips-max,100%);margin-inline:auto;overflow:visible;-webkit-mask-image:none;mask-image:none}
+  .chips--wrap>li.chips-line-start::before{content:none}
+}
 .chips li{display:flex;align-items:center}
 .chips li+li::before{content:"";width:1px;height:14px;background:var(--hair)}
 @media (max-width:767.98px){.chips li+li::before{content:none}}
@@ -591,7 +623,7 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
 .menu-section .jump-chips{margin-bottom:clamp(2.5rem,1.75rem + 2vw,4rem)}
 .menu-section .container>p.measure{max-width:var(--measure);margin:0 auto var(--sp-4)}
 .level-legend{max-width:var(--measure);margin:0 auto var(--sp-5);font-size:1rem;color:var(--b-text)}
-.level-legend a{font-size:var(--b-role);letter-spacing:.12em;text-transform:lowercase;font-weight:600}
+.level-legend a{font-size:var(--b-role);letter-spacing:.12em;text-transform:lowercase;font-weight:600;white-space:nowrap}
 .level-legend:has(+ .level-key){margin-bottom:22px}
 /* who's at each level (B7 #4): one hairline row, a cell per level: level word, the page's anchor price, the names */
 .level-key{max-width:var(--measure);margin:0 auto clamp(3rem,2.5rem + 2vw,4.5rem)}
@@ -629,7 +661,7 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
   .price-list:not(.price-list--ladder)>.price-item,.price-list>.price-ref{height:100%}
 }
 .price-item{padding:16px 0 18px;border-bottom:1px solid var(--hair)}
-.price-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;color:var(--ink)}
+.price-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;line-height:1.5;color:var(--ink)}
 .price-head .name{font-weight:600;text-wrap:balance}
 .price-head .dots{display:none}
 .price-head .price{font-weight:600;white-space:nowrap;text-align:right}
@@ -732,7 +764,7 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
 @media (min-width:768px){.link-list--stacked{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:1280px){.link-list--stacked{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .link-list--single{grid-template-columns:minmax(0,1fr)}
-.link-list--wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.link-list--wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));max-width:var(--measure);margin-inline:auto}
 @media (min-width:768px){.link-list--trio{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:1024px){.link-list--trio{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .link-list--trio a{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:2px;align-items:center}
@@ -779,7 +811,7 @@ a.fp-name:hover{color:var(--ink);text-decoration:underline;text-underline-offset
 .team-filters .container{display:grid;justify-items:center;padding-block:2px}
 .team-filters .chips{flex-wrap:nowrap;justify-content:safe center;max-width:100%;overflow-x:auto;scrollbar-width:none}
 .team-filters .chips::-webkit-scrollbar{display:none}
-@media (max-width:1279.98px){.team-filters .chips{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}}
+@media (max-width:767.98px){.team-filters .chips{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}}
 @media (max-width:767.98px){.team-filters .chips li+li::before{content:""}}
 .team-filters .count{margin:-4px 0 6px;font-size:var(--b-role);line-height:1.3;letter-spacing:.12em;text-transform:lowercase;color:var(--b-muted)}
 .team-filters .count:empty{display:none}
@@ -908,16 +940,20 @@ body:has(dialog[open]){overflow:hidden}
 .bento .bn-note h3{font-size:var(--b-h3);letter-spacing:.15em;text-transform:uppercase}
 .bento .bn-note p{max-width:46ch}
 .bento .bn-square{grid-column:3}
-.bento .bn-square figure{aspect-ratio:1}
-@media (max-width:767.98px){
-  .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .bento .bn-wide{grid-column:1/-1;grid-row:1}
-  .bento .bn-tall{grid-column:1;grid-row:2}
-  .bento .bn-tall figure{aspect-ratio:1}
-  .bento .bn-tall img{object-position:50% 25%}
-  .bento .bn-square{grid-column:2;grid-row:2}
-  .bento .bn-note{grid-column:1/-1;grid-row:3}
+/* squares keep 1:1 (gallery-3 is only ever a 1:1 crop from the top) even when a taller note shares the row */
+.bento .bn-square figure,.bento .bn-sq figure{height:auto;aspect-ratio:1}
+.bento .bn-square,.bento .bn-sq{align-self:start}
+/* About's bento: below 1024px the wide print on top, two squares, then the note */
+@media (max-width:1023.98px){
+  .bento:not(.bento--life){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bento:not(.bento--life) .bn-wide{grid-column:1/-1;grid-row:1}
+  .bento:not(.bento--life) .bn-tall{grid-column:1;grid-row:2}
+  .bento:not(.bento--life) .bn-tall figure{aspect-ratio:1}
+  .bento:not(.bento--life) .bn-tall img{object-position:50% 25%}
+  .bento:not(.bento--life) .bn-square{grid-column:2;grid-row:2}
+  .bento:not(.bento--life) .bn-note{grid-column:1/-1;grid-row:3}
 }
+@media (max-width:767.98px){.bento--life{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* ==== new guests (B7): split titles for the head, pricing and changes; caps heads for the rest ==== */
 .choose-grid{display:grid;gap:var(--sp-4) var(--gutter);max-width:var(--measure);margin:0 auto;align-items:start}
@@ -1031,7 +1067,7 @@ body:has(dialog[open]){overflow:hidden}
 .brand-mat{display:grid;place-items:center;margin:0;aspect-ratio:4/3;padding:12% 14%;background:var(--white);box-shadow:var(--print-shadow)}
 .brand-mat img{width:100%;height:auto;max-height:100%;object-fit:contain}
 @media (min-width:1024px){.brand-mat{grid-column:1/5}.brand-copy{grid-column:6/12}}
-@media (max-width:1023.98px){.brand-mat{width:100%;max-width:520px}}
+@media (min-width:768px) and (max-width:1023.98px){.brand-about{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}}
 @media (max-width:767.98px){.brand-mat{aspect-ratio:3/2;padding:10% 16%}}
 .brand-copy>p{max-width:52ch}
 .brand-copy>.link-list{max-width:52ch;margin-top:30px}
@@ -1137,7 +1173,6 @@ body:has(dialog[open]){overflow:hidden}
 @media (min-width:1024px){.learn-print{grid-column:1/7}.learn-copy{grid-column:8/13}}
 .learn-copy>p:not(.eyebrow){max-width:50ch}
 /* Life at Bellezza: The Lane's gallery bento; the note carries the section head */
-.bento .bn-sq figure{aspect-ratio:1}
 .bento--life .bn-wide{grid-column:1/3;grid-row:1}
 .bento--life .bn-tall{grid-column:3;grid-row:1}
 .bento--life .bn-note{grid-column:1;grid-row:2;padding:clamp(22px,3vw,48px)}
@@ -1195,7 +1230,8 @@ body:has(dialog[open]){overflow:hidden}
 .job li::before,.doc-row .prose ul:not(.escalation)>li::before{content:"";position:absolute;left:0;top:1.45em;width:20px;height:1px;background:var(--umber)}
 .person-grid{align-items:center}
 @media (min-width:1024px){.person-frame{grid-column:2/5}.person-copy{grid-column:6/12}}
-@media (max-width:1023.98px){.person-frame{max-width:300px}}
+/* tablet: the print and the copy side by side, so the print never hangs alone on an empty wall */
+@media (min-width:768px) and (max-width:1023.98px){.person-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}}
 @media (max-width:767.98px){.person-frame{max-width:250px}}
 .person-copy>p:not(.eyebrow){max-width:52ch}
 .person-copy p:has(>.text-link:only-child){margin-bottom:.25em}

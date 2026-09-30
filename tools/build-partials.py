@@ -509,6 +509,16 @@ def part_head(file, page):
     return '\n'.join(lines)
 
 
+def keep_dot(text):
+    """A wrapped range never opens a line with its middle dot: the word before " · " and the dot
+    stay together ("medical <span class="nowrap">aesthetics ·</span> Fridays"). Characters unchanged."""
+    if ' · ' not in text:
+        return text
+    left, right = text.split(' · ', 1)
+    head, _, last = left.rpartition(' ')
+    return f'{head}{" " if head else ""}<span class="nowrap">{last} ·</span> {right}'
+
+
 def services_panel():
     """Mega panel: four hairline-divided columns with centered caps heads (B5)."""
     cols = {}
@@ -516,7 +526,7 @@ def services_panel():
         cols.setdefault(col, []).append((label, file, nav_price(spec, prefix)))
     out = []
     for col, items in cols.items():
-        lis = ''.join(f'<li><a href="{f}"><span class="pl-name">{esc(l)}</span><span class="pl-range">{esc(p)}</span></a></li>'
+        lis = ''.join(f'<li><a href="{f}"><span class="pl-name">{esc(l)}</span><span class="pl-range">{keep_dot(esc(p))}</span></a></li>'
                       for l, f, p in items)
         out.append(f'<div class="panel-col"><h2>{esc(col)}</h2><ul>{lis}</ul></div>')
     foot = ('<div class="panel-foot">'
@@ -584,7 +594,7 @@ def part_top(file, page):
 </div>
 </div>'''
 
-    svc_links = ''.join(f'<li><a href="{f}"><span>{esc(short)}</span><small>{esc(nav_price(s, p))}</small></a></li>'
+    svc_links = ''.join(f'<li><a href="{f}"><span>{esc(short)}</span><small>{keep_dot(esc(nav_price(s, p)))}</small></a></li>'
                         for _, _l, short, f, s, p in SERVICES)
     special_link = f'<a href="specials.html">{esc(special["title"])}</a>' if special else ''
     if ov.get('cta') in ('slay', 'gift'):
