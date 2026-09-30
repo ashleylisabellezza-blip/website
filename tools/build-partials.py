@@ -243,6 +243,19 @@ def nav_price(spec, prefix):
     return text[0].upper() + text[1:]
 
 
+def nav_price_html(spec, prefix):
+    """nav_price() as HTML, with the figures kept on one line ("$42–80" never breaks at the dash)."""
+    kind, _, arg = spec.partition(':')
+    if kind == 'text':
+        return esc(arg)
+    val = price_value(kind, arg)
+    if not val:
+        return ''
+    if prefix:
+        return f'{esc(prefix[0].upper() + prefix[1:])}<span class="nowrap">{esc(val)}</span>'
+    return f'<span class="nowrap">{esc(val[0].upper() + val[1:])}</span>'
+
+
 def _plain(fragment):
     return html.unescape(re.sub(r'<[^>]+>', '', fragment)).strip()
 
@@ -691,7 +704,7 @@ def part_head(file, page):
 def services_panel():
     out = []
     for col, items in NAV_SERVICES:
-        lis = ''.join(f'<li><a href="{f}"><span>{l}</span><small>{esc(nav_price(spec, pre))}</small></a></li>'
+        lis = ''.join(f'<li><a href="{f}"><span>{l}</span><small>{nav_price_html(spec, pre)}</small></a></li>'
                       for l, f, spec, pre in items)
         out.append(f'<div class="panel-col"><h2>{col}</h2><ul>{lis}</ul></div>')
     out.append('<div class="panel-col panel-doors"><h2>Not sure?</h2><ul>'
@@ -765,7 +778,7 @@ def part_top(file, page):
 </div>
 </header>'''
 
-    svc_links = ''.join(f'<li><a href="{f}"><span>{esc(l)}</span><small>{esc(nav_price(s, p))}</small></a></li>'
+    svc_links = ''.join(f'<li><a href="{f}"><span>{esc(l)}</span><small>{nav_price_html(s, p)}</small></a></li>'
                         for _, l, f, s, p in SERVICES)
     team_links = ''.join(f'<li><a href="our-team.html#filter-{key}"><span>{label}</span>{dept_count(count)}</a></li>'
                          for label, key, count in TEAM_DEPTS)

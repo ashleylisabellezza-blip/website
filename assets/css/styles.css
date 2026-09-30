@@ -69,7 +69,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc
 body{margin:0;background:var(--white);color:var(--d-text);font:400 var(--d-body)/1.65 var(--f);font-stretch:100%;font-kerning:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip}
 img,picture,svg,video{display:block;max-width:100%;height:auto}
 a[href^="tel:"]{white-space:nowrap}
-a.btn[href^="tel:"]{white-space:normal}
+a.btn[href^="tel:"],a.book-this[href^="tel:"]{white-space:normal}
 a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 a:hover{text-decoration-thickness:2px}
 p{margin:0 0 1em;text-wrap:pretty;max-width:66ch}
@@ -126,7 +126,7 @@ main:focus{outline:none}
 /* centered section heads (D4: centered H2 + one-line intro, 60ch max) */
 .section-head{margin:0 auto var(--s-7);text-align:center;max-width:60ch}
 .section-head h2{margin-inline:auto;max-width:26ch}
-.section-head p{margin-inline:auto;max-width:60ch}
+.section-head p{margin-inline:auto;max-width:60ch;text-wrap:balance}
 .section-head.grid-7-5{display:block}
 .section-head .eyebrow{margin-bottom:var(--s-2)}
 
@@ -228,6 +228,17 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
   .menu-toggle{display:none}
   .header-book{min-height:48px;padding:13px 24px}
 }
+/* 1024-1199: the five nav items and a long Book override ("Buy an eGift card") only fit with tighter spacing */
+@media (min-width:1024px) and (max-width:1199.98px){
+  .site-header>.container{gap:var(--s-4)}
+  .brand img{height:50px}
+  .nav-main>ul{gap:4px}
+  .nav-main>ul>li>a{padding:0 6px}
+  .nav-main>ul>li>a::after{left:6px;right:6px}
+  .chev{width:24px}
+  .header-actions{margin-left:0}
+  .header-book{padding-inline:18px}
+}
 @media (min-width:1024px) and (max-height:799.98px){.utility{position:static}.site-header{top:0}}
 @media (max-height:500px){.utility,.site-header,.jump-chips,.team-filters{position:static!important}}
 .chev{display:inline-flex;align-items:center;justify-content:center;width:28px;min-height:44px;padding:0;border:0;background:none;color:var(--ink)}
@@ -239,6 +250,7 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .nav-panel h2{display:block;margin:0 0 var(--s-3);padding-bottom:var(--s-3);border-bottom:2px solid var(--ink);font:800 18px/1 var(--f);font-stretch:125%;letter-spacing:.02em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
 .nav-panel ul{list-style:none;margin:0;padding:0}
 .panel-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s-6) var(--s-6)}
+@media (max-width:1279.98px){.panel-grid{column-gap:var(--s-5)}.nav-panel h2{font-size:15px;white-space:normal}.panel-doors{padding:var(--s-4)}}
 .panel-col li a{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--ink);font:600 16px/1.3 var(--f);text-decoration:none}
 .panel-col li a:hover span{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 .panel-col li a small{font:400 14px/1.35 var(--f);color:var(--muted)}
@@ -382,7 +394,9 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .hero-strip figcaption a{font-weight:700}
 @media (max-width:767.98px){.hero-strip{margin-inline:calc(-1 * var(--pad))}.hero-strip figcaption{padding-inline:var(--pad)}}
 
-.positioning{margin:0 auto;max-width:34ch;font:500 var(--d-lede)/1.35 var(--f);color:var(--ink);text-align:center;text-wrap:balance}
+/* Element's statement line under the hero: one centered line on tablets and up, set heavier than body */
+.positioning{margin:0 auto;max-width:34ch;font:600 var(--d-lede)/1.35 var(--f);letter-spacing:-.005em;color:var(--ink);text-align:center;text-wrap:balance}
+@media (min-width:768px){.positioning{max-width:none}}
 .intents{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-7) var(--gap);margin:var(--s-7) 0 0;padding:0;list-style:none}
 @media (min-width:768px){.intents{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .intent{display:block;color:var(--ink);text-decoration:none}
@@ -393,6 +407,16 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .intent-type>span{display:block;width:100%;padding:var(--s-4) 0;border-bottom:1px solid var(--line);font:800 clamp(1.125rem,.9rem + .7vw,1.375rem)/1.15 var(--f);font-stretch:125%;letter-spacing:.02em;text-transform:uppercase;color:var(--ink)}
 .intent-type>span:first-child{border-top:1px solid var(--line)}
 .intent-type small{display:block;margin-top:6px;font:700 clamp(1.125rem,.95rem + .6vw,1.375rem)/1 var(--f);font-stretch:100%;letter-spacing:0;text-transform:none;color:var(--ink)}
+/* tablets: three narrow cards, so the type panel and the label bars get smaller type */
+@media (min-width:768px) and (max-width:1023.98px){
+  .intents{column-gap:var(--s-4)}
+  .intent .label-bar{margin:-24px var(--s-3) 0;padding:10px 10px 11px;min-height:0}
+  .intent .label-bar .lb-k{font-size:15px;letter-spacing:.03em}
+  .intent .label-bar .lb-s{font-size:13px;line-height:1.3}
+  .intent-type{padding:var(--s-2) var(--s-3) var(--s-6)}
+  .intent-type>span{padding:10px 0;font-size:15px;font-stretch:112%}
+  .intent-type small{margin-top:4px;font-size:16px}
+}
 .intent-products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));height:100%;margin:0;padding:0;list-style:none;background:var(--white);border:1px solid var(--line)}
 .intent-products>span{display:grid;place-items:center;padding:12%;min-height:0;background:var(--white)}
 .intent-products>span:nth-child(odd){border-right:1px solid var(--line)}
@@ -409,16 +433,21 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 @media (min-width:900px){.expertise{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}}
 
 .matrix{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--gap);margin:0;padding:0;list-style:none}
-@media (min-width:1024px){.matrix{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.matrix{align-items:start}
-@media (min-width:700px) and (max-width:1023.98px){.matrix{grid-template-columns:repeat(2,minmax(0,1fr))}.matrix>li:first-child{grid-column:1/-1}}
+/* phones and tablets: one column. 1024 and up: the hair card
+   (8 specialties) spans the row with its rows in columns; nails and skin sit side by side below at one height */
+@media (min-width:1024px){.matrix{grid-template-columns:repeat(2,minmax(0,1fr))}.matrix>li:first-child{grid-column:1/-1}}
 .matrix-card{display:flex;flex-direction:column;border:1px solid var(--ink);background:var(--white)}
 .matrix-card h3{margin:0}
 .matrix-card .label-bar{min-height:56px}
 .matrix-rows{margin:0;padding:var(--s-2) var(--s-5) var(--s-3);list-style:none;flex:1}
-@media (min-width:700px) and (max-width:1023.98px){.matrix>li:first-child .matrix-rows{columns:2;column-gap:var(--s-7)}.matrix>li:first-child .matrix-rows li{break-inside:avoid}}
 .matrix-rows>li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);column-gap:var(--s-2);align-items:start;padding:var(--s-2) 0;border-bottom:1px solid var(--line)}
 .matrix-rows>li:last-child{border-bottom:0}
+@media (min-width:1024px){
+  .matrix>li:first-child .matrix-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s-7)}
+  .matrix>li:first-child .matrix-rows>li{border-bottom:0;border-top:1px solid var(--line)}
+  .matrix>li:first-child .matrix-rows>li:nth-child(-n+2){border-top:0}
+}
+@media (min-width:1280px){.matrix>li:first-child .matrix-rows{grid-template-columns:repeat(3,minmax(0,1fr))}.matrix>li:first-child .matrix-rows>li:nth-child(3){border-top:0}}
 @media (max-width:599.98px){.matrix-rows>li{grid-template-columns:minmax(0,1fr)}.m-spec{padding-top:0;margin-bottom:var(--s-2)}.m-spec .dots{display:none}}
 .m-spec{display:flex;align-items:baseline;gap:var(--s-2);margin:0;padding-top:12px;font-weight:700;color:var(--ink);font-size:15px;line-height:1.3;max-width:none}
 .m-spec .dots{flex:1 1 auto;min-width:var(--s-4);border-bottom:1px dotted var(--dots);transform:translateY(-4px)}
@@ -432,13 +461,13 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .who a:hover span{text-decoration:underline;text-underline-offset:3px}
 .who img{width:32px;height:32px;object-fit:cover;object-position:50% 18%;filter:grayscale(1) contrast(1.12);background:var(--ink);flex:none}
 .who small{font-size:13px;color:var(--muted)}
-.matrix-foot{margin:0;padding:0 var(--s-5) var(--s-4);border-top:1px solid var(--line)}
+.matrix-foot{margin:0;padding:0 var(--s-5) var(--s-4);border-top:1px solid var(--line);max-width:none}
 .matrix-foot a{display:inline-block;max-width:100%;padding-block:15px;font:700 var(--d-label)/1.2 var(--f);font-stretch:112%;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);text-underline-offset:4px}
 
 .quiz-band{text-align:center}
 .quiz-faces{display:flex;justify-content:center;margin:0 auto var(--s-5);padding:0;list-style:none}
-.quiz-faces img{width:56px;height:56px;object-fit:cover;object-position:50% 18%;filter:grayscale(1) contrast(1.12);background:var(--ink)}
-@media (min-width:768px){.quiz-faces img{width:72px;height:72px}}
+.quiz-faces img{flex:0 1 56px;min-width:0;width:56px;height:auto;aspect-ratio:1;object-fit:cover;object-position:50% 18%;filter:grayscale(1) contrast(1.12);background:var(--ink)}
+@media (min-width:768px){.quiz-faces img{flex-basis:72px;width:72px}}
 .quiz-band h2{max-width:24ch;margin-inline:auto}
 .quiz-band p{margin-inline:auto}
 
@@ -460,11 +489,11 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .sign-photo img{width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 0}
 .visit-info{display:grid;align-content:start;gap:var(--s-4)}
 .visit-info>*{margin:0}
-.visit-info .addr{font-weight:700}
+.visit-info .addr{margin:0 0 var(--s-2);font-weight:700}
 .visit-info .hours{max-width:none}
 .visit-status:empty{display:none}
 .visit-grid .map-facade{min-height:0}
-@media (min-width:768px){.visit-grid .map-facade:not(:has(iframe)){grid-template-columns:auto minmax(0,1fr) auto;justify-items:start;align-items:center;column-gap:var(--s-5);padding:var(--s-5) var(--s-6);text-align:left}.visit-grid .map-facade::before{width:32px;height:32px}}
+@media (min-width:1200px){.visit-grid .map-facade:not(:has(iframe)){grid-template-columns:auto minmax(0,1fr) auto;justify-items:start;align-items:center;column-gap:var(--s-5);padding:var(--s-5) var(--s-6);text-align:left}.visit-grid .map-facade::before{width:32px;height:32px}}
 .visit-faq{max-width:880px;margin:var(--s-8) auto 0}
 .visit-faq h3{margin-bottom:var(--s-4);font-size:var(--d-h3);font-stretch:112%;text-align:center}
 .visit-faq .faq{max-width:none}
@@ -483,7 +512,7 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .dark .hours .today-tag{background:var(--gold);color:var(--ink)}
 .holidays{width:100%;font-size:15px}
 .holidays th,.holidays td{padding:8px 0;border-bottom:1px solid var(--line);text-align:left;font-weight:400;color:var(--ink)}
-.holidays td{text-align:right;color:var(--d-text);padding-left:var(--s-4)}
+.holidays td{text-align:right;color:var(--d-text);padding-left:var(--s-4);white-space:nowrap}
 .map-facade{display:grid;justify-items:center;align-content:center;gap:var(--s-4);min-height:280px;padding:var(--s-6);background:var(--ink);color:var(--on-ink);text-align:center}
 .map-facade::before{content:"";width:40px;height:40px;background:var(--gold);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E") center/contain no-repeat}
 .map-facade>p{margin:0;color:var(--on-ink)}
@@ -546,7 +575,7 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .social a{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--ink)}
 .social svg{width:20px;height:20px}
 .footer-band .social a{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--white)}
-.footer-band .social a:hover{background:var(--ink-2);color:var(--gold-lt)}
+.footer-band .social a:hover{background:var(--white);color:var(--ink)}
 
 /* ==== price menus (D7): fog panels, the category word between rules ==== */
 .level-legend{margin:0 0 var(--s-6);padding:var(--s-4) var(--s-5);background:var(--fog);border-left:3px solid var(--ink);font-size:16px;color:var(--ink);max-width:none}
@@ -563,7 +592,8 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .menu-group>h3 .h3-pre{grid-row:1;margin-bottom:6px;font:400 16px/1.3 var(--f);font-stretch:100%;letter-spacing:0;text-transform:none;color:var(--d-text)}
 .menu-group>h3 .h3-main{grid-row:2}
 .menu-group>h3 .h3-sub{grid-row:3;margin-top:6px;font:400 16px/1.3 var(--f);font-stretch:100%;letter-spacing:0;text-transform:none;color:var(--d-text)}
-@media (max-width:599.98px){.menu-group>h3{font-size:clamp(1.25rem,1rem + 1.5vw,1.5rem);column-gap:var(--s-3)}}
+@media (max-width:599.98px){.menu-group>h3{font-size:clamp(1.25rem,1rem + 1.5vw,1.5rem);column-gap:var(--s-3);text-wrap:pretty}}
+@media (max-width:399.98px){.menu-group>h3{grid-template-columns:minmax(12px,1fr) auto minmax(12px,1fr);column-gap:var(--s-2);font-size:1.1875rem;font-stretch:112%}}
 .menu-group .group-intro{color:var(--d-text)}
 .tier-head{margin:0 0 var(--s-1);text-align:right;font:600 var(--d-util)/1.3 var(--f);letter-spacing:.06em;text-transform:uppercase;color:var(--d-text);max-width:none}
 .price-list{list-style:none;margin:0;padding:0}
@@ -607,7 +637,8 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 @media (max-width:479.98px){
   .price-list--ladder .price-item{padding:4px 2px}
   .price-list--ladder .price-head{gap:4px}
-  .price-list--ladder .name{font-size:10px;letter-spacing:.02em;line-height:1.2}
+  .price-list--ladder .name{font-size:10px;letter-spacing:0;line-height:1.2}
+  .menu-group:has(.price-list--ladder){padding-inline:12px}
   .price-list--ladder .price{font-size:1.0625rem;font-stretch:112%}
 }
 .menu-cols{display:grid;gap:0 var(--gap)}
@@ -648,7 +679,9 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .chips a:hover::after,.chips button:hover::after,.chips [aria-current="true"]::after,.chips [aria-pressed="true"]::after{transform:scaleX(1)}
 .chips a:focus-visible,.chips button:focus-visible{outline-offset:-5px}
 @media (forced-colors:active){.chips [aria-current="true"],.chips [aria-pressed="true"]{outline:2px solid Highlight}}
-@media (min-width:1024px){.jump-chips--dense .chips a{padding:0 8px}.jump-chips--dense .chips a::after{left:8px;right:8px}.jump-chips--dense .chips{-webkit-mask-image:none;padding-right:0}}
+/* dense bars (many links): tighter links from 1024px; the fade and its padding go once they fit */
+@media (min-width:1024px){.jump-chips--dense .chips a{padding:0 8px;font-size:var(--d-util)}.jump-chips--dense .chips a::after{left:8px;right:8px}}
+@media (min-width:1280px){.jump-chips--dense .chips{-webkit-mask-image:none;padding-right:0}}
 
 
 /* ==== services.html (D7): the honest line, a 2-column grid of fog menu panels, Slay in ink ==== */
@@ -765,9 +798,16 @@ a:hover>.label-bar b,a:hover .label-bar b,a:hover .label-bar .lb-k,a:hover .labe
 .team-dept--lead{margin-bottom:calc(-1 * var(--s-6))}
 /* the three small departments share one row on desktop, each under a column head (as in the
    Services panel): Skin & waxing (2), Massage (1), Medical aesthetics (1) */
-.team-row{display:grid;gap:var(--s-8) var(--s-4);max-width:calc(1128px + 2 * var(--pad))}
+.team-row{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-8) var(--s-4);max-width:calc(1128px + 2 * var(--pad))}
 .dept-head{display:flex;align-items:flex-end;gap:10px;margin:0 0 var(--s-5);padding-bottom:var(--s-3);border-bottom:2px solid var(--ink);font:800 clamp(1.0625rem,.95rem + .4vw,1.1875rem)/1.1 var(--f);font-stretch:125%;letter-spacing:.02em;text-transform:uppercase;color:var(--ink);text-wrap:balance}
 .dept-head .cat-count{white-space:nowrap}
+/* below 1024 the three small departments stack, so their heads match the other departments: the
+   expanded word centered between two ink rules */
+@media (max-width:1023.98px){
+  .dept-head{justify-content:center;align-items:center;gap:var(--s-5);padding-bottom:0;border-bottom:0;font-size:var(--d-cat);line-height:1;text-align:center;margin-bottom:var(--s-6)}
+  .dept-head::before,.dept-head::after{content:"";flex:1 1 0;min-width:var(--s-5);height:1px;background:var(--ink)}
+}
+@media (max-width:599.98px){.dept-head,.team-dept .cat-rule{gap:var(--s-3);font-size:clamp(1.25rem,1rem + 1.5vw,1.5rem)}.dept-head::before,.dept-head::after,.team-dept .cat-rule::before,.team-dept .cat-rule::after{min-width:12px}}
 @media (min-width:1024px){
   .team-row{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:auto auto;row-gap:0}
   .team-row>.team-dept{display:grid;grid-row:span 2;grid-template-rows:subgrid}
