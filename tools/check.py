@@ -62,6 +62,7 @@ CHECKS = [
     ("main-landmark",       True,  "Exactly one <main id=\"main\"> per page"),
     ("skip-link",           True,  "First focusable element in <body> is a.skip-link href=\"#main\""),
     ("owner-questions",     True,  "Launch-gating owner questions answered in site.json ownerAnswers (WARN)"),
+    ("menu-h3-vs-main",     True,  "Every .menu-group > h3 has the same text as on the main branch (skipped without git)"),
 ]
 
 SITE = "https://bellezzaspaonline.com/"
@@ -819,6 +820,39 @@ def run_checks(root, enabled, today):
                             R.warn("tools/site.json", "staleness", "review rating/count dated %s is over 90 days old"
                                    % d.isoformat())
                         break
+
+    # menu-h3-vs-main: design branches may wrap substrings of a group head in
+    # span.h3-pre/.h3-main/.h3-sub, but the text must stay byte-identical to main
+    # (docs/DESIGN-OPTIONS.md section 0). Needs git and a local "main" ref.
+    if on("menu-h3-vs-main"):
+        import subprocess
+
+        def group_heads(text):
+            heads = re.findall(r'<div\b[^>]*class="menu-group\b[^"]*"[^>]*>\s*<h3\b[^>]*>(.*?)</h3>', text, re.S)
+            return [html.unescape(re.sub(r"<[^>]+>", "", h)) for h in heads]
+
+        try:
+            probe = subprocess.run(["git", "-C", str(root), "rev-parse", "--verify", "--quiet", "main"],
+                                   capture_output=True, text=True, timeout=20)
+            has_main = probe.returncode == 0
+        except (OSError, subprocess.SubprocessError):
+            has_main = False
+        if has_main:
+            for name, pg in pages.items():
+                mine = group_heads(pg.text)
+                if not mine:
+                    continue
+                r = subprocess.run(["git", "-C", str(root), "show", "main:" + name],
+                                   capture_output=True, timeout=20)
+                if r.returncode:
+                    continue
+                theirs = group_heads(r.stdout.decode("utf-8", errors="replace"))
+                if mine != theirs:
+                    for i in range(max(len(mine), len(theirs))):
+                        a = theirs[i] if i < len(theirs) else "(none)"
+                        b = mine[i] if i < len(mine) else "(none)"
+                        if a != b:
+                            R.fail(name, "menu-h3-vs-main", "group head %d is \"%s\" (main: \"%s\")" % (i + 1, b, a))
 
     # owner-questions (WARN)
     if on("owner-questions"):

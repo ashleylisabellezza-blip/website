@@ -19,6 +19,11 @@ It also fills live values from the page content, so numbers never drift:
     <span data-range="salon.html#cuts-women">   "$37–60" from that group or item
     <span data-from="facials.html#facials">     "from $55" (lowest price)
     <span data-level-price="salon.html#cuts-women@Master">   "$60" (one level's price)
+    <span data-level-price="...#gel-manicure-without-removal@madison">  "$49" (that person's level)
+    <span data-level-who="hair@Senior">  linked first names of the Senior hair stylists
+                                      (from the titles on our-team.html)
+    <small data-artist="madison" data-anchor="tips-and-toes.html#gel-manicure-without-removal"
+           data-anchor-label="gel manicure">   "senior · gel manicure $49" (or the title)
     <time data-asof>                  "Prices as of September 2026"
 and the /* config:start */ block in assets/js/site.js (hours, holidays, URLs).
 
@@ -187,19 +192,48 @@ def price_value(kind, spec):
     return f'${_fmt(lo)}' if lo == hi else f'${_fmt(lo)}–{_fmt(hi)}'
 
 
-SLASH_LEVELS = ['Associate', 'Senior', 'Expert']  # order of "$a / b / c" prices (nail and skin menus)
+SLASH_LEVELS = ['Associate', 'Senior', 'Expert']  # default order of "$a / b / c" prices (nail and skin menus)
+LEVELS = ['Jr Associate', 'Associate', 'Senior', 'Expert', 'Master']
+LEVEL_RE = re.compile(r'\b(Jr Associate|Associate|Senior|Expert|Master)\b')
+
+
+def _tier_levels(ref):
+    """The level order of a slash-price group, read from its p.tier-head
+    ("Associate / Senior"), so two-price skin menus map correctly."""
+    file, _, frag = ref.partition('#')
+    try:
+        page = read(file)
+    except FileNotFoundError:
+        return SLASH_LEVELS
+    m = re.search(r'\bid="%s"' % re.escape(frag), page) if frag else None
+    if not m:
+        return SLASH_LEVELS
+    start = page.rfind('class="menu-group', 0, m.end())
+    if start < 0:
+        return SLASH_LEVELS
+    nxt = re.search(r'class="menu-group\b|</section>', page[start + 20:])
+    group = page[start: start + 20 + (nxt.start() if nxt else len(page))]
+    th = re.search(r'<p class="tier-head"[^>]*>(.*?)</p>', group, re.S)
+    if not th:
+        return SLASH_LEVELS
+    levels = [html.unescape(re.sub(r'<[^>]+>', '', t)).strip() for t in th.group(1).split('/')]
+    return levels if all(l in LEVELS for l in levels) else SLASH_LEVELS
 
 
 def level_price(spec):
     """One level's price, read from the menus (section 0: level facts are derived).
 
     'salon.html#cuts-women@Jr Associate'                -> '$37'  (ladder row by level)
-    'tips-and-toes.html#gel-manicure-without-removal@Senior' -> '$49'  (slash price, by position)
+    'tips-and-toes.html#gel-manicure-without-removal@Senior' -> '$49'  (slash price, by tier-head position)
+    'tips-and-toes.html#gel-manicure-without-removal@madison' -> '$49' (a team slug: that person's level)
     """
     ref, _, level = spec.partition('@')
+    if level and level not in LEVELS:
+        level = (PEOPLE.get(level) or {}).get('level')
     frag = _fragment(ref)
     if frag is None or not level:
         return None
+    tiers = _tier_levels(ref)
     for li in PRICE_ITEM.findall(frag):
         m_name = re.search(r'<span class="name">(.*?)<span class="dots">', li, re.S)
         m_price = re.search(r'<span class="price">(.*?)</span>', li, re.S)
@@ -210,9 +244,78 @@ def level_price(spec):
         if level in [p.strip() for p in name.split('/')]:
             return price
         parts = _numbers(price)
-        if '/' in price and len(parts) == len(SLASH_LEVELS) and level in SLASH_LEVELS:
-            return f'${_fmt(parts[SLASH_LEVELS.index(level)])}'
+        if '/' in price and len(parts) == len(tiers) and level in tiers:
+            return f'${_fmt(parts[tiers.index(level)])}'
     return None
+
+
+# ------------------------------------------------------------------ team levels (section 0: derived, never typed)
+def _first_name(name):
+    """'Ashley Basham' -> 'Ashley'; 'Taylor F' -> 'Taylor F' (a surname initial stays)."""
+    parts = name.split()
+    if len(parts) > 1 and re.fullmatch(r'[A-Z]\.?', parts[1]):
+        return ' '.join(parts[:2])
+    return parts[0] if parts else name
+
+
+def team_people():
+    """Every team card on our-team.html, in page order: slug, name, first name,
+    departments, title (span.role) and the level word found in the title."""
+    try:
+        page = read('our-team.html')
+    except FileNotFoundError:
+        return {}
+    starts = list(re.finditer(r'<li\b[^>]*class="team-item\b[^"]*"[^>]*>', page))
+    people = {}
+    for i, m in enumerate(starts):
+        end = starts[i + 1].start() if i + 1 < len(starts) else page.find('</ul>', m.end())
+        card = page[m.end(): end]
+        slug = re.search(r'\bid="([^"]+)"', m.group(0))
+        if not slug:
+            continue
+        dept = re.search(r'data-dept="([^"]*)"', m.group(0))
+        h3 = re.search(r'<h3\b[^>]*>(.*?)</h3>', card, re.S)
+        role = re.search(r'<span class="role">(.*?)</span>', card, re.S)
+        name = html.unescape(re.sub(r'<[^>]+>', '', h3.group(1))).strip() if h3 else slug.group(1)
+        title = html.unescape(re.sub(r'<[^>]+>', '', role.group(1))).strip() if role else ''
+        lvl = LEVEL_RE.search(title)
+        people[slug.group(1)] = {
+            'slug': slug.group(1), 'name': name, 'first': _first_name(name),
+            'depts': dept.group(1).split() if dept else [], 'title': title,
+            'level': lvl.group(1) if lvl else None,
+            'chair_note': bool(re.search(r'behind the chair one day a week', card, re.I)),
+        }
+    return people
+
+
+PEOPLE = team_people()
+
+
+def level_who(spec):
+    """'hair@Senior' -> linked first names of everyone in that department whose
+    team title carries that level, in our-team.html order (empty if nobody)."""
+    dept, _, level = spec.partition('@')
+    names = [p for p in PEOPLE.values() if dept in p['depts'] and p['level'] == level]
+    return ', '.join(f'<a href="our-team.html#{p["slug"]}">{esc(p["first"])}</a>' for p in names)
+
+
+def artist_line(slug, anchor, label):
+    """The level line under a "Your artists" frame (B7 #2): "senior · gel manicure $49"
+    when the title carries a level and the page's anchor menu prices it; otherwise
+    the person's title. Ashley's and Lisa's "behind the chair one day a week"
+    comes from their team cards."""
+    p = PEOPLE.get(slug)
+    if not p:
+        return ''
+    price = level_price(f'{anchor}@{slug}') if (anchor and p['level']) else None
+    if price:
+        out = (f'<span class="af-lvl">{esc(p["level"].lower())}</span><span class="af-sep"> · </span>'
+               f'<span class="af-price">{esc(label)} {esc(price)}</span>')
+    else:
+        out = f'<span class="af-lvl">{esc(p["title"])}</span>'
+    if p['chair_note']:
+        out += '<span class="af-note">behind the chair one day a week</span>'
+    return out
 
 
 def nav_price(spec, prefix):
@@ -506,6 +609,29 @@ BAND_PHOTO = ('<picture class="band-photo">'
               '<img src="assets/img/team/contact-sheet-800.jpg" width="800" height="800" alt="" loading="lazy" decoding="async"></picture>')
 
 
+def _work_print(slug, label, alt):
+    s = 'assets/img/work/brows-' + slug
+    sizes = '(min-width: 768px) 300px, 44vw'
+    return (f'<figure><picture><source type="image/avif" srcset="{s}-400.avif 400w, {s}-470.avif 470w" sizes="{sizes}">'
+            f'<source type="image/webp" srcset="{s}-400.webp 400w, {s}-470.webp 470w" sizes="{sizes}">'
+            f'<img src="{s}-470.jpg" srcset="{s}-400.jpg 400w, {s}-470.jpg 470w" sizes="{sizes}" width="470" height="260" '
+            f'alt="{esc(alt)}" loading="lazy" decoding="async"></picture><span class="ba-label">{label}</span></figure>')
+
+
+# B7 #7: on makeup-and-eyes the closing window holds the Bella Brows before/after
+# as two framed prints (the caption is HTML, not baked into the image).
+BAND_WORK = {
+    'makeup-and-eyes.html': (
+        '<!-- OWNER: please confirm written client consent for this before/after pair (owner question 14), '
+        'and tell us who did the service so the caption can name them. -->\n'
+        '<figure class="band-work" id="brows-result">'
+        + _work_print('before', 'Before', "Close-up of a client's eyebrows before the service: sparse, uneven hairs growing in different directions.")
+        + _work_print('after', 'After', 'The same eyebrows after the service: shaped, tinted darker, with the hairs brushed up and set.')
+        + '<figcaption>Bella Brows: brow lamination, eyebrow wax and tint. <a href="#bella-brows">Bella Brows on the menu</a></figcaption>'
+        '</figure>\n'),
+}
+
+
 def part_bottom(file, page):
     ov = page.get('bookOverride') or {}
     slay = ov.get('cta') == 'slay'
@@ -527,14 +653,15 @@ def part_bottom(file, page):
                      'at Slay Aesthetics. <a href="policies.html#gift-cards">Gift card policy</a></p>')
         else:
             micro = booking_microcopy(True)
-        photo = '' if slay else BAND_PHOTO
-        mod = ' cta-band--plain' if slay else ''
+        work = BAND_WORK.get(file, '')
+        photo = '' if (slay or work) else BAND_PHOTO
+        mod = ' cta-band--plain' if (slay or work) else ''
         band = f'''<section class="cta-band{mod}" aria-labelledby="band-h" data-band>
 <div class="container">
 <div class="band-window">
 {photo}
 <div class="band-inner">
-<p class="band-status" data-status="band" hidden></p>
+{work}<p class="band-status" data-status="band" hidden></p>
 <h2 id="band-h">{heading}</h2>
 <div class="btn-row">{primary}{call}</div>
 {micro}
@@ -589,7 +716,20 @@ def fill_values(text, counts):
         val = level_price(m.group(2))
         return m.group(1) + (val or m.group(3)) + m.group(4)
 
+    def who(m):
+        return m.group(1) + level_who(m.group(2)) + m.group(4)
+
+    def artist(m):
+        tag = m.group(1)
+        anchor = re.search(r'data-anchor="([^"]*)"', tag)
+        label = re.search(r'data-anchor-label="([^"]*)"', tag)
+        line = artist_line(m.group(2), anchor.group(1) if anchor else '',
+                           html.unescape(label.group(1)) if label else '')
+        return tag + (line or m.group(3)) + m.group(4)
+
     text = re.sub(r'(<span\b[^>]*data-level-price="([^"]+)"[^>]*>)(.*?)(</span>)', lvl, text)
+    text = re.sub(r'(<span\b[^>]*data-level-who="([^"]+)"[^>]*>)(.*?)(</span>)', who, text, flags=re.S)
+    text = re.sub(r'(<small\b[^>]*data-artist="([^"]+)"[^>]*>)(.*?)(</small>)', artist, text, flags=re.S)
     text = re.sub(r'(<span\b[^>]*data-range="([^"]+)"[^>]*>)(.*?)(</span>)', rng, text)
     text = re.sub(r'(<span\b[^>]*data-from="([^"]+)"[^>]*>)(.*?)(</span>)', frm, text)
     for key, n in counts.items():

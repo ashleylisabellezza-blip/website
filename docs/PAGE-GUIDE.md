@@ -229,3 +229,51 @@ and `<button class="btn btn--strong" type="submit">Send inquiry</button>` (never
 - Brand logos: `assets/img/brands/{dermalogica,ref,lakme}-logo.jpg`, `voesh-logo.jpg`, `olaplex-logo.png`, `smashbox-logo.jpg`, `calecim-logo.jpg`, `ecru-logo.jpg`; product shots in `assets/img/brands/gallery/`.
 - App badges: `assets/img/badge-app-store.jpg` (438×156), `assets/img/badge-google-play.png` (461×135).
 - Check real pixel sizes with Python/Pillow before writing width/height.
+
+## 6. Option B (branch design-b): service-page template
+
+The 10 service pages and `services.html` follow docs/DESIGN-OPTIONS.md B7. The
+blocks below replace the head, artists strip and level legend shown in section 4.
+
+**Head (no image), a split title:** H1 right, a 2px umber rule, then a 38ch column.
+```html
+<section class="page-head page-head--split" aria-labelledby="page-h">
+  <div class="container"><div class="split-title">
+    <h1 id="page-h"><span class="st-line">Manicures &amp;</span> <span class="st-line">pedicures</span></h1>
+    <p class="eyebrow">Tips &amp; Toes</p>
+    <p class="lede">…</p>
+    <ul class="range-list"><li><span>Classic manicure</span><span data-range="tips-and-toes.html#classic-manicure">$31–40</span></li>…</ul>
+    <div class="btn-row" data-hero-ctas>(gold Book) <a class="text-link" …>Send as an eGift card</a></div>
+    <p class="microcopy">…</p>
+  </div></div>
+</section>
+```
+At most 3 split titles per page (`.split-title`, `.split-title--long` for notes), never two in a row.
+
+**Your artists:** a row of 3:5 mini frames (88px, `srcset` 180w/360w, `sizes="88px"`,
+`src` the 360 file). The line under each name is stamped by the build from the
+team titles and the page's anchor menu, so never type a level or price there:
+```html
+<li><a href="our-team.html#madison"><span class="af-frame"><picture>…</picture></span><span class="af-name">Madison</span>
+<small class="af-line" data-artist="madison" data-anchor="tips-and-toes.html#gel-manicure-without-removal" data-anchor-label="gel manicure"></small></a></li>
+```
+It becomes "senior · gel manicure $49"; a person whose title carries no level (Emma,
+Mia until owner question 8) shows the title instead. Use `artist-row--many` for 8
+people and `artist-row--solo` for one.
+
+**Who's at each level** (once per page, under `.level-legend`):
+```html
+<div class="level-key"><p class="lk-caption" id="lk-cap">Who’s at each level</p>
+<ul class="lk-row lk-row--3" aria-labelledby="lk-cap">
+  <li><span class="lk-level">Senior</span><span class="lk-price">gel manicure <span data-level-price="tips-and-toes.html#gel-manicure-without-removal@Senior">$49</span></span><span class="lk-who" data-level-who="nails@Senior"></span></li>
+</ul></div>
+```
+`data-level-who="dept@Level"` is filled with linked first names from the titles on
+`our-team.html`; `data-level-price` reads ladders by row and slash prices by the
+group's `p.tier-head` order. Changing a title or a price and rebuilding updates
+every row.
+
+**Menu:** per-group Book links are umber caps text links with the page's Book label
+(4 words or fewer). Long group heads may wrap existing substrings in
+`span.h3-pre` / `span.h3-sub`; `check.py` (menu-h3-vs-main) fails if the text
+differs from `main`.
