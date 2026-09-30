@@ -1,10 +1,11 @@
-"""Build the self-hosted WOFF2 web fonts for the Bellezza & Co. site (brief section 2.2).
+"""Build the self-hosted WOFF2 web fonts for Option D (Open Door): docs/DESIGN-OPTIONS.md D2.
 
 Usage (from the project root):
 
     python tools/build-fonts.py              # download sources if missing, build, verify
     python tools/build-fonts.py --refresh    # re-download the source TTFs first
     python tools/build-fonts.py --print-css  # ... and print the CSS fonts block
+    python tools/build-fonts.py --stamp-css  # ... and write it into assets/css/styles.css
 
 What it does:
   1. Makes sure the official variable TTFs from the google/fonts GitHub repo are in
@@ -12,16 +13,17 @@ What it does:
      together with each family's OFL.txt licence.
   2. Instances them with fontTools.varLib.instancer, keeping the variable axes but
      limiting their ranges:
-       Bodoni Moda roman + italic : opsz 11-96 (clamped to the font's range), wght 400-500
-       Hanken Grotesk roman       : wght 400-600
-  3. Subsets to Latin (the Google Fonts "latin" range plus a few extra punctuation
-     code points) keeping only the OpenType features the site can use.
+       Archivo roman : wght 400-800, wdth 100-125 (everything except the greeting)
+       Allura        : static 400, used once (the home greeting)
+  3. Subsets Archivo to Latin (the Google Fonts "latin" range plus a few extra
+     punctuation code points) keeping only the OpenType features the site can use,
+     and Allura to just the glyphs of the greeting ("Hello from Deo Drive!").
   4. Writes WOFF2 files to assets/fonts/ and copies the OFL licences next to them.
   5. Parses every output back with fontTools, checks glyph coverage for a test
      string and prints the size of each file against the budget in the brief.
   6. With --print-css: prints the CSS fonts block for assets/css/styles.css (to go
-     between /* fonts:start */ and /* fonts:end */; this script never edits the
-     stylesheet). It holds the three @font-face rules, whose URLs carry
+     between /* fonts:start */ and /* fonts:end */; --stamp-css writes it into the
+     stylesheet). It holds the two @font-face rules, whose URLs carry
      ?v=HASH, the same sha1[:8] content hash tools/build-partials.py puts on the font
      preloads, so preload and stylesheet request the same URL and each font downloads
      once. It also holds the metric-matched fallback faces computed by tools/font-metrics.py.
@@ -48,11 +50,10 @@ OUT = ROOT / "assets" / "fonts"
 
 RAW = "https://raw.githubusercontent.com/google/fonts/main/ofl/"
 SOURCES = {
-    "BodoniModa[opsz,wght].ttf": RAW + "bodonimoda/BodoniModa%5Bopsz%2Cwght%5D.ttf",
-    "BodoniModa-Italic[opsz,wght].ttf": RAW + "bodonimoda/BodoniModa-Italic%5Bopsz%2Cwght%5D.ttf",
-    "HankenGrotesk[wght].ttf": RAW + "hankengrotesk/HankenGrotesk%5Bwght%5D.ttf",
-    "BodoniModa-OFL.txt": RAW + "bodonimoda/OFL.txt",
-    "HankenGrotesk-OFL.txt": RAW + "hankengrotesk/OFL.txt",
+    "Archivo[wdth,wght].ttf": RAW + "archivo/Archivo%5Bwdth%2Cwght%5D.ttf",
+    "Allura-Regular.ttf": RAW + "allura/Allura-Regular.ttf",
+    "Archivo-OFL.txt": RAW + "archivo/OFL.txt",
+    "Allura-OFL.txt": RAW + "allura/OFL.txt",
 }
 
 # Google Fonts "latin" unicode-range, plus the extras the brief asks for.
@@ -65,35 +66,37 @@ UNICODE_RANGE = (
 
 # Features kept in the subset (only those present in each font survive anyway):
 # fontTools' default shaping set (ccmp, locl, mark, mkmk, calt, frac, ...) plus the
-# typographic features the site uses. Note: Hanken Grotesk has no tnum feature, but
-# its default figures are already tabular (all digits share one advance width).
+# typographic features the site uses (Archivo ships tnum, used for prices).
 EXTRA_FEATURES = ["kern", "liga", "lnum", "tnum", "onum", "pnum", "case"] + [
     "ss%02d" % i for i in range(1, 21)
 ]
 FEATURES = sorted(set(subset.Options().layout_features) | set(EXTRA_FEATURES))
 
+# The greeting is the only text set in Allura (D2, D9 rule 1). Owner question D-1 may
+# change the wording: rebuild with the new text (5 words or fewer).
+GREETING = "Hello from Deo Drive!"
+
 BUILDS = [
-    # (source, output, axis limits, budget in KB)
-    ("BodoniModa[opsz,wght].ttf", "bodoni-moda-roman-latin.woff2",
-     {"opsz": (11, 96), "wght": (400, 500)}, 70),
-    ("BodoniModa-Italic[opsz,wght].ttf", "bodoni-moda-italic-latin.woff2",
-     {"opsz": (11, 96), "wght": (400, 500)}, 45),
-    ("HankenGrotesk[wght].ttf", "hanken-grotesk-latin.woff2",
-     {"wght": (400, 600)}, 45),
+    # (source, output, axis limits, budget in KB, subset text or None for Latin)
+    ("Archivo[wdth,wght].ttf", "archivo-var-latin.woff2",
+     {"wght": (400, 800), "wdth": (100, 125)}, 70, None),
+    ("Allura-Regular.ttf", "allura-greeting.woff2", {}, 6, GREETING),
 ]
 
 LICENCES = [
-    ("BodoniModa-OFL.txt", "bodoni-moda-OFL.txt"),
-    ("HankenGrotesk-OFL.txt", "hanken-grotesk-OFL.txt"),
+    ("Archivo-OFL.txt", "archivo-OFL.txt"),
+    ("Allura-OFL.txt", "allura-OFL.txt"),
 ]
 
-TEST_STRING = "Beauty & relaxation, tailored to you. $37–60 • é"
+TEST_STRINGS = {
+    "archivo-var-latin.woff2": "Beauty & relaxation, tailored to you. $37–60 • é ’",
+    "allura-greeting.woff2": GREETING,
+}
 
-# (output file, CSS family, font-style, font-weight range)
+# (output file, CSS family, font-style, font-weight, font-stretch, unicode-range)
 FACES = [
-    ("bodoni-moda-roman-latin.woff2", "Bodoni Moda", "normal", "400 500"),
-    ("bodoni-moda-italic-latin.woff2", "Bodoni Moda", "italic", "400 500"),
-    ("hanken-grotesk-latin.woff2", "Hanken Grotesk", "normal", "400 600"),
+    ("archivo-var-latin.woff2", "Archivo", "normal", "400 800", "100% 125%", UNICODE_RANGE),
+    ("allura-greeting.woff2", "Allura", "normal", "400", None, None),
 ]
 
 
@@ -138,12 +141,14 @@ def clamp_limits(font, limits):
     return out
 
 
-def build_one(src_name, out_name, limits):
+def build_one(src_name, out_name, limits, text=None):
     font = TTFont(SRC / src_name)
-    axis_limits = clamp_limits(font, limits)
-    font = instancer.instantiateVariableFont(
-        font, axis_limits, updateFontNames=False, optimize=True
-    )
+    axis_limits = None
+    if limits:
+        axis_limits = clamp_limits(font, limits)
+        font = instancer.instantiateVariableFont(
+            font, axis_limits, updateFontNames=False, optimize=True
+        )
     # Round-trip through bytes so the subsetter sees fully compiled tables
     # (subsetting the in-memory instancer result trips over lazy gvar data).
     tmp = io.BytesIO()
@@ -153,7 +158,8 @@ def build_one(src_name, out_name, limits):
     font = TTFont(tmp, recalcTimestamp=False)
 
     opts = subset.Options()
-    opts.layout_features = FEATURES
+    # the greeting keeps only the script's joining features (no stylistic sets)
+    opts.layout_features = ["kern", "liga", "calt", "fina", "init", "ccmp", "locl"] if text else FEATURES
     opts.flavor = "woff2"
     opts.name_IDs = ["*"]          # keep names (licence/copyright strings included)
     opts.name_languages = [0x409]
@@ -164,7 +170,10 @@ def build_one(src_name, out_name, limits):
     opts.desubroutinize = False
 
     sub = subset.Subsetter(opts)
-    sub.populate(unicodes=parse_ranges(UNICODE_RANGE))
+    if text:
+        sub.populate(text=text)
+    else:
+        sub.populate(unicodes=parse_ranges(UNICODE_RANGE))
     sub.subset(font)
 
     OUT.mkdir(parents=True, exist_ok=True)
@@ -177,6 +186,7 @@ def build_one(src_name, out_name, limits):
 
 
 def verify(out_name, budget_kb):
+    TEST_STRING = TEST_STRINGS[out_name]
     path = OUT / out_name
     size_kb = path.stat().st_size / 1024
     font = TTFont(path)
@@ -213,34 +223,50 @@ def fallback_css():
 
 def css_block():
     lines = ["/* generated by python tools/build-fonts.py --print-css; do not edit by hand */"]
-    for out_name, family, style, weight in FACES:
+    for out_name, family, style, weight, stretch, urange in FACES:
+        extra = (";font-stretch:%s" % stretch if stretch else "") + (";unicode-range:%s" % urange if urange else "")
         lines.append(
             "@font-face{font-family:'%s';src:url('../fonts/%s?v=%s') format('woff2');"
-            "font-style:%s;font-weight:%s;font-display:swap;unicode-range:%s}"
-            % (family, out_name, content_hash(OUT / out_name), style, weight, UNICODE_RANGE))
+            "font-style:%s;font-weight:%s;font-display:swap%s}"
+            % (family, out_name, content_hash(OUT / out_name), style, weight, extra))
     lines.append("/* metric-matched fallbacks (tools/font-metrics.py) */")
     lines.append(fallback_css())
     return "\n".join(lines)
 
 
+def stamp_css():
+    """Write the fonts block between /* fonts:start */ and /* fonts:end */ in styles.css."""
+    import re
+    css_path = ROOT / "assets" / "css" / "styles.css"
+    css = css_path.read_text(encoding="utf-8")
+    new = re.sub(r"/\* fonts:start \*/.*?/\* fonts:end \*/",
+                 lambda m: "/* fonts:start */\n" + css_block() + "\n/* fonts:end */", css, flags=re.S)
+    if new != css:
+        with open(css_path, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(new)
+        print("stamped fonts block into", css_path.relative_to(ROOT))
+
+
 def main():
     refresh = "--refresh" in sys.argv
     fetch_sources(refresh)
-    for src_name, out_name, limits, _ in BUILDS:
+    for src_name, out_name, limits, _, text in BUILDS:
         print("build", out_name)
-        build_one(src_name, out_name, limits)
+        build_one(src_name, out_name, limits, text)
     for src_name, out_name in LICENCES:
         shutil.copyfile(SRC / src_name, OUT / out_name)
     print()
     ok = True
-    for _, out_name, _, budget in BUILDS:
+    for _, out_name, _, budget, _ in BUILDS:
         ok &= verify(out_name, budget)
     print()
-    print("coverage test string: %s" % ascii(TEST_STRING))
+    print("coverage test strings: %s" % ascii(list(TEST_STRINGS.values())))
     print("ALL OK" if ok else "PROBLEMS FOUND (see above)")
-    if ok and "--print-css" in sys.argv:
+    if ok and ("--print-css" in sys.argv or "--stamp-css" in sys.argv):
         print()
         print(css_block())
+    if ok and "--stamp-css" in sys.argv:
+        stamp_css()
     return 0 if ok else 1
 
 

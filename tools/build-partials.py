@@ -53,6 +53,7 @@ def icon(name, label=None):
         'facebook': '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
         'gift': '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
         'clock': '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        'pinfill': '<path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" fill="currentColor" stroke="none"/>',
     }
     a11y = f' role="img" aria-label="{esc(label)}"' if label else ' aria-hidden="true" focusable="false"'
     return (f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" '
@@ -109,19 +110,54 @@ LABELS = {
     '404.html': 'Page not found', 'thank-you.html': 'Thank you',
 }
 
-# Services dropdown: (column, label, file, price spec). Price spec is filled
-# from the page content by fill_values(), e.g. data-from="massages.html".
+# Services list (footer, drawer): (column, label, file, price spec, prefix). Price spec
+# is filled from the page content by nav_price(). Option D (DESIGN-OPTIONS §0): every
+# range names its anchor service ("Women's cut $37–60", never "Hair $37–60").
 SERVICES = [
-    ('Hair', 'Hair', 'salon.html', 'range:salon.html#cuts-women', "Women's cuts "),
-    ('Hair', "Men's", 'mens-care.html', 'from:salon.html#cuts-men', 'Cuts '),
+    ('Hair', 'Hair', 'salon.html', 'range:salon.html#cuts-women', "Women's cut "),
+    ('Hair', "Men's", 'mens-care.html', 'from:salon.html#cuts-men', "Men's cut "),
     ('Hair', 'Bridal', 'brides.html', 'from:brides.html#bridal-hair-style', 'Bridal style '),
     ('Nails & Skin', 'Nails', 'tips-and-toes.html', 'range:tips-and-toes.html#classic-manicure', 'Manicures '),
-    ('Nails & Skin', 'Facials', 'facials.html', 'from:facials.html#focus-facial', ''),
-    ('Nails & Skin', 'Waxing', 'hair-removal.html', 'from:hair-removal.html', ''),
-    ('Spa & Beauty', 'Massage', 'massages.html', 'from:massages.html', ''),
-    ('Spa & Beauty', 'Brows, Lashes & Makeup', 'makeup-and-eyes.html', 'from:makeup-and-eyes.html#brows', ''),
-    ('Spa & Beauty', 'Spray Tans', 'spray-tans.html', 'from:spray-tans.html', ''),
+    ('Nails & Skin', 'Facials', 'facials.html', 'from:facials.html#focus-facial', 'Facials '),
+    ('Nails & Skin', 'Waxing', 'hair-removal.html', 'from:hair-removal.html', 'Waxing '),
+    ('Spa & Beauty', 'Massage', 'massages.html', 'range:massages.html#relaxation', 'Relaxation massage '),
+    ('Spa & Beauty', 'Brows, Lashes & Makeup', 'makeup-and-eyes.html', 'from:makeup-and-eyes.html#brows', 'Brows, lashes & makeup '),
+    ('Spa & Beauty', 'Spray Tans', 'spray-tans.html', 'from:spray-tans.html', 'Spray tans '),
     ('Medical', 'Slay Aesthetics', 'slay-aesthetics.html', 'text:Medical aesthetics · Fridays', ''),
+]
+
+# Option D header panel (D5): four service columns plus the "Not sure?" doors.
+NAV_SERVICES = [
+    ('Hair', [
+        ('Cuts &amp; styling', 'salon.html', 'range:salon.html#cuts-women', "Women's cut "),
+        ('Color', 'salon.html#color-all-over', 'range:salon.html#color-all-over', 'All-over color '),
+        ("Men&rsquo;s cuts", 'mens-care.html', 'from:salon.html#cuts-men', "Men's cut "),
+    ]),
+    ('Nails', [
+        ('Manicures', 'tips-and-toes.html#manicures', 'range:tips-and-toes.html#classic-manicure', 'Manicures '),
+        ('Gel manicures', 'tips-and-toes.html#manicures',
+         'range:tips-and-toes.html#gel-manicure-without-removal+tips-and-toes.html#gel-manicure-with-removal', 'Gel manicure '),
+        ('Pedicures', 'tips-and-toes.html#pedicures', 'from:tips-and-toes.html#classic-pedicure', 'Pedicures '),
+    ]),
+    ('Skin &amp; body', [
+        ('Facials', 'facials.html', 'from:facials.html#focus-facial', 'Facials '),
+        ('Massage', 'massages.html', 'range:massages.html#relaxation', 'Relaxation massage '),
+        ('Waxing', 'hair-removal.html', 'from:hair-removal.html', 'Waxing '),
+        ('Brows, lashes &amp; makeup', 'makeup-and-eyes.html', 'from:makeup-and-eyes.html#brows', 'Brows, lashes & makeup '),
+        ('Spray tans', 'spray-tans.html', 'from:spray-tans.html', 'Spray tans '),
+    ]),
+    ('Occasions', [
+        ('Bridal hair &amp; makeup', 'brides.html', 'from:brides.html#bridal-hair-style', 'Bridal style '),
+        ('Special occasion makeup', 'makeup-and-eyes.html#makeup', 'range:makeup-and-eyes.html#special-occasion-makeup', 'Special occasion makeup '),
+        ('Slay Aesthetics', 'slay-aesthetics.html', 'text:Medical aesthetics · Fridays', ''),
+    ]),
+]
+
+# Team panel and drawer (D5): department -> our-team.html#filter-* (count stamped)
+TEAM_DEPTS = [
+    ('Hair', 'hair', 'dept-hair'), ('Nails', 'nails', 'dept-nails'), ('Skin &amp; waxing', 'skin', 'dept-skin'),
+    ('Massage', 'massage', 'dept-massage'), ('Makeup', 'makeup', 'dept-makeup'), ('Bridal', 'bridal', None),
+    ('Front desk', 'client-services', 'dept-client-services'),
 ]
 
 
@@ -172,9 +208,10 @@ def _fmt(n):
 
 
 def price_value(kind, spec):
-    frag = _fragment(spec)
-    if frag is None:
+    frags = [_fragment(part) for part in spec.split('+')]
+    if any(f is None for f in frags):
         return None
+    frag = ''.join(frags)
     nums = _prices_in(frag)
     if not nums:
         return None
@@ -193,6 +230,23 @@ def nav_price(spec, prefix):
         return ''
     text = f'{prefix}{val}'
     return text[0].upper() + text[1:]
+
+
+def level_price(spec):
+    """'salon.html#cuts-women|Senior' -> '$48': the price on the ladder row whose name
+    starts with that level (derived level facts, DESIGN-OPTIONS §0)."""
+    where, _, level = spec.partition('|')
+    frag = _fragment(where)
+    if not frag or not level:
+        return None
+    for li in PRICE_ITEM.findall(frag):
+        name = re.search(r'<span class="name">(.*?)</span>', li, re.S)
+        price = re.search(r'<span class="price">(.*?)</span>', li, re.S)
+        if name and price:
+            label = html.unescape(re.sub(r'<[^>]+>', '', name.group(1))).strip()
+            if label == level or label.startswith(level + ' '):
+                return html.unescape(re.sub(r'<[^>]+>', '', price.group(1))).strip()
+    return None
 
 
 # ------------------------------------------------------------------ team counts
@@ -265,18 +319,61 @@ def holiday_table():
 
 
 # ------------------------------------------------------------------ partials
-def book_link(page, placement, cls='btn btn--book', label=None, extra=''):
+# Option D (Open Door) chrome: docs/DESIGN-OPTIONS.md D5. Gold utility bar (desktop and
+# tablet) or a 6px gold edge (phones), white header with the framed logo, Services and
+# Team panels, gold square Book; a full-screen white menu; a fog closing band; an ink
+# footer over a gold band; a phone thumb bar (Menu · Call · Book).
+
+# Placements where a pages.json bookOverride does NOT replace the Bellezza Book
+# (DESIGN-OPTIONS §0):
+#   slay     none: every placement becomes "Book with Slay" (no gold on that page)
+#   gift     the menu keeps Bellezza booking; the chrome Book becomes "Buy an eGift card"
+#   bridal   the header and menu keep Bellezza booking; the band and thumb bar go to the inquiry
+OVERRIDE_SKIP = {
+    'slay': set(),
+    'gift': {'drawer'},
+    'bridal': {'header', 'drawer'},
+}
+
+
+def nocase_egift(text_html):
+    """Keep the "e" of eGift lowercase inside caps labels (DESIGN-OPTIONS §0)."""
+    return re.sub(r'\beGift', '<span class="nocase">e</span>Gift', text_html)
+
+
+def overridden(page, placement):
     ov = page.get('bookOverride')
-    # Header and drawer keep Bellezza booking, except on Slay (no gold anywhere there)
-    if ov and (placement not in ('header', 'drawer', 'header-t') or ov['cta'] == 'slay'):
+    return ov if ov and placement not in OVERRIDE_SKIP.get(ov['cta'], {'header', 'drawer'}) else None
+
+
+def book_link(page, placement, cls='btn btn--book', label=None, extra='', label_html=None):
+    ov = overridden(page, placement)
+    if ov:
         cls = cls.replace('btn--book', 'btn--strong')
-        tgt = ov['href']
-        lab = label or ov['label']
-        return (f'<a class="{cls}" href="{esc(tgt)}" data-cta="{ov["cta"]}" data-placement="{placement}"{extra}>'
-                f'{esc(lab)}</a>')
-    lab = label or 'Book an appointment'
+        lab = label_html if label_html is not None else nocase_egift(esc(label or ov['label']))
+        rel_ = ' rel="noopener"' if ov.get('external') else ''
+        return (f'<a class="{cls}" href="{esc(ov["href"])}" data-cta="{ov["cta"]}" data-placement="{placement}"{rel_}{extra}>'
+                f'{lab}</a>')
+    lab = label_html if label_html is not None else esc(label or 'Book an appointment')
     return (f'<a class="{cls}" href="{esc(U["book"])}" data-book data-cta="book" data-placement="{placement}"{extra}>'
-            f'{esc(lab)}</a>')
+            f'{lab}</a>')
+
+
+def chrome_label(page, placement):
+    """(label, short label) for the chrome Book: the header ('header') or the thumb bar ('bookbar').
+    The short label is used below 400px (D5)."""
+    ov = overridden(page, placement)
+    cta = ov['cta'] if ov else 'book'
+    if cta == 'slay':
+        return 'Book with Slay', 'Book with Slay'
+    if cta == 'gift':
+        return 'Buy an eGift card', 'Buy an eGift card'
+    if cta == 'bridal':
+        return page['bookLabel'], 'Bridal inquiry'
+    if placement == 'header':
+        return 'Book now', 'Book now'
+    long = page['bookLabel'] if not page.get('bookOverride') else 'Book an appointment'
+    return long, page.get('bookLabelShort') or (long if len(long) <= 14 else 'Book now')
 
 
 def part_head(file, page):
@@ -298,7 +395,7 @@ def part_head(file, page):
     else:
         lines.append(f'<link rel="canonical" href="{url}">')
     lines += [
-        '<meta name="theme-color" content="#faf8f5">',
+        '<meta name="theme-color" content="#ffffff">',
         '<meta property="og:type" content="website">',
         '<meta property="og:site_name" content="Bellezza &amp; Co.">',
         f'<meta property="og:title" content="{esc(page["title"])}">',
@@ -311,17 +408,14 @@ def part_head(file, page):
         '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">',
         '<meta name="twitter:card" content="summary_large_image">',
         f'<link rel="icon" href="{v("assets/img/favicon.png")}">',
-        f'<link rel="preload" href="{v("assets/fonts/bodoni-moda-roman-latin.woff2")}" as="font" type="font/woff2" crossorigin>',
+        f'<link rel="preload" href="{v("assets/fonts/archivo-var-latin.woff2")}" as="font" type="font/woff2" crossorigin>',
     ]
-    if page.get('italic'):
-        lines.append(f'<link rel="preload" href="{v("assets/fonts/bodoni-moda-italic-latin.woff2")}" as="font" type="font/woff2" crossorigin>')
+    if file == 'index.html':
+        # the one script greeting (D2): 4KB, above the fold, home page only
+        lines.append(f'<link rel="preload" href="{v("assets/fonts/allura-greeting.woff2")}" as="font" type="font/woff2" crossorigin>')
     lines.append(f'<link rel="stylesheet" href="{v("assets/css/styles.css")}">')
     if file in ('new-guests.html', 'book-online.html'):
         lines.append(f'<meta name="apple-itunes-app" content="app-id={U["iosAppId"]}">')
-    if file == 'index.html':
-        lines.append('<link rel="preload" as="image" href="assets/img/team/contact-sheet-1540.avif" '
-                     'imagesrcset="assets/img/team/contact-sheet-1100.avif 1100w, assets/img/team/contact-sheet-1540.avif 1540w" '
-                     'imagesizes="58vw" type="image/avif" fetchpriority="high" media="(min-width: 1024px)">')
     if not noindex:
         lines.append('<script type="speculationrules">{"prefetch":[{"where":{"and":['
                      '{"href_matches":{"pathname":"/*.html","search":""}},'
@@ -332,90 +426,101 @@ def part_head(file, page):
 
 
 def services_panel():
-    cols = {}
-    for col, label, file, spec, prefix in SERVICES:
-        cols.setdefault(col, []).append((label, file, nav_price(spec, prefix)))
     out = []
-    for col, items in cols.items():
-        if col == 'Medical':
-            continue  # shown in the feature column, apart from the beauty menu
-        lis = ''.join(f'<li><a href="{f}"><span>{esc(l)}</span><small>{esc(p)}</small></a></li>' for l, f, p in items)
-        out.append(f'<div class="panel-col"><h2>{esc(col)}</h2><ul>{lis}</ul></div>')
-    out.append('<div class="panel-feature"><h2>Not sure where to start?</h2>'
-               '<p>See every service and price on one page, or learn how our level pricing works before you book.</p>'
-               '<ul><li><a href="services.html"><span>All services &amp; prices</span></a></li>'
-               '<li><a href="new-guests.html"><span>Your first visit</span></a></li>'
-               '<li><a href="gift-cards.html"><span>Gift cards</span></a></li></ul>'
-               '<p class="panel-slay">Also in the building: <a href="slay-aesthetics.html">Slay Aesthetics</a>, '
-               'medical aesthetics by Shannon Francis, CNP, on Fridays.</p></div>')
+    for col, items in NAV_SERVICES:
+        lis = ''.join(f'<li><a href="{f}"><span>{l}</span><small>{esc(nav_price(spec, pre))}</small></a></li>'
+                      for l, f, spec, pre in items)
+        out.append(f'<div class="panel-col"><h2>{col}</h2><ul>{lis}</ul></div>')
+    out.append('<div class="panel-col panel-doors"><h2>Not sure?</h2><ul>'
+               f'<li><a href="{esc(U["quiz"])}" data-cta="quiz" data-placement="nav"><span>Take the match quiz</span>'
+               '<small>Find your provider</small></a></li>'
+               '<li><a href="new-guests.html"><span>New to Bellezza? Start here</span><small>Your first visit</small></a></li>'
+               '<li><a href="services.html"><span>All services &amp; prices</span><small>Every menu on one page</small></a></li>'
+               '</ul></div>')
     return ''.join(out)
+
+
+def dept_count(count):
+    return f'<small><span data-count="{count}">0</span></small>' if count else ''
+
+
+def team_panel():
+    lis = [f'<li><a href="our-team.html#filter-{key}"><span>{label}</span>{dept_count(count)}</a></li>'
+           for label, key, count in TEAM_DEPTS]
+    lis.append('<li class="team-all"><a href="our-team.html"><span>All <span data-count="team">28</span></span>'
+               '<small>Meet the team</small></a></li>')
+    return ('<div class="container panel-team"><p class="panel-lead">Bios, levels and specialties, by department.</p>'
+            f'<ul class="team-depts">{"".join(lis)}</ul></div>')
 
 
 def part_top(file, page):
     nav = page.get('nav')
 
-    def navlink(key, href, label):
-        attr = ' aria-current="page"' if href == file else (' aria-current="true"' if key == nav and key in ('services', 'about', 'bridal', 'team', 'guests') and href != file else '')
-        return f'<a href="{href}"{attr}>{label}</a>'
+    def cur(key, href):
+        if href == file:
+            return ' aria-current="page"'
+        return ' aria-current="true"' if key == nav else ''
 
     special = next(iter(SITE.get('specials') or []), None)
-    special_link = (f'<a class="u-desktop" href="specials.html" data-cta="special" data-placement="utility">'
-                    f'{esc(special["title"])}</a>') if special else ''
-    util = f'''<div class="utility dark">
+    special_link = ('<a class="u-wide u-xl" href="specials.html" data-cta="special" data-placement="utility">Specials</a>'
+                    if special else '')
+    util = f'''<div class="utility">
 <div class="container">
-<a class="u-desktop" href="{esc(U['directions'])}" data-cta="directions" data-placement="utility">{icon('pin')}{esc(ADDR['street'])}, {esc(ADDR['city'])}, {ADDR['region']}</a>
-<a class="u-desktop" href="{SITE['tel']}" data-cta="call" data-placement="utility">{icon('phone')}{SITE['phone']}</a>
-<span class="status-slot" data-status="utility"><a href="contact-us.html#hours">Hours &amp; holidays</a></span>
+<a class="u-addr" href="{esc(U['directions'])}" data-cta="directions" data-placement="utility">{icon('pinfill')}{esc(ADDR['street'])}, {esc(ADDR['city'])}</a>
 <span class="u-right">
-<span class="u-desktop gift-slot"><a href="gift-cards.html" data-gift-label="off" data-cta="gift" data-placement="utility">{icon('gift')}Gift cards</a><a href="gift-cards.html" data-gift-label="on" hidden data-cta="gift" data-placement="utility">{icon('gift')}Send a Bellezza eGift card</a></span>
+<span class="status-slot" data-status="utility"><a href="contact-us.html#hours">Hours &amp; holidays</a></span>
+<a class="u-tel" href="{SITE['tel']}" data-cta="call" data-placement="utility">{SITE['phone']}</a>
+<a class="u-wide" href="{esc(U['quiz'])}" data-cta="quiz" data-placement="utility">Find your match</a>
+<span class="u-wide gift-slot"><a href="gift-cards.html" data-gift-label="off" data-cta="gift" data-placement="utility">Gift cards</a><a href="gift-cards.html" data-gift-label="on" hidden data-cta="gift" data-placement="utility">Send an <span class="nocase">e</span>Gift card</a></span>
 {special_link}
-<span class="u-desktop u-social"><a href="{U['instagram']}" aria-label="Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Facebook">{icon('facebook')}</a></span>
+<a class="u-wide u-xl" href="products.html">Boutique</a>
+<a class="u-wide u-ig" href="{U['instagram']}" aria-label="Bellezza on Instagram">{icon('instagram')}</a>
 </span>
 </div>
 </div>'''
 
-    services_cur = ' aria-current="true"' if nav == 'services' or file == 'services.html' else ''
+    head_label, _ = chrome_label(page, 'header')
+    header_book = book_link(page, 'header', cls='btn btn--book header-book', label_html=nocase_egift(esc(head_label)))
     header = f'''<header class="site-header" id="top">
 <div class="container">
-<a class="wordmark" href="index.html"><img src="assets/img/brand/wordmark.png" alt="Bellezza &amp; Co. home" width="185" height="28"></a>
+<a class="brand" href="index.html"><img src="assets/img/brand/logo.png" alt="Bellezza &amp; Co. home" width="786" height="257"></a>
 <nav class="nav-main" aria-label="Main">
 <ul>
-<li class="nav-services"><a href="services.html"{services_cur}>Services &amp; Prices</a><button class="chev" type="button" aria-expanded="false" aria-controls="nav-services" hidden>{icon('chevron')}<span class="sr-only">Show services</span></button>
+<li class="nav-drop nav-services"><a href="services.html"{cur('services', 'services.html')}>Services</a><button class="chev" type="button" aria-expanded="false" aria-controls="nav-services" hidden>{icon('chevron')}<span class="sr-only">Show services</span></button>
 <div class="nav-panel" id="nav-services" hidden><div class="container panel-grid">{services_panel()}</div></div></li>
-<li>{navlink('team', 'our-team.html', 'Meet the Team')}</li>
-<li>{navlink('guests', 'new-guests.html', 'New Guests')}</li>
-<li>{navlink('bridal', 'brides.html', 'Bridal')}</li>
-<li>{navlink('about', 'about.html', 'About')}</li>
+<li class="nav-drop nav-team"><a href="our-team.html"{cur('team', 'our-team.html')}>Team</a><button class="chev" type="button" aria-expanded="false" aria-controls="nav-team" hidden>{icon('chevron')}<span class="sr-only">Show team departments</span></button>
+<div class="nav-panel nav-panel--team" id="nav-team" hidden>{team_panel()}</div></li>
+<li><a href="new-guests.html"{cur('guests', 'new-guests.html')}>New guests</a></li>
+<li><a href="brides.html"{cur('bridal', 'brides.html')}>Bridal</a></li>
+<li><a href="about.html"{cur('about', 'about.html')}>About</a></li>
 </ul>
 </nav>
 <div class="header-actions">
-<a class="header-gift" href="gift-cards.html" data-cta="gift" data-placement="header">Gift cards</a>
-{book_link(page, 'header', cls='btn btn--book header-book', label='Book now' if page.get('bookOverride', {}).get('cta') != 'slay' else 'Book with Slay')}
+{header_book}
 <a class="menu-toggle" href="#footer-nav" data-menu-toggle>{icon('menu')}<span>Menu</span></a>
 </div>
 </div>
 </header>'''
 
-    svc_links = ''.join(f'<li><a href="{f}">{esc(l)}<small>{esc(nav_price(s, p))}</small></a></li>'
+    svc_links = ''.join(f'<li><a href="{f}"><span>{esc(l)}</span><small>{esc(nav_price(s, p))}</small></a></li>'
                         for _, l, f, s, p in SERVICES)
+    team_links = ''.join(f'<li><a href="our-team.html#filter-{key}"><span>{label}</span>{dept_count(count)}</a></li>'
+                         for label, key, count in TEAM_DEPTS)
     drawer = f'''<dialog class="drawer" id="drawer" aria-label="Menu">
 <div class="drawer-inner">
-<div class="drawer-top"><a class="wordmark" href="index.html"><img src="assets/img/brand/wordmark.png" alt="Bellezza &amp; Co. home" width="158" height="24"></a><button class="icon-btn" type="button" data-drawer-close autofocus>{icon('close')}<span class="sr-only">Close menu</span></button></div>
-{book_link(page, 'drawer')}
-<a class="btn btn--outline" href="{SITE['tel']}" data-cta="call" data-placement="drawer">Call {SITE['phone']}</a>
-<div class="drawer-extras"><a href="gift-cards.html" data-gift-label="on" hidden data-cta="gift" data-placement="drawer">Send a Bellezza eGift card</a>{f'<a href="specials.html">{esc(special["title"])}</a>' if special else ''}</div>
-<h2>Services &amp; Prices</h2>
-<ul>{svc_links}<li><a href="services.html">All services &amp; prices</a></li></ul>
-<h2>Bellezza &amp; Co.</h2>
-<ul><li><a href="our-team.html">Meet the Team</a></li><li><a href="new-guests.html">New Guests</a></li><li><a href="brides.html">Bridal</a></li><li><a href="about.html">Our Story</a></li></ul>
-<h2>Plan your visit</h2>
-<ul><li><a href="gift-cards.html">Gift Cards</a></li><li><a href="specials.html">Specials</a></li><li><a href="products.html">The Boutique</a></li><li><a href="pick-up-orders.html">Pick-up Orders</a></li><li><a href="join-our-team.html">Careers</a></li><li><a href="contact-us.html">Visit &amp; Contact</a></li></ul>
-<h2>Visit</h2>
-<p><span class="status" data-status="drawer">Hours &amp; holidays below</span></p>
-<address class="addr">{esc(ADDR['street'])}<br>{esc(ADDR['city'])}, {ADDR['region']} {ADDR['zip']}</address>
+<div class="drawer-top"><a class="brand" href="index.html"><img src="assets/img/brand/logo.png" alt="Bellezza &amp; Co. home" width="786" height="257"></a><button class="icon-btn" type="button" data-drawer-close autofocus>{icon('close')}<span class="sr-only">Close menu</span></button></div>
+<div class="drawer-doors">{book_link(page, 'drawer')}<a class="btn btn--outline" href="new-guests.html" data-cta="new-guests" data-placement="drawer">New here? Start here</a></div>
+<h2>Services &amp; prices</h2>
+<ul class="drawer-list">{svc_links}<li><a href="services.html"><span>All services &amp; prices</span></a></li></ul>
+<h2>Team</h2>
+<ul class="drawer-list drawer-list--team">{team_links}<li><a href="our-team.html"><span>All <span data-count="team">28</span></span></a></li></ul>
+<ul class="drawer-list drawer-list--main"><li><a href="new-guests.html"><span>New guests</span></a></li><li><a href="brides.html"><span>Bridal</span></a></li><li><a href="about.html"><span>About</span></a></li></ul>
+<ul class="drawer-more"><li><a href="gift-cards.html" data-gift-label="off">Gift cards</a><a href="gift-cards.html" data-gift-label="on" hidden data-cta="gift" data-placement="drawer">Send an eGift card</a></li><li><a href="specials.html">Specials</a></li><li><a href="products.html">Boutique</a></li><li><a href="pick-up-orders.html">Pick-up orders</a></li><li><a href="join-our-team.html">Careers</a></li><li><a href="policies.html">Policies</a></li><li><a href="contact-us.html">Contact</a></li></ul>
+<h2>Hours</h2>
+<p class="drawer-status"><span class="status" data-status="drawer">Hours &amp; holidays below</span></p>
 {hours_table(caption=False)}
-<div class="badges"><a href="{U['ios']}"><img src="assets/img/badge-app-store.jpg" alt="Download the Bellezza app on the App Store" width="123" height="44" loading="lazy"></a><a href="{U['android']}"><img src="assets/img/badge-google-play.png" alt="Get the Bellezza app on Google Play" width="150" height="44" loading="lazy"></a></div>
-<div class="social drawer-social"><a href="{U['instagram']}" aria-label="Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Facebook">{icon('facebook')}</a></div>
+<p class="drawer-visit"><a href="{esc(U['directions'])}" data-cta="directions" data-placement="drawer">{esc(ADDR_LINE)}</a><br><a href="{SITE['tel']}" data-cta="call" data-placement="drawer">{SITE['phone']}</a></p>
+<div class="social drawer-social"><a href="{U['instagram']}" aria-label="Bellezza on Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Bellezza on Facebook">{icon('facebook')}</a></div>
 </div>
 </dialog>'''
     return f'<a class="skip-link" href="#main">Skip to main content</a>\n{util}\n{header}\n{drawer}'
@@ -448,44 +553,49 @@ def part_bottom(file, page):
         band_micro = ('<p class="microcopy">eGift cards are sold on our online gift card page (Meevo) and can&rsquo;t be used '
                       'at Slay Aesthetics. <a href="policies.html#gift-cards">Gift card policy</a></p>')
     band = ''
-    if file != '404.html':
-        band = f'''<section class="cta-band dark" aria-labelledby="band-h" data-band>
+    # The home page closes with its own Visit & FAQ section and a centered Book (D6 row 10).
+    if file not in ('404.html', 'index.html'):
+        band = f'''<section class="cta-band" aria-labelledby="band-h" data-band>
 <div class="container">
 <p class="band-status" data-status="band" hidden></p>
 <h2 id="band-h">{band_h}</h2>
-<div class="band-facts"><p>Today: <span data-today-hours>see our <a href="contact-us.html#hours">hours</a></span></p><p><a href="{esc(U['directions'])}" data-cta="directions" data-placement="band">{esc(ADDR_LINE)}</a></p></div>
 <div class="btn-row">{book_link(page, 'band', label=page['bookLabel'] if ov else 'Book an appointment')}{band_call}</div>
+<div class="band-facts"><p>Today: <span data-today-hours>see our <a href="contact-us.html#hours">hours</a></span></p><p><a href="{esc(U['directions'])}" data-cta="directions" data-placement="band">{esc(ADDR_LINE)}</a></p></div>
 {band_micro}
 </div>
 </section>'''
     svc_links = ''.join(f'<li><a href="{f}">{esc(l)}</a></li>' for _, l, f, _, _ in SERVICES)
     year = TODAY.year
     footer = f'''<footer class="site-footer dark">
-<div class="container">
-<div class="footer-grid">
+<div class="container footer-grid">
 <div class="f-visit">
-<img class="footer-lockup" src="assets/img/brand/logo-on-dark.png" alt="Bellezza &amp; Co., established 2009. Salon, spa, boutique." width="200" height="65" loading="lazy">
-<p class="footer-lockup-tag">Est. 2009 • Salon • Spa • Boutique</p>
+<h2 class="f-pin">{icon('pinfill')}{esc(ADDR['street'])}</h2>
 <address><a href="{esc(U['directions'])}" data-cta="directions" data-placement="footer">{esc(ADDR['street'])}<br>{esc(ADDR['city'])}, {ADDR['region']} {ADDR['zip']}</a><br><a href="{SITE['tel']}" data-cta="call" data-placement="footer">{SITE['phone']}</a></address>
 {hours_table()}
 <p class="footer-holidays"><a href="policies.html#holidays">Holiday hours</a></p>
 <p class="footer-bridal">Bridal inquiries: <a href="mailto:{SITE['bridalEmail']}">{SITE['bridalEmail']}</a></p>
+<a class="btn btn--on-ink" href="{esc(U['directions'])}" data-cta="directions" data-placement="footer-button">Get directions</a>
 </div>
 <nav class="footer-nav" id="footer-nav" aria-label="Footer">
-<div><h2>Services &amp; Prices</h2><ul>{svc_links}<li><a href="services.html">All services &amp; prices</a></li></ul></div>
-<div><h2>Plan your visit</h2><ul><li><a href="new-guests.html">New Guests</a></li><li><a href="book-online.html">Book Online</a></li><li><a href="gift-cards.html">Gift Cards</a></li><li><a href="specials.html">Specials</a></li><li><a href="products.html">The Boutique</a></li><li><a href="pick-up-orders.html">Pick-up Orders</a></li></ul>
+<div><h2>Services &amp; prices</h2><ul>{svc_links}<li><a href="services.html">All services &amp; prices</a></li></ul></div>
+<div><h2>Plan your visit</h2><ul><li><a href="new-guests.html">New guests</a></li><li><a href="book-online.html">Book online</a></li><li><a href="gift-cards.html">Gift cards</a></li><li><a href="specials.html">Specials</a></li><li><a href="products.html">The Boutique</a></li><li><a href="pick-up-orders.html">Pick-up orders</a></li></ul>
 <div class="badges"><a href="{U['ios']}"><img src="assets/img/badge-app-store.jpg" alt="Download the Bellezza app on the App Store" width="112" height="40" loading="lazy"></a><a href="{U['android']}"><img src="assets/img/badge-google-play.png" alt="Get the Bellezza app on Google Play" width="137" height="40" loading="lazy"></a></div></div>
-<div><h2>About</h2><ul><li><a href="about.html">Our Story</a></li><li><a href="our-team.html">Meet the Team</a></li><li><a href="join-our-team.html">Careers</a></li><li><a href="policies.html">Policies</a></li><li><a href="policies.html#privacy">Privacy</a></li><li><a href="policies.html#sms-privacy">SMS Privacy</a></li><li><a href="contact-us.html">Contact</a></li></ul></div>
+<div><h2>About</h2><ul><li><a href="about.html">Our story</a></li><li><a href="our-team.html">Meet the team</a></li><li><a href="join-our-team.html">Careers</a></li><li><a href="policies.html">Policies</a></li><li><a href="policies.html#privacy">Privacy</a></li><li><a href="policies.html#sms-privacy">SMS privacy</a></li><li><a href="contact-us.html">Contact</a></li></ul></div>
 </nav>
 </div>
-<div class="footer-bottom"><span>&copy; {year} Bellezza &amp; Co. (formerly Bellezza Salon and Day Spa)</span><span class="social"><a href="{U['instagram']}" aria-label="Bellezza on Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Bellezza on Facebook">{icon('facebook')}</a></span></div>
+<div class="footer-band">
+<div class="container"><span class="social"><a href="{U['instagram']}" aria-label="Bellezza on Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Bellezza on Facebook">{icon('facebook')}</a></span><p>&copy; {year} Bellezza &amp; Co. (formerly Bellezza Salon and Day Spa)</p></div>
 </div>
 </footer>'''
     bar = ''
     if file != '404.html':
-        bar = (f'<nav class="bookbar" aria-label="Book or call" data-bookbar data-hidden="true">'
-               f'{book_link(page, "bookbar", label=page["bookLabel"])}'
-               f'<a class="btn btn--outline" href="{SITE["tel"]}" data-cta="call" data-placement="bookbar" data-call-label>{icon("phone")}Call</a></nav>')
+        long, short = chrome_label(page, 'bookbar')
+        lab = (f'<span class="bl-long">{nocase_egift(esc(long))}</span><span class="bl-short">{nocase_egift(esc(short))}</span>'
+               if short != long else nocase_egift(esc(long)))
+        bar = (f'<nav class="bookbar" aria-label="Menu, call and book" data-bookbar="always" data-hidden="false">'
+               f'<a class="tb-cell tb-menu" href="#footer-nav" data-menu-toggle>{icon("menu")}<span>Menu</span></a>'
+               f'<a class="tb-cell tb-call" href="{SITE["tel"]}" data-cta="call" data-placement="bookbar" data-call-label>{icon("phone")}<span>Call</span></a>'
+               f'{book_link(page, "bookbar", cls="btn btn--book tb-book", label_html=lab)}</nav>')
     scripts = f'<script src="{v("assets/js/site.js")}" defer></script>'
     if file in ('brides.html', 'join-our-team.html', 'pick-up-orders.html'):
         scripts += f'\n<script src="{v("assets/js/forms.js")}" defer></script>'
@@ -507,8 +617,13 @@ def fill_values(text, counts):
         val = price_value('from', m.group(2))
         return m.group(1) + (val or m.group(3)) + m.group(4)
 
+    def lvl(m):
+        val = level_price(html.unescape(m.group(2)))
+        return m.group(1) + (esc(val) if val else m.group(3)) + m.group(4)
+
     text = re.sub(r'(<span\b[^>]*data-range="([^"]+)"[^>]*>)(.*?)(</span>)', rng, text)
     text = re.sub(r'(<span\b[^>]*data-from="([^"]+)"[^>]*>)(.*?)(</span>)', frm, text)
+    text = re.sub(r'(<span\b[^>]*data-level="([^"]+)"[^>]*>)(.*?)(</span>)', lvl, text)
     for key, n in counts.items():
         text = re.sub(r'(<span\b[^>]*data-count="%s"[^>]*>)[^<]*(</span>)' % re.escape(key),
                       lambda m, n=n: f'{m.group(1)}{n}{m.group(2)}', text)

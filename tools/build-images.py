@@ -8,7 +8,7 @@ Usage (from the project root):
     python tools/build-images.py --strict   # exit 1 if a portrait's outer 8px
                                             # mean luma is above 3% (brief 2.6)
 
-Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, og
+Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, og, optd
 
 What it makes (all new files; no source image is modified or overwritten):
 
@@ -41,6 +41,11 @@ What it makes (all new files; no source image is modified or overwritten):
   slay    assets/img/slay/shannon-{360,497}.{avif,webp,jpg} (source is 497 wide,
           so no 540), assets/img/slay/slay-logo-{240,480}.{png,webp}
   og      assets/img/og-image.jpg (1200x630)
+  optd    Option D (docs/DESIGN-OPTIONS.md D4, D6): join/gallery-3-sq-{400,800} (the
+          1:1 crop from the top of gallery-3 that keeps the wall sign and both faces
+          and drops the retail packaging and the counter card lower in the frame),
+          and team/devon-720 (the expertise-split portrait at 2x, from the native
+          720px source)
 
 Idempotent: an output is skipped when it exists and is newer than both its
 source(s) and this script. Every run ends with a table of every output path,
@@ -559,10 +564,30 @@ def build_og() -> None:
 
 # --------------------------------------------------------------------------
 
+def build_optd() -> None:
+    print("option D derivatives")
+    src = IMG / "join" / "gallery-3.jpg"
+
+    def square_top(w: int) -> Image.Image:
+        im = load_rgb(src)
+        side = min(im.width, im.height)
+        return resize_w(im.crop(((im.width - side) // 2, 0, (im.width + side) // 2, side)), w)
+
+    for w in (400, 800):
+        build_set(IMG / "join" / f"gallery-3-sq-{w}", [src], lambda w=w: square_top(w))
+    for slug in ("devon",):
+        crop = portrait(slug)
+        if crop.width < 720:
+            print(f"  skip {slug}: source only {crop.width}px wide")
+            continue
+        build_set(IMG / "team" / f"{slug}-720", [IMG / "team" / f"{slug}.jpg"],
+                  lambda c=crop: resize_w(c, 720), "portrait-720")
+
+
 GROUPS = {
     "team": build_team, "sheets": build_sheets, "owners": build_owners,
     "brand": build_brand, "about": build_about, "join": build_join,
-    "brows": build_brows, "slay": build_slay, "og": build_og,
+    "brows": build_brows, "slay": build_slay, "og": build_og, "optd": build_optd,
 }
 
 

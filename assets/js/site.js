@@ -110,7 +110,7 @@
     if (s.state !== 'open' && s.next) {
       $$('[data-call-label]').forEach(function (a) {
         if (!a.querySelector('.call-note')) {
-          var sm = doc.createElement('span'); sm.className = 'call-note'; sm.textContent = ' · opens ' + s.next.replace(/^(today|tomorrow|\w{3}) at /, '');
+          var sm = doc.createElement('span'); sm.className = 'call-note'; sm.textContent = 'opens ' + s.next.replace(/^(today|tomorrow|\w{3}) at /, '');
           a.appendChild(sm);
         }
       });
@@ -140,58 +140,68 @@
     onScroll();
   }
 
-  /* ---------- services disclosure (APG pattern, no role=menu) ---------- */
+  /* ---------- nav disclosures: Services and Team panels (APG pattern, no role=menu) ---------- */
   function initServicesNav() {
-    var btn = $('.nav-services .chev');
-    var panel = $('#nav-services');
-    if (!btn || !panel) return;
-    btn.hidden = false;
-    var li = btn.parentNode, openTimer, closeTimer, suppressHover = false, byHover = false;
-    function set(open) {
-      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      panel.hidden = !open;
-      if (!open) byHover = false;
-    }
-    btn.addEventListener('click', function (e) {
-      /* a pointer user who hovered the panel open and then clicks the chevron expects it to stay open */
-      if (byHover && e.detail > 0) { byHover = false; return; }
-      set(btn.getAttribute('aria-expanded') !== 'true');
-    });
-    li.addEventListener('mouseenter', function () {
-      if (!mqDesktop.matches || suppressHover) return;
-      clearTimeout(closeTimer);
-      openTimer = setTimeout(function () { if (btn.getAttribute('aria-expanded') !== 'true') { set(true); byHover = true; } }, 150);
-    });
-    li.addEventListener('mouseleave', function () {
-      clearTimeout(openTimer); suppressHover = false;
-      closeTimer = setTimeout(function () { set(false); }, 300);
-    });
-    doc.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
-        var had = li.contains(doc.activeElement);
-        set(false); suppressHover = true; if (had) btn.focus();
+    var drops = [];
+    $$('.nav-main .chev[aria-controls]').forEach(function (btn) {
+      var panel = doc.getElementById(btn.getAttribute('aria-controls'));
+      if (!panel) return;
+      btn.hidden = false;
+      var li = btn.parentNode, openTimer, closeTimer, suppressHover = false, byHover = false;
+      function set(open) {
+        if (open) drops.forEach(function (d) { if (d.btn !== btn) d.set(false); });
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        panel.hidden = !open;
+        if (!open) byHover = false;
       }
+      drops.push({ btn: btn, set: set });
+      btn.addEventListener('click', function (e) {
+        /* a pointer user who hovered the panel open and then clicks the chevron expects it to stay open */
+        if (byHover && e.detail > 0) { byHover = false; return; }
+        set(btn.getAttribute('aria-expanded') !== 'true');
+      });
+      li.addEventListener('mouseenter', function () {
+        if (!mqDesktop.matches || suppressHover) return;
+        clearTimeout(closeTimer);
+        openTimer = setTimeout(function () { if (btn.getAttribute('aria-expanded') !== 'true') { set(true); byHover = true; } }, 150);
+      });
+      li.addEventListener('mouseleave', function () {
+        clearTimeout(openTimer); suppressHover = false;
+        closeTimer = setTimeout(function () { set(false); }, 300);
+      });
+      doc.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+          var had = li.contains(doc.activeElement);
+          set(false); suppressHover = true; if (had) btn.focus();
+        }
+      });
+      doc.addEventListener('click', function (e) { if (!li.contains(e.target)) set(false); });
+      li.addEventListener('focusout', function (e) { if (!li.contains(e.relatedTarget)) set(false); });
     });
-    doc.addEventListener('click', function (e) { if (!li.contains(e.target)) set(false); });
-    li.addEventListener('focusout', function (e) { if (!li.contains(e.relatedTarget)) set(false); });
   }
 
-  /* ---------- mobile menu drawer ---------- */
+  /* ---------- mobile menu drawer (opened from the header on tablets and the thumb bar on phones) ---------- */
   function initDrawer() {
-    var link = $('[data-menu-toggle]');
     var drawer = $('#drawer');
-    if (!link || !drawer || typeof drawer.showModal !== 'function') return;
-    var btn = doc.createElement('button');
-    btn.type = 'button';
-    btn.className = link.className;
-    btn.innerHTML = link.innerHTML;
-    btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-controls', 'drawer');
-    link.parentNode.replaceChild(btn, link);
-    btn.addEventListener('click', function () {
-      drawer.showModal(); btn.setAttribute('aria-expanded', 'true'); syncBookbar();
+    var links = $$('[data-menu-toggle]');
+    if (!links.length || !drawer || typeof drawer.showModal !== 'function') return;
+    var btns = links.map(function (link) {
+      var btn = doc.createElement('button');
+      btn.type = 'button';
+      btn.className = link.className;
+      btn.innerHTML = link.innerHTML;
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-controls', 'drawer');
+      link.parentNode.replaceChild(btn, link);
+      btn.addEventListener('click', function () {
+        drawer.showModal(); btn.setAttribute('aria-expanded', 'true'); syncBookbar();
+      });
+      return btn;
     });
-    drawer.addEventListener('close', function () { btn.setAttribute('aria-expanded', 'false'); syncBookbar(); });
+    drawer.addEventListener('close', function () {
+      btns.forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
+      syncBookbar();
+    });
     $$('[data-drawer-close]', drawer).forEach(function (b) { b.addEventListener('click', function () { drawer.close(); }); });
     drawer.addEventListener('click', function (e) { if (e.target === drawer) drawer.close(); });
     $$('a', drawer).forEach(function (a) {
@@ -199,7 +209,8 @@
     });
   }
 
-  /* ---------- mobile bottom bar: after hero CTAs, not over band/footer ---------- */
+  /* ---------- mobile bottom bar. data-bookbar="always" (the thumb bar): shown from load and
+     hidden only while a dialog is open. Otherwise: after the hero CTAs, not over band/footer ---------- */
   var bar, heroGone = false, bandVisible = false;
   function syncBookbar() {
     if (!bar) return;
@@ -208,6 +219,7 @@
   }
   function initBookbar() {
     bar = $('[data-bookbar]');
+    if (bar && bar.getAttribute('data-bookbar') === 'always') { heroGone = true; syncBookbar(); return; }
     if (!bar || !('IntersectionObserver' in window)) { if (bar) bar.setAttribute('data-hidden', 'false'); return; }
     var main = $('main');
     var hero = $('[data-hero-ctas]') || (main && main.querySelector('.btn--book, .btn--strong'));
@@ -232,7 +244,7 @@
     doc.addEventListener('focusin', function (e) {
       var el = e.target;
       if (el.closest && el.closest('.chips')) { el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); return; }
-      if (!el.getBoundingClientRect || el.closest('.site-header, .bookbar, dialog, .jump-chips, .team-filters')) return;
+      if (!el.getBoundingClientRect || el.closest('.utility, .site-header, .bookbar, dialog, .jump-chips, .team-filters')) return;
       var r = el.getBoundingClientRect();
       var header = $('.site-header'), chips = $('.jump-chips') || $('.team-filters');
       var topCover = 0;
@@ -282,8 +294,14 @@
       if (!fromHash) history.replaceState(null, '', key === 'all' ? location.pathname : '#filter-' + key);
     }
     chips.forEach(function (c) { c.addEventListener('click', function () { apply(c.getAttribute('data-filter')); }); });
-    var m = /^#filter-([\w-]+)$/.exec(location.hash);
-    if (m && chips.some(function (c) { return c.getAttribute('data-filter') === m[1]; })) apply(m[1], true);
+    function syncFromHash() {
+      var m = /^#filter-([\w-]+)$/.exec(location.hash);
+      if (m && chips.some(function (c) { return c.getAttribute('data-filter') === m[1]; })) { apply(m[1], true); return true; }
+      return false;
+    }
+    syncFromHash();
+    /* the header's Team panel links to #filter-* hashes on this same page */
+    window.addEventListener('hashchange', function () { if (syncFromHash()) wrap.scrollIntoView({ block: 'start' }); });
   }
 
   /* ---------- jump chips scrollspy ---------- */
