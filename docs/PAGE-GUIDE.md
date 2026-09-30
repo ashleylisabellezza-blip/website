@@ -262,3 +262,57 @@ italics, no tracked caps. `index.html` is the reference implementation.
 - **Booking band:** stamped at the end of every page by the bottom partial, or
   wherever a page places `<!-- partial:band:start --><!-- partial:band:end -->`
   (home). There is no mobile bottom bar: Book lives in the sticky bronze header.
+
+### 6.1 Service pages and `services.html` (C7)
+
+`tips-and-toes.html` is the reference service page; `salon.html` adds ladders, the
+level key, the extensions split and the keratin ritual.
+
+- **Head (no-image variant):** `section.svc-head > .container > .ghost-card.ghost-card--head`
+  holding `span.ghost[aria-hidden]` (the category word: Hair, Nails, Massage…) and
+  `.float-card.head-card`: `p.eyebrow`, the `h1`, one `p.lede` line from the audited
+  intro, `ul.head-range` (leader rows: `span.hr-name`, `span.lr-rule`, a stamped
+  `span.hr-price[data-range|data-from|data-unit]`), then `.head-actions` with the
+  `.btn-row[data-hero-ctas]` (the contextual gold Book; `btn--strong` on bridal and Slay),
+  `p.head-links` (eGift, Call) and the microcopy. Desktop lays the card out as lede and
+  actions left, the range right.
+- **Your artists (3 or more people):** `section.artists-c` = `.intro-row` + `ul.artist-cards`
+  (`artist-cards--3` for exactly three). Each `a.artist` holds `span.ph-frame > picture`
+  (360/540/native srcset; brackets on hover), `h3.a-name`, `span.a-role[data-team-role="slug"]`
+  and `span.a-tags[data-team-tags="slug"]`; the owners also carry `span.a-note`
+  ("Behind the chair one day a week"). The first card image is not lazy.
+- **One or two providers** (massage, facials, waxing): a bronze
+  `section.flush-split.flush-split--media-start.people-split` with `.fs-solo` or `.fs-duo`
+  portraits and a `ul.lead-list` of facts (`.ll-sub.brk[data-team-tags]` for specialties).
+- **Level key** (salon, nails, services): `section.levels--key` (sand, ghost "Levels") with
+  `table.level-key.level-key--{2|3}`. Rows: `th[role=rowheader]` = `span.lk-level` +
+  `span.lk-who[data-who="hair|nails|hair nails"][data-level]`; cells
+  `td[data-label][role=cell] > span[data-level-price][data-level]`. The explicit table
+  roles stay: below 600px each row becomes a grid and some browsers drop native table
+  semantics when display changes.
+- **Ladders:** every level row gets `<div class="who" data-who="hair" data-level="Senior"></div>`
+  after `.price-head`; each ladder group gets `<p class="tier-head">by stylist level</p>`
+  after its `p.group-intro` (the intro must stay the first element after the `h3`: the
+  schema reads it as the group description).
+- **Packages:** `<div class="unit" data-unit-price></div>` after `.price-head` in a
+  "Package of N" row: the build writes "$49 each". No "save" claims.
+- **Ritual block** (keratin on salon, bridal): `section.section--bronze.ritual-block >
+  .split-48`: the treatment, `p.rb-price` (stamped) and one capsule left; `ol.ritual`
+  "Step n" rows right. Verified steps only.
+- **4/8 sections:** FAQ, gift and related use `.container.split-48` with `.split-head`
+  (eyebrow + `h2`) left. The gift section (massages, facials, spray tans) is
+  `section.section--sand.gift.gift-c`. FAQ rows are the sand accordion.
+- **services.html:** `section.svc-head--hl` with the only highlighter
+  (`Services &amp; <span class="hl">prices</span>`, uppercased by CSS), the level key with
+  linked level names, `ul.tiles.tiles--menu` (`span.tile-desc`, `span.tile-rows > span.trow`
+  stamped leader rows, the home avatar stack) and `ul.line-cards.line-cards--4`.
+- **Team facts stamped by the build** (`fill_team` in `tools/build-partials.py`, from the
+  `our-team.html` titles; never typed): `data-who` + `data-level` (names at a level,
+  owners with their note, several disciplines joined by " · ", a combined
+  "Expert / Master" cell as "Expert names; Master names"), `data-team-role`,
+  `data-team-tags`, `data-unit-price`, and `data-level-price` on a tiered item
+  (`tips-and-toes.html#gel-manicure-without-removal` + "Senior" = "$49", read by position
+  from the group's `p.tier-head`). Skin therapists and massage have no level line
+  (owner question 8; massage is priced by length).
+- **`check.py` h3-parity:** every `.menu-group > h3` must match `main` once tags are
+  stripped (it runs `git show main:<file>`; without git it warns and skips).

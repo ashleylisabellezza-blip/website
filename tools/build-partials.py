@@ -22,6 +22,11 @@ It also fills live values from the page content, so numbers never drift:
     <span data-from="facials.html#facials">     "from $55" (lowest price)
     <span data-unit="slay-aesthetics.html#botox">          "$12/unit"
     <span data-level-price="salon.html#cuts-women" data-level="Senior">   "$48"
+    <span data-level-price="tips-and-toes.html#gel-manicure-without-removal" data-level="Senior">  "$49"
+                                      (a tiered item: position in its group's p.tier-head)
+    <div class="who" data-who="hair" data-level="Senior">   "Austyn, Cherish, Liv" (our-team.html titles)
+    <span data-team-role="madison">, <span data-team-tags="madison">   title, specialties
+    <div class="unit" data-unit-price> in a "Package of 5" row   "$49 each"
     <time data-asof>                  "Prices as of September 2026"
 and the /* config:start */ block in assets/js/site.js (hours, holidays, URLs).
 
@@ -201,21 +206,54 @@ def unit_value(spec):
     return re.sub(r'\s*per\s+unit$', '/unit', txt)
 
 
+def _plain(fragment):
+    return html.unescape(re.sub(r'<[^>]+>', '', fragment)).strip()
+
+
+def _tier_price(spec, level):
+    """Price at one level of a tiered item: ('tips-and-toes.html#gel-manicure-without-removal',
+    'Senior') -> '$49'. The item's price ("$44 / 49 / 53") is split on "/" and matched by
+    position against its group's p.tier-head ("Associate / Senior / Expert")."""
+    file, _, frag = spec.partition('#')
+    try:
+        page = read(file)
+    except FileNotFoundError:
+        return None
+    m = re.search(r'<li\b[^>]*\bid="%s"[^>]*>' % re.escape(frag), page)
+    if not m:
+        return None
+    group_start = page.rfind('<div class="menu-group', 0, m.start())
+    heads = re.findall(r'<p class="tier-head"[^>]*>(.*?)</p>', page[group_start:m.start()], re.S) if group_start >= 0 else []
+    li = page[m.start():page.find('</li>', m.end())]
+    p = re.search(r'<span class="price">(.*?)</span>', li, re.S)
+    if not (heads and p):
+        return None
+    tiers = [t.strip() for t in _plain(heads[-1]).split('/')]
+    prices = [x.strip() for x in _plain(p.group(1)).split('/')]
+    if level not in tiers or len(prices) != len(tiers):
+        return None
+    val = prices[tiers.index(level)]
+    return val if val.startswith('$') else '$' + val
+
+
 def level_price(spec, level):
-    """Price of one level row in a ladder group: ('salon.html#cuts-women', 'Senior') -> '$48'.
+    """Price of one level row in a ladder group: ('salon.html#cuts-women', 'Senior') -> '$48',
+    or of one tier of a tiered item (see _tier_price).
     DESIGN-OPTIONS section 0: derived level facts are stamped, never typed."""
     frag = _fragment(spec)
     if frag is None:
         return None
+    if frag.startswith('<li'):
+        return _tier_price(spec, level)
     for li in PRICE_ITEM.findall(frag):
         n = re.search(r'<span class="name">(.*?)</span>(?=<span class="dots")', li, re.S)
         p = re.search(r'<span class="price">(.*?)</span>', li, re.S)
         if not (n and p):
             continue
-        name = html.unescape(re.sub(r'<[^>]+>', '', n.group(1))).strip()
+        name = _plain(n.group(1))
         name = re.sub(r'\s+Stylist$', '', name)
         if name == level:
-            return html.unescape(re.sub(r'<[^>]+>', '', p.group(1))).strip()
+            return _plain(p.group(1))
     return None
 
 
@@ -246,6 +284,95 @@ def team_counts():
             providers += 1
     counts['providers'] = providers
     return counts
+
+
+# ------------------------------------------------------------------ team facts (from our-team.html)
+# DESIGN-OPTIONS section 0: who is at each level comes from the our-team.html titles,
+# never typed by hand. Only hair stylists and nail artists carry a level line: the skin
+# therapists wait for owner question 8, and massage is priced by length, not level.
+LEVELS = ('Jr Associate', 'Associate', 'Senior', 'Expert', 'Master')
+LEVEL_RE = re.compile(r'\b(Jr Associate|Associate|Senior|Expert|Master)\b')
+OWNER_NOTE = 'behind the chair one day a week'
+_PEOPLE = None
+
+
+def team_people():
+    """Team cards on our-team.html, in page order."""
+    global _PEOPLE
+    if _PEOPLE is not None:
+        return _PEOPLE
+    try:
+        page = read('our-team.html')
+    except FileNotFoundError:
+        _PEOPLE = []
+        return _PEOPLE
+    starts = [m for m in re.finditer(r'<li\b[^>]*class="team-item\b[^"]*"[^>]*>', page)]
+    people = []
+    for i, m in enumerate(starts):
+        chunk = page[m.end(): starts[i + 1].start() if i + 1 < len(starts) else len(page)]
+        tag = m.group(0)
+        slug = re.search(r'\bid="([^"]+)"', tag).group(1)
+        dm = re.search(r'data-dept="([^"]*)"', tag)
+        depts = dm.group(1).split() if dm else []
+        h3 = re.search(r'<h3\b[^>]*>(.*?)</h3>', chunk, re.S)
+        role = re.search(r'<span class="role">(.*?)</span>', chunk, re.S)
+        tags = re.search(r'<ul class="tags">(.*?)</ul>', chunk, re.S)
+        name = _plain(h3.group(1)) if h3 else slug
+        role = _plain(role.group(1)) if role else ''
+        disc = set()
+        if 'Nail Artist' in role:
+            disc.add('nails')
+        if 'Stylist' in role:
+            disc.add('hair')
+        owner = role.startswith('Owner')
+        lvl = LEVEL_RE.search(role)
+        people.append({
+            'slug': slug, 'name': name, 'first': name.split()[0] if owner else name,
+            'role': role, 'depts': depts, 'owner': owner, 'disc': disc,
+            'level': lvl.group(1) if (lvl and disc) else None,
+            'tags': [_plain(t) for t in re.findall(r'<li>(.*?)</li>', tags.group(1))] if tags else [],
+        })
+    _PEOPLE = people
+    return people
+
+
+def who_at(disciplines, level):
+    """Names at a level: ('hair', 'Senior') -> 'Austyn, Cherish, Liv'. A combined ladder cell
+    ('Expert / Master') lists both levels. Several disciplines join with ' · '.
+    The owners always carry the note that they are behind the chair one day a week."""
+    wanted = [l.strip() for l in level.split('/')]
+    parts = []
+    for d in disciplines:
+        per_level = []
+        for w in wanted:
+            names = [p for p in team_people() if p['level'] == w and d in p['disc']]
+            if not names:
+                continue
+            owners = [p['first'] for p in names if p['owner']]
+            rest = [p['first'] for p in names if not p['owner']]
+            lead = [' and '.join(owners) + f' ({OWNER_NOTE})'] if owners else []
+            per_level.append(', '.join(lead + rest))
+        if per_level:
+            parts.append('; '.join(per_level))
+    return ' · '.join(parts)
+
+
+def person(slug):
+    return next((p for p in team_people() if p['slug'] == slug), None)
+
+
+def unit_each(li):
+    """'Gel Manicure Package of 5' at '$245' -> '$49 each' (the per-unit price of a package
+    row, DESIGN-OPTIONS C7). No 'save' claims: only the division."""
+    n = re.search(r'<span class="name">(.*?)</span>', li, re.S)
+    p = re.search(r'<span class="price">(.*?)</span>', li, re.S)
+    if not (n and p):
+        return None
+    k = re.search(r'\b(?:Package|Packages) of (\d+)\b', _plain(n.group(1)))
+    nums = _numbers(_plain(p.group(1)))
+    if not k or len(nums) != 1:
+        return None
+    return f'${_fmt(round(nums[0] / int(k.group(1)), 2))} each'
 
 
 # ------------------------------------------------------------------ hours & holidays
@@ -588,6 +715,7 @@ def fill_values(text, counts):
     text = re.sub(r'(<span\b[^>]*data-unit="([^"]+)"[^>]*>)(.*?)(</span>)', unit, text)
     # <span data-level-price="salon.html#cuts-women" data-level="Senior">$48</span>
     text = re.sub(r'(<span\b[^>]*data-level-price="([^"]+)"[^>]*data-level="([^"]+)"[^>]*>)(.*?)(</span>)', lvl, text)
+    text = fill_team(text)
     for key, n in counts.items():
         text = re.sub(r'(<span\b[^>]*data-count="%s"[^>]*>)[^<]*(</span>)' % re.escape(key),
                       lambda m, n=n: f'{m.group(1)}{n}{m.group(2)}', text)
@@ -599,6 +727,47 @@ def fill_values(text, counts):
                   f'<time data-team-updated datetime="{team}">Team updated {month_year(team)}</time>', text)
     text = re.sub(r'(<span\b[^>]*data-year[^>]*>)[^<]*(</span>)', lambda m: f'{m.group(1)}{TODAY.year}{m.group(2)}', text)
     return text
+
+
+def _attr_map(tag):
+    return {k: html.unescape(v) for k, v in re.findall(r'\s([\w-]+)="([^"]*)"', tag)}
+
+
+def fill_team(text):
+    """Team facts and derived price facts (Option C service pages, services.html):
+        <div class="who" data-who="hair" data-level="Senior">       names at that level
+        <td data-who="hair nails" data-level="Expert">               several disciplines, ' · '
+        <span data-team-role="madison">                              her title on our-team.html
+        <span data-team-tags="madison">                              her specialties, ' · '
+        <div class="unit" data-unit-price>  (inside li.price-item)   "$49 each" for "Package of 5"
+    Leaf elements only (no nested tag of the same name). A missing fact keeps the default."""
+    leaf = re.compile(r'(<(div|span|td|th|p)\b[^>]*\b(?:data-who|data-team-role|data-team-tags)="[^"]*"[^>]*>)(.*?)(</\2>)', re.S)
+
+    def fact(m):
+        tag, inner, close = m.group(1), m.group(3), m.group(4)
+        a = _attr_map(tag)
+        val = None
+        if 'data-who' in a and 'data-level' in a:
+            val = who_at(a['data-who'].split(), a['data-level'])
+        elif 'data-team-role' in a:
+            p = person(a['data-team-role'])
+            val = p and p['role']
+        elif 'data-team-tags' in a:
+            p = person(a['data-team-tags'])
+            val = p and ' · '.join(p['tags'])
+        return tag + (esc(val) if val else inner) + close
+
+    def unit(m):
+        li = m.group(0)
+        val = unit_each(li)
+        if not val:
+            return li
+        return re.sub(r'(<div\b[^>]*data-unit-price[^>]*>)(.*?)(</div>)',
+                      lambda u: u.group(1) + esc(val) + u.group(3), li, flags=re.S)
+
+    text = leaf.sub(fact, text)
+    return re.sub(r'<li\b[^>]*class="price-item\b[^"]*"[^>]*>(?:(?!</li>).)*?data-unit-price(?:(?!</li>).)*?</li>',
+                  unit, text, flags=re.S)
 
 
 def stamp_js_config():

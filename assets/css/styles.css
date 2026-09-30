@@ -63,6 +63,8 @@ img{font-style:normal}
 a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.2em;text-decoration-color:currentColor}
 a:hover{color:var(--bronze);text-decoration-thickness:2px;text-decoration-color:var(--bronze)}
 a[href^="tel:"]{white-space:nowrap}
+/* long call labels wrap; the number itself stays on one line (span.nowrap) */
+a.book-this[href^="tel:"],a.btn--wrap[href^="tel:"]{white-space:normal}
 p{margin:0 0 1em;text-wrap:pretty;max-width:66ch}
 ul,ol{margin:0 0 1em;padding-left:1.2em}
 strong,b{font-weight:600;color:var(--ink)}
@@ -200,9 +202,10 @@ a.btn,button.btn{color:var(--fg)}
 @media (max-width:599.98px){.btn-row>.btn{flex:1 1 100%}}
 
 /* small text-link form (C3): a label plus a 28px bronze circle, for per-group Book links */
-.book-this,.arrow-link,.card .card-bio{position:relative;display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:0;border:0;background:none;color:var(--ink);font:600 1rem/1.3 var(--sans);text-decoration:none;cursor:pointer;text-align:left}
-.book-this::after,.arrow-link::after,.card .card-bio::after{content:"";flex:none;width:28px;height:28px;border-radius:50%;background:var(--bronze)}
-.book-this::before,.arrow-link::before,.card .card-bio::before{content:"";position:absolute;right:7px;top:50%;width:14px;height:14px;margin-top:-7px;background:var(--white);-webkit-mask:var(--arrow-bold) center/14px 14px no-repeat;mask:var(--arrow-bold) center/14px 14px no-repeat;pointer-events:none}
+/* block-level text (not flex) so spaces around inner spans survive; the circle sits on the right, centred */
+.book-this,.arrow-link,.card .card-bio{position:relative;display:inline-block;min-height:44px;padding:10px 40px 10px 0;border:0;background:none;color:var(--ink);font:600 1rem/1.5 var(--sans);text-decoration:none;cursor:pointer;text-align:left}
+.book-this::after,.arrow-link::after,.card .card-bio::after{content:"";position:absolute;right:0;top:50%;width:28px;height:28px;margin-top:-14px;border-radius:50%;background:var(--bronze)}
+.book-this::before,.arrow-link::before,.card .card-bio::before{content:"";position:absolute;z-index:1;right:7px;top:50%;width:14px;height:14px;margin-top:-7px;background:var(--white);-webkit-mask:var(--arrow-bold) center/14px 14px no-repeat;mask:var(--arrow-bold) center/14px 14px no-repeat;pointer-events:none}
 .book-this:hover,.arrow-link:hover,.card .card-bio:hover{color:var(--bronze);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em}
 :is(.section--bronze,.dark) :is(.book-this,.arrow-link){color:var(--white)}
 :is(.section--bronze,.dark) :is(.book-this,.arrow-link)::after{background:var(--cream)}
@@ -616,6 +619,201 @@ body:has(dialog[open]){overflow:hidden}
 .frame-label{margin:0 0 var(--s4);font:400 var(--c-eyebrow)/1.4 var(--sans);color:var(--text)}
 .frame-label .asof{display:inline;margin:0;font-size:inherit;color:inherit}
 
+/* ==== service pages (C7): ghost-word head ==== */
+/* white band, the category name behind the floating card; the card's range sits in bronze */
+.svc-head{padding-block:var(--s5) var(--section);background:var(--white);overflow-x:clip}
+.ghost-card--head{padding-top:calc(var(--c-ghost) * .5)}
+.head-card{display:grid;grid-template-columns:minmax(0,1fr);column-gap:var(--s6)}
+.head-card>*{min-width:0}
+.head-card>.eyebrow{margin-bottom:var(--s3)}
+.head-card>h1{margin:0 0 var(--s5);max-width:none}
+.head-card>.lede{margin:0 0 var(--s5);max-width:34ch}
+.head-range{margin:0 0 var(--s5);padding:0;list-style:none;border-top:1px solid var(--leader)}
+.head-range li{display:flex;align-items:baseline;gap:var(--s3);padding:12px 0;border-bottom:1px solid var(--line)}
+.hr-name{font:400 var(--c-body)/1.35 var(--sans);color:var(--ink)}
+.hr-price{font:600 var(--c-row)/1.2 var(--sans);color:var(--bronze);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.head-actions>:last-child{margin-bottom:0}
+.head-actions .btn-row{margin-bottom:var(--s3)}
+.head-links{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:0}
+.head-links a{display:inline-block;padding-block:9px}
+.head-card .microcopy{margin-top:var(--s2)}
+@media (min-width:900px){
+  .head-card{grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);grid-template-areas:"eb eb" "h1 h1" "lede range" "act range";align-items:start}
+  .head-card>.eyebrow{grid-area:eb}
+  .head-card>h1{grid-area:h1}
+  .head-card>.lede{grid-area:lede}
+  .head-card>.head-range{grid-area:range;margin:.35em 0 0}
+  .head-card>.head-actions{grid-area:act}
+}
+@media (max-width:599.98px){.head-card>.lede{font-size:var(--c-body);line-height:1.55}}
+
+/* ==== service pages: your artists (C7 #2), 3:4 cards 4-up, brackets on hover ==== */
+.artist-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--gap);margin:0;padding:0;list-style:none}
+@media (min-width:768px){.artist-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1024px){.artist-cards{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.artist-cards>li{display:flex;min-width:0}
+.artist{flex:1;display:flex;flex-direction:column;align-items:flex-start;color:var(--text);text-decoration:none}
+.artist:hover{color:var(--text)}
+.artist .ph-frame{align-self:stretch;margin-bottom:var(--s4)}
+.a-name{margin:0 0 4px;font-size:var(--c-h3);line-height:1.15;color:var(--ink)}
+.artist:hover .a-name{color:var(--bronze);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.a-role{font-size:var(--c-small);line-height:1.4;color:var(--text)}
+.a-tags,.a-note{margin-top:6px;font-size:var(--c-small)}
+.a-tags::before,.a-note::before,.lk-who::before,.who::before,.price-item .unit::before{content:"["}
+.a-tags::after,.a-note::after,.lk-who::after,.who::after,.price-item .unit::after{content:"]"}
+.a-tags:empty{display:none}
+.artists-c .intro-row>p:last-child .arrow-link{margin-top:var(--s2)}
+.artists-c .intro-row>p:last-child{display:grid;justify-items:start;gap:var(--s2)}
+/* the corner brackets on hover (C4: 64px L-shapes of 8px bronze, offset -14px) */
+:is(.card,.artist) .ph-frame{position:relative;isolation:isolate;display:block;aspect-ratio:3/4;background:var(--ink)}
+.artist .ph-frame picture{height:100%}
+.artist img{width:100%;height:100%;object-fit:cover}
+.artist .ph-frame::before,.artist .ph-frame::after{content:"";position:absolute;z-index:-1;width:48px;height:48px;border:0 solid var(--bronze);opacity:0;pointer-events:none}
+.artist .ph-frame::before{top:-10px;right:-10px;border-top-width:6px;border-right-width:6px}
+.artist .ph-frame::after{bottom:-10px;left:-10px;border-bottom-width:6px;border-left-width:6px}
+.artist:hover .ph-frame::before,.artist:hover .ph-frame::after,.artist:focus-visible .ph-frame::before,.artist:focus-visible .ph-frame::after{opacity:1}
+.artist:focus-visible{outline-offset:6px}
+
+/* ==== service pages: the level key (who is at each level, stamped by the build) ==== */
+.levels--key .float-card h2{max-width:22ch;margin-bottom:var(--s5)}
+.level-key{width:100%;margin:0 0 var(--s5);border-top:1px solid var(--leader)}
+.level-key th,.level-key td{padding:14px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-weight:400}
+.level-key thead th{padding-block:10px;font-size:var(--c-small);line-height:1.35;color:var(--text)}
+.level-key thead th+th,.level-key td{text-align:right;padding-left:var(--s4)}
+.level-key td{font:600 var(--c-row)/1.25 var(--sans);color:var(--bronze);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.lk-level{display:block;font:600 var(--c-row)/1.25 var(--sans);color:var(--ink)}
+.lk-who{display:block;margin-top:4px;font:400 var(--c-eyebrow)/1.4 var(--sans);color:var(--text)}
+.lk-who:empty{display:none}
+.lk-note{margin:0 0 var(--s4);font-size:var(--c-small);color:var(--text)}
+.level-key thead th:first-child{width:auto}
+@media (min-width:768px){.level-key thead th+th,.level-key td{width:11.5rem}}
+/* below 600px each level becomes a block: level and names on top, labelled prices below
+   (the labels are visual only; the table roles keep the column headers for screen readers) */
+@media (max-width:599.98px){
+  .level-key thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .level-key tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s4);row-gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .level-key--3 tbody tr{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}
+  .level-key tbody :is(th,td){display:block;width:auto;padding:0;border:0;text-align:left}
+  .level-key tbody th{grid-column:1/-1}
+  .level-key td{display:flex!important;flex-direction:column;justify-content:space-between;font-size:1.125rem}
+  .level-key td::before{content:attr(data-label);content:attr(data-label) / "";display:block;margin-bottom:2px;font:400 13px/1.3 var(--sans);color:var(--text);white-space:normal}
+  .lk-level{font-size:1.1875rem}
+}
+
+/* ==== service pages: one or two providers as a bronze flush split (people and story) ==== */
+.people-split .fs-text h2{margin-bottom:var(--s5);max-width:18ch}
+.people-split .lead-list,.section--bronze .lead-list{border-top-color:var(--rule-bronze)}
+.section--bronze .lead-list li{border-bottom-color:var(--rule-bronze-soft)}
+.section--bronze .lead-list .ll-name{color:var(--sand);font-weight:400}
+.section--bronze .lead-list .ll-val{color:var(--white)}
+.section--bronze .lead-list .ll-val a,.section--bronze .lead-list .ll-name a{color:var(--white)}
+.people-split .fs-text>p:not(.eyebrow){margin-top:var(--s5)}
+.fs-links{display:flex;flex-wrap:wrap;gap:0 var(--s5)}
+.brk::before{content:"["}
+.brk::after{content:"]"}
+.ll-sub{display:block;margin-top:2px;font-size:var(--c-small);color:var(--text)}
+.section--bronze .ll-sub{color:var(--sand)}
+@media (min-width:600px){.people-split .lead-list li{flex-wrap:nowrap}.people-split .lead-list .ll-name{flex:none;min-width:6.5rem}}
+.fs-solo{align-self:stretch;background:var(--ink)}
+/* two columns: the portrait fills its cell (at least its own 3:4 height), cropping only if the text runs taller */
+@media (min-width:768px){
+  .people-split .fs-solo{position:relative;min-height:calc(min(42vw,35rem) * 4 / 3)}
+  .people-split .fs-solo img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:50% 20%}
+}
+@media (min-width:768px){.people-split .fs-duo{align-content:stretch}.people-split .fs-duo picture,.people-split .fs-duo img{height:100%}}
+/* a portrait pair on white (the extensions split): no bronze under the photos */
+.fs-duo--light{background:var(--white)}
+.fs-duo--light figcaption{color:var(--text)}
+.ext-split .fs-text h2{margin-bottom:var(--s5)}
+.ext-split .fs-text p{max-width:60ch}
+.ext-split .btn-row{margin-top:var(--s5)}
+@media (min-width:768px){.ext-split{grid-template-columns:minmax(0,1fr) min(44vw,38rem)}.ext-split .fs-text{align-self:start;padding-block:var(--s7) var(--section)}.ext-split .fs-duo{position:sticky;top:var(--header-h);align-self:start;align-content:start}}
+
+/* ==== treatment-as-ritual block (C7 #5): bronze, treatment left, steps right ==== */
+.ritual-block .split-head p:not(.eyebrow):not(.rb-price){color:var(--white)}
+.rb-price{margin:var(--s5) 0 0;font:600 var(--c-row)/1.3 var(--sans);color:var(--white)}
+.rb-price .bracket{display:block;margin-top:4px;font-weight:400}
+.ritual-block .ritual{margin-top:0}
+.ritual-note{margin:var(--s5) 0 0;color:var(--sand)}
+@media (min-width:1024px){.ritual-block .ritual li{grid-template-columns:8rem minmax(0,1fr)}}
+
+/* ==== ladders: level rows with the names at that level (C7 #4, Yukie's "Senior Hairstylist") ==== */
+.price-item .who{margin-top:2px;line-height:1.45}
+.price-item .who:empty{display:none}
+
+@media (min-width:1024px){.artist-cards--3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* ==== brows before/after (makeup-and-eyes): one bracket frame, labels in HTML ==== */
+.ba-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s7) var(--gap);align-items:center}
+@media (min-width:1024px){.ba-grid{grid-template-columns:minmax(0,4fr) minmax(0,7fr);column-gap:var(--s8)}}
+.ba-text h2{margin-bottom:var(--s4)}
+.ba-text .head-range{margin:var(--s5) 0 var(--s4)}
+.ba-feature{margin:0}
+.ba-feature .ba{max-width:none;margin:14px;gap:10px;background:var(--white)}
+@media (min-width:600px){.ba-feature .ba{grid-template-columns:1fr 1fr}}
+.ba-feature .ba figure{position:relative}
+.ba-feature .ba .ba-label{position:absolute;left:10px;top:10px;margin:0;padding:3px 12px;border-radius:999px;background:var(--white);font-size:14px;line-height:1.4}
+.ba-feature>figcaption{margin:var(--s4) 14px 0;font-size:var(--c-small);color:var(--text)}
+
+/* ==== slay-aesthetics: the provider in brackets, then the bronze explainer (C7 #6) ==== */
+.provider-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s7) var(--gap);align-items:center}
+@media (min-width:768px){.provider-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:var(--s8)}}
+.provider-photo{max-width:360px;margin:14px}
+.provider-photo img{width:100%;height:auto;background:var(--sand)}
+.provider-photo figcaption{margin-top:var(--s5);font-size:var(--c-small);color:var(--text)}
+.provider-text h2{margin-bottom:var(--s4)}
+.provider-logo{margin:var(--s5) 0 var(--s3)}
+.provider-logo img{width:160px;height:auto}
+.explainer-list{margin-top:.4em}
+@media (min-width:600px){.explainer-list li{flex-wrap:nowrap}.explainer-list .ll-name{flex:none;min-width:7.5rem}.explainer-list .ll-val{text-align:right}}
+.slay-explainer .split-head h2{max-width:14ch}
+
+/* ==== bridal inquiry: heading and the email/call panel left, the form right ==== */
+.inquiry-sec .split-head>p{max-width:40ch}
+.inquiry-sec .inquiry-aside{position:static;margin-top:var(--s6)}
+.inquiry-sec .inquiry-aside h3{font-size:var(--c-row)}
+@media (min-width:1024px){.inquiry-sec .split-head{position:sticky;top:calc(var(--header-h) + var(--s5));align-self:start}}
+.notes-body>p{max-width:62ch}
+
+/* ==== services.html (C7): the highlighter head, the level key, the menu tiles ==== */
+.svc-head--hl{padding-block:var(--s7) var(--s8)}
+.hl-head{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s5) var(--gap);align-items:end}
+.hl-title h1{margin:0;font-size:clamp(2.75rem,1.9rem + 3.9vw,5.5rem);line-height:1.08;letter-spacing:-.01em}
+.hl-title h1 .hl{padding:.02em .2em}
+.hl-side .lede{margin-bottom:var(--s5)}
+.hl-side .btn-row{margin-bottom:var(--s2)}
+@media (min-width:1024px){.hl-head{grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:var(--s8)}.hl-side{padding-bottom:.4em}}
+a.lk-level{text-decoration-thickness:1px;text-underline-offset:.2em}
+a.lk-level:hover{color:var(--bronze);text-decoration-thickness:2px}
+.svc-tiles .intro-row .asof{margin-top:var(--s3)}
+.tile--menu{gap:var(--s3);padding-bottom:calc(var(--s5) + 44px)}
+.tile--menu .tile-faces{margin-top:var(--s3)}
+.tile-desc{font-size:var(--c-small);line-height:1.45;color:var(--text)}
+.tile-rows{display:grid;align-self:stretch;margin-top:auto;border-top:1px solid var(--leader)}
+.trow{display:flex;align-items:baseline;gap:var(--s3);padding:9px 0;border-bottom:1px solid rgb(28 28 28/.1)}
+.tr-name{font-size:16px;line-height:1.35;color:var(--ink)}
+.tr-name .bracket{font-size:14px;white-space:nowrap}
+.tr-price{font:600 1.0625rem/1.3 var(--sans);color:var(--bronze);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.tile--menu .tile-faces:has(+ .tile-go){padding-right:0}
+.tile--menu:is(:hover,:focus-visible) .tr-name,.tile--menu:is(:hover,:focus-visible) .tile-desc{color:var(--white)}
+.tile--menu:is(:hover,:focus-visible) .tr-price{color:var(--sand)}
+.tile--menu:is(:hover,:focus-visible) .tile-rows,.tile--menu:is(:hover,:focus-visible) .trow{border-color:var(--rule-bronze)}
+.tile--menu:is(:hover,:focus-visible) .lr-rule{background:var(--rule-bronze)}
+@media (min-width:768px){.line-cards--4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1200px){.line-cards--4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.line-card>.bracket{margin-top:-4px}
+
+/* ==== service pages: 4/8 section splits (FAQ, gift, related) ==== */
+.split-head>h2{margin-bottom:var(--s4)}
+.split-head>:last-child{margin-bottom:0}
+.split-head .btn-row{margin-top:var(--s5)}
+@media (min-width:1024px){.split-48>.split-head{padding-right:var(--s5)}}
+.split-48>.faq,.split-48>.link-list,.split-48>.gift-ideas{margin-top:0}
+.gift-c .gift-ideas{margin:0;grid-template-columns:minmax(0,1fr)}
+.gift-c .gift-ideas li{padding:14px 0}
+.gift-c .gift-ideas li>span:first-child{font-size:var(--c-row);font-weight:600;line-height:1.25}
+.gift-c .gift-ideas .price{font-size:var(--c-row)}
+
 /* ==== artists strip (service pages) ==== */
 .artists h2{font-size:var(--c-h3);margin-bottom:var(--s5)}
 .artists ul{display:flex;gap:var(--s4);margin:0;padding:6px 0;list-style:none;overflow-x:auto;scroll-snap-type:x proximity}
@@ -695,11 +893,11 @@ body:has(dialog[open]){overflow:hidden}
   .price-item[data-price-text] .price{white-space:normal;flex:0 0 6.5em}
 }
 /* level ladders: leader rows (the level word, a hairline, the price) */
-.price-list--ladder .price-item{padding:var(--s3) 0}
-.price-list--ladder .name{font-weight:400}
-.price-list--ladder .lvl-suffix{color:var(--text)}
+.price-list--ladder .price-item{padding:12px 0}
+.price-list--ladder .name{font-weight:600}
+.price-list--ladder .lvl-suffix{font-weight:400;color:var(--text)}
 .price-list--flow{columns:auto}
-@media (min-width:1280px){.menu-group:not(:has(.price-list--ladder)) .price-list--flow{column-count:2;column-gap:var(--s6)}.price-list--flow>:is(.price-item,.price-ref){break-inside:avoid}}
+/* Option C: one leader-line column in the 8/12 (no two-column flow) */
 .price-ref{padding:var(--s3) 0 var(--s4);border-top:1px solid rgb(28 28 28/.08)}
 .price-ref>p{margin:var(--s2) 0 0;font-size:16px}
 .price-ref>.text-link{display:inline-block;margin-top:var(--s2);font-size:var(--c-small)}
@@ -1060,7 +1258,8 @@ html.show-ph .ph::before{content:"Photo needed · Shot " attr(data-ph) " · " at
   .tile .avatars picture{transition:box-shadow .2s}
   .tile-go,.tile-go::before{transition:background-color .2s,transform .2s}
   .tile:hover .tile-go{transform:translateX(3px)}
-  .card .ph-frame::before,.card .ph-frame::after{transition:opacity .15s}
+  :is(.card,.artist) .ph-frame::before,:is(.card,.artist) .ph-frame::after{transition:opacity .15s}
+  .a-name{transition:color .15s}
   .chips a,.chips button{transition:background-color .15s,color .15s}
   .faq details,.faq summary{transition:background-color .15s,color .15s}
   .social a{transition:background-color .15s}

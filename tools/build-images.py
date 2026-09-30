@@ -8,7 +8,7 @@ Usage (from the project root):
     python tools/build-images.py --strict   # exit 1 if a portrait's outer 8px
                                             # mean luma is above 3% (brief 2.6)
 
-Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, og, squares
+Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, og, squares, cards
 
 What it makes (all new files; no source image is modified or overwritten):
 
@@ -49,6 +49,8 @@ What it makes (all new files; no source image is modified or overwritten):
           assets/img/join/gallery-4-sq-{400,800}  1:1 from the top of the 900x1200 source
           assets/img/team/{devon,stephanie}-720  (the C bridal and credentials portraits;
           both sources are 720 wide, so this is native, not upscaled)
+  cards   (Option C) assets/img/team/{slug}-{720|native}.{avif,webp,jpg} for every
+          portrait: the 3:4 artist and team cards (Emilie, Janet, Rissa 600; Paige 679)
 
 Idempotent: an output is skipped when it exists and is newer than both its
 source(s) and this script. Every run ends with a table of every output path,
@@ -504,6 +506,22 @@ SQUARES = [
 C_PORTRAITS_720 = ["devon", "stephanie"]
 
 
+def build_cards() -> None:
+    """Option C artist and team cards (3:4, about 285 CSS px wide at 4-up in the 1200px
+    container, so 2x needs ~570px): each portrait at its native 3:4 width, capped at 720.
+    Sources narrower than 720 (Emilie, Janet and Rissa 600, Paige 679) get their native
+    width, named by it; nothing is upscaled."""
+    print("option C: native-width card portraits")
+    for slug in team_slugs():
+        src = IMG / "team" / f"{slug}.jpg"
+        crop = portrait(slug)
+        w = min(720, crop.width)
+        if w <= max(PORTRAIT_WIDTHS):
+            continue
+        build_set(IMG / "team" / f"{slug}-{w}", [src],
+                  lambda c=crop, w=w: resize_w(c, w), "portrait-720")
+
+
 def build_squares() -> None:
     print("option C: 1:1 candid crops + 720w portraits")
     for name, out, widths, ax, ay in SQUARES:
@@ -598,7 +616,7 @@ GROUPS = {
     "team": build_team, "sheets": build_sheets, "owners": build_owners,
     "brand": build_brand, "about": build_about, "join": build_join,
     "brows": build_brows, "slay": build_slay, "og": build_og,
-    "squares": build_squares,
+    "squares": build_squares, "cards": build_cards,
 }
 
 

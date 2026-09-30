@@ -62,6 +62,7 @@ CHECKS = [
     ("main-landmark",       True,  "Exactly one <main id=\"main\"> per page"),
     ("skip-link",           True,  "First focusable element in <body> is a.skip-link href=\"#main\""),
     ("owner-questions",     True,  "Launch-gating owner questions answered in site.json ownerAnswers (WARN)"),
+    ("h3-parity",           True,  "Every .menu-group > h3 is byte-identical (tags stripped) to main (design branches; WARN and skip without git)"),
 ]
 
 SITE = "https://bellezzaspaonline.com/"
@@ -683,6 +684,48 @@ def run_checks(root, enabled, today):
                 desc = "; ".join("%s:%d %s" % (n, it["line"], it["price"]) for n, it in entries)
                 R.warn(entries[0][0], "price-consistency", "\"%s\" priced differently: %s"
                        % (entries[0][1]["name"], desc))
+
+    # h3-parity (DESIGN-OPTIONS section 0): group heads may gain spans in a design branch,
+    # but their text must stay byte-identical to main, because the schema and the stamped
+    # ranges read them. Compared with `git show main:<file>`; skipped when that fails.
+    if on("h3-parity"):
+        import subprocess
+
+        def menu_h3s(text):
+            out = []
+            starts = [m.end() for m in re.finditer(r'<div\b[^>]*class="menu-group\b[^"]*"[^>]*>', text)]
+            for i, a in enumerate(starts):
+                b = starts[i + 1] if i + 1 < len(starts) else len(text)
+                m = re.search(r"<h3\b[^>]*>(.*?)</h3>", text[a:b], re.S)
+                if m:
+                    out.append(html.unescape(re.sub(r"<[^>]+>", "", m.group(1))))
+            return out
+
+        skipped = None
+        for name, pg in sorted(pages.items()):
+            here = menu_h3s(pg.text)
+            if not here:
+                continue
+            try:
+                r = subprocess.run(["git", "show", "main:" + name], cwd=str(root), capture_output=True, timeout=20)
+            except (OSError, subprocess.SubprocessError) as e:
+                skipped = str(e)
+                break
+            if r.returncode != 0:
+                if b"exists on disk, but not in" in r.stderr or b"does not exist in" in r.stderr:
+                    continue  # a page that main does not have
+                skipped = r.stderr.decode("utf-8", "replace").strip().splitlines()[0] if r.stderr else "git show failed"
+                break
+            there = menu_h3s(r.stdout.decode("utf-8", "replace"))
+            if here != there:
+                for i in range(max(len(here), len(there))):
+                    a = here[i] if i < len(here) else "(none)"
+                    b = there[i] if i < len(there) else "(none)"
+                    if a != b:
+                        R.fail(name, "h3-parity", "group head %d is %r here but %r on main" % (i + 1, a, b))
+                        break
+        if skipped:
+            R.warn("(site)", "h3-parity", "skipped: main not readable with git (%s)" % skipped)
 
     # sitemap
     if on("sitemap"):
