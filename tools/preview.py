@@ -23,7 +23,8 @@ import shutil
 import subprocess
 import sys
 
-SKIP_DIRS = {'.git', '.github', 'tools', 'docs', 'preview', '__pycache__', '.playwright-mcp', 'node_modules'}
+SKIP_DIRS = {'.git', '.github', 'tools', 'docs', 'preview', '.playwright-mcp', '.worktrees'}  # top level only
+SKIP_ANYWHERE = {'__pycache__', 'node_modules'}  # assets/docs (the PDFs) must still be copied
 SKIP_FILES = {'netlify.toml', '_redirects', '_headers', 'README.md', 'IMAGE-MANIFEST.txt', 'PAGE-TEMPLATE.html',
               '.gitignore', '.gitattributes', 'robots.txt', 'sitemap.xml'}
 
@@ -48,7 +49,8 @@ def run_build(src):
 
 def copy_site(src, dst):
     for base, dirs, files in os.walk(src):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not (base == src and d.startswith('.'))]
+        dirs[:] = [d for d in dirs if d not in SKIP_ANYWHERE
+                   and not (base == src and (d in SKIP_DIRS or d.startswith('.')))]
         rel = os.path.relpath(base, src)
         for f in files:
             if base == src and (f in SKIP_FILES or f.startswith('_qa')):
