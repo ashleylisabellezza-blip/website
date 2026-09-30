@@ -26,6 +26,7 @@ It also fills live values from the page content, so numbers never drift:
                                       (a tiered item: position in its group's p.tier-head)
     <div class="who" data-who="hair" data-level="Senior">   "Austyn, Cherish, Liv" (our-team.html titles)
     <span data-team-role="madison">, <span data-team-tags="madison">   title, specialties
+    <span data-team-level="austyn">   "Senior · women’s cut $48" (level from the title, price from the menu)
     <div class="unit" data-unit-price> in a "Package of 5" row   "$49 each"
     <time data-asof>                  "Prices as of September 2026"
 and the /* config:start */ block in assets/js/site.js (hours, holidays, URLs).
@@ -359,6 +360,26 @@ def who_at(disciplines, level):
 
 def person(slug):
     return next((p for p in team_people() if p['slug'] == slug), None)
+
+
+# The anchor service each discipline's level line quotes (DESIGN-OPTIONS C7, team cards and bios).
+LEVEL_ANCHORS = (('hair', 'salon.html#cuts-women', 'women’s cut'),
+                 ('nails', 'tips-and-toes.html#classic-manicure', 'classic manicure'))
+
+
+def level_line(slug):
+    """'austyn' -> 'Senior · women’s cut $48': the level word comes from the our-team.html title
+    and the price at that level from the menu. None for anyone without a level: the skin
+    therapists (owner question 8), massage (priced by length), leadership and client services."""
+    p = person(slug)
+    if not p or not p['level']:
+        return None
+    for disc, spec, label in LEVEL_ANCHORS:
+        if disc in p['disc']:
+            price = level_price(spec, p['level'])
+            if price:
+                return f"{p['level']} · {label} {price}"
+    return None
 
 
 def unit_each(li):
@@ -739,9 +760,10 @@ def fill_team(text):
         <td data-who="hair nails" data-level="Expert">               several disciplines, ' · '
         <span data-team-role="madison">                              her title on our-team.html
         <span data-team-tags="madison">                              her specialties, ' · '
+        <span data-team-level="austyn">                              "Senior · women’s cut $48" (team cards, bios)
         <div class="unit" data-unit-price>  (inside li.price-item)   "$49 each" for "Package of 5"
     Leaf elements only (no nested tag of the same name). A missing fact keeps the default."""
-    leaf = re.compile(r'(<(div|span|td|th|p)\b[^>]*\b(?:data-who|data-team-role|data-team-tags)="[^"]*"[^>]*>)(.*?)(</\2>)', re.S)
+    leaf = re.compile(r'(<(div|span|td|th|p)\b[^>]*\b(?:data-who|data-team-role|data-team-tags|data-team-level)="[^"]*"[^>]*>)(.*?)(</\2>)', re.S)
 
     def fact(m):
         tag, inner, close = m.group(1), m.group(3), m.group(4)
@@ -755,6 +777,8 @@ def fill_team(text):
         elif 'data-team-tags' in a:
             p = person(a['data-team-tags'])
             val = p and ' · '.join(p['tags'])
+        elif 'data-team-level' in a:
+            val = level_line(a['data-team-level'])
         return tag + (esc(val) if val else inner) + close
 
     def unit(m):

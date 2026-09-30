@@ -47,6 +47,8 @@ What it makes (all new files; no source image is modified or overwritten):
           retail packaging and the "$70" counter card lower in the frame; brief 0)
           assets/img/join/gallery-1-sq-{400,800}  1:1 centre crop of the 1200x900 source
           assets/img/join/gallery-4-sq-{400,800}  1:1 from the top of the 900x1200 source
+          assets/img/join/gallery-2-sq-{400,800}  1:1 centre of the centre 80% (drops the vignette)
+          assets/img/join/join-3-sq-{400,582}     1:1 centre crop of the 1200x582 source
           assets/img/team/{devon,stephanie}-720  (the C bridal and credentials portraits;
           both sources are 720 wide, so this is native, not upscaled)
   cards   (Option C) assets/img/team/{slug}-{720|native}.{avif,webp,jpg} for every
@@ -498,11 +500,24 @@ def build_join() -> None:
 
 
 SQUARES = [
-    # (source, output name, widths, anchor_x, anchor_y)
+    # (source, output name, widths, anchor_x, anchor_y[, inset]); inset keeps only the
+    # centre fraction of the source before the 1:1 crop
     ("gallery-3", "gallery-3-sq", (400, 800, 900), 0.5, 0.0),
     ("gallery-1", "gallery-1-sq", (400, 800), 0.5, 0.5),
     ("gallery-4", "gallery-4-sq", (400, 800), 0.5, 0.0),
+    # About gallery (C7): gallery-2 has a white vignette baked in, so crop to the centre
+    # 80% first (brief 0); join-3 (1200x582) is a centre square, native 582 wide
+    ("gallery-2", "gallery-2-sq", (400, 800), 0.5, 0.5, 0.8),
+    ("join-3", "join-3-sq", (400, 582), 0.5, 0.5),
 ]
+
+
+def inset_crop(im: Image.Image, frac: float) -> Image.Image:
+    """The centre `frac` of an image (both axes)."""
+    w, h = im.size
+    nw, nh = round(w * frac), round(h * frac)
+    x, y = (w - nw) // 2, (h - nh) // 2
+    return im.crop((x, y, x + nw, y + nh))
 C_PORTRAITS_720 = ["devon", "stephanie"]
 
 
@@ -524,12 +539,13 @@ def build_cards() -> None:
 
 def build_squares() -> None:
     print("option C: 1:1 candid crops + 720w portraits")
-    for name, out, widths, ax, ay in SQUARES:
+    for name, out, widths, ax, ay, *rest in SQUARES:
         src = IMG / "join" / f"{name}.jpg"
+        inset = rest[0] if rest else 1.0
         for w in widths:
             build_set(IMG / "join" / f"{out}-{w}", [src],
-                      lambda s=src, w=w, ax=ax, ay=ay: resize_w(
-                          crop_to_ratio(load_rgb(s), 1, 1, anchor_y=ay, anchor_x=ax), w))
+                      lambda s=src, w=w, ax=ax, ay=ay, k=inset: resize_w(
+                          crop_to_ratio(inset_crop(load_rgb(s), k), 1, 1, anchor_y=ay, anchor_x=ax), w))
     for slug in C_PORTRAITS_720:
         src = IMG / "team" / f"{slug}.jpg"
         crop = portrait(slug)

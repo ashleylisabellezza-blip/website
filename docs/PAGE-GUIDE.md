@@ -316,3 +316,52 @@ level key, the extensions split and the keratin ritual.
   (owner question 8; massage is priced by length).
 - **`check.py` h3-parity:** every `.menu-group > h3` must match `main` once tags are
   stripped (it runs `git show main:<file>`; without git it warns and skips).
+
+### 6.2 People & place pages (C7: team, About, New guests, Contact)
+
+- **Photo slots on this branch** take a ratio class instead of an inline style
+  (`class="ph ph--3x2"`); no page carries a `style=""` attribute.
+- **`our-team.html` (jump mode).** The wrapper `div.team-block[data-team-mode="jump"]` holds
+  the sticky `nav.jump-chips` (links to `#filter-hair` … `#filter-client-services`), the
+  owners' bronze split and `div.team-depts`. `site.js` then skips filtering; an old
+  `our-team.html#filter-*` link lands on the block with that id.
+  - **Owners:** `section.flush-split.team-lead-split#owners`: `.fs-text` (h2, a `lead-list`
+    of facts, the one gold Book capsule) and `.fs-media > ul.team-lead` with Ashley's and
+    Lisa's `li.team-item`.
+  - **Departments:** one `section.dept#filter-{key}` per department, in the chip order:
+    `.container.dept-grid` = `.dept-head` (h2, `p.bracket.dept-facts` with stamped counts
+    and ranges, `p.bracket.dept-also` naming cross-listed people, `p.dept-actions` with a
+    `.book-this` text link) + `ul.team-grid`. A card sits in the **first** department of
+    its `data-dept`; the others name the person in brackets. A department with no cards
+    of its own (makeup, bridal) shows `ul.dept-roster` leader rows instead
+    (44px avatar, name linking to the card, `span.ro-role[data-team-role]`).
+  - **Card** (`li.team-item > div.card`, no `<div>` inside the card: the schema reads the
+    card up to its first `</div>`): `span.ph-frame > picture`, `h3`, `span.role`,
+    `span.lvl-line[data-team-level="slug"]` (stamped "Senior · women's cut $48"),
+    `ul.tags`, `p.creds`, `span.card-actions` (`button.card-bio`, `span.card-links` with the
+    `a[data-book]` text link and Instagram).
+  - **Bio** (`dialog.bio#bio-{slug}`): `.bio-photo.brackets > picture` and `.bio-body`:
+    `h2`, `span.role`, the `span.lvl-line`, then the bio `<p>` (it must stay the first `<p>`
+    after `span.role`; `build-schema.py` reads it), `ul.creds-list.lead-list` rows (label,
+    `lr-rule`, value; "Specialties" is `data-team-tags`), `p.bio-services`, the
+    "Ask for …" microcopy and `.bio-actions` (gold Book, Instagram).
+  - **Stamp:** `<span data-team-level="slug">` gives the level from the person's title and
+    the price at that level from `salon.html#cuts-women` (stylists) or
+    `tips-and-toes.html#classic-manicure` (nail artists). No level line for the skin
+    therapists (owner question 8), massage (priced by length), leadership or front desk.
+- **`about.html`:** ghost word "2009" + `.head-card--duo` (lede left, actions right); the
+  house year by year as `.year-split` flush splits (2008 bronze with the owners,
+  2022 white with `.prod-grid` product shots never wider than 180 CSS px, Today bronze with
+  `.fs-wide` group photo) and one `.years-band` (`ol.year-row` numerals) where there is no
+  photo; `p.year-n` is the `--c-numeral` line. Then the stat row and `ul.gallery-3x2.brackets`
+  (`li.g-wide` spans two columns). Below 1024px the splits stack, photo first.
+- **`new-guests.html`:** head card (ghost "Welcome"), the bronze `.ritual-block.first-visit`
+  (`span.step-d` under each step), the chips, then 4/8 `split-48` sections. The levels card
+  is a `level-key` table whose rows keep the ids `level-jr-associate` … `level-master`;
+  prices (`data-level-price`) and names (`data-who="hair nails"`) are stamped.
+- **`contact-us.html`:** `.visit-grid.contact-grid`: H1, `ul.detail-rows.contact-rows`
+  (status row hides itself without JS, Call, Directions, Book) and `#hours` (the stamped
+  table) left; `.map-panel.brackets.contact-map` (sticky from 1024px) right. Then the sand
+  `section#holidays` with the stamped holiday table, and the other ways to reach us.
+- **Chip rows** scroll sideways on their own (`revealChip` in `site.js`); the scrollspy never
+  calls `scrollIntoView()`, which cancelled smooth scrolls to far sections.

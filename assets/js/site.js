@@ -227,11 +227,23 @@
     syncBookbar();
   }
 
+  /* ---------- bring a chip into view inside its own row ----------
+     Only the chip row scrolls sideways. scrollIntoView() would also scroll the page, and in
+     Chromium that cancels a smooth scroll already under way (a chip click or a #hash landing
+     stopped part-way down long pages). */
+  function revealChip(a) {
+    var ul = a.closest && a.closest('.chips');
+    if (!ul) return;
+    var ur = ul.getBoundingClientRect(), ar = a.getBoundingClientRect();
+    if (ar.left < ur.left + 8) ul.scrollLeft -= ur.left + 8 - ar.left;
+    else if (ar.right > ur.right - 40) ul.scrollLeft += ar.right - (ur.right - 40);
+  }
+
   /* ---------- keep focused elements clear of sticky chrome (WCAG 2.4.11) ---------- */
   function initFocusClearance() {
     doc.addEventListener('focusin', function (e) {
       var el = e.target;
-      if (el.closest && el.closest('.chips')) { el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); return; }
+      if (el.closest && el.closest('.chips')) { revealChip(el); return; }
       if (!el.getBoundingClientRect || el.closest('.site-header, .bookbar, dialog, .jump-chips, .team-filters')) return;
       var r = el.getBoundingClientRect();
       var header = $('.site-header'), chips = $('.jump-chips') || $('.team-filters');
@@ -264,6 +276,15 @@
 
   /* ---------- team filters (our-team.html) ---------- */
   function initTeamFilters() {
+    /* jump mode (DESIGN-OPTIONS section 0): the chips are plain in-page links and the
+       department blocks carry the ids filter-hair, filter-nails...; nothing is hidden.
+       An old our-team.html#filter-* link lands on its block once the sticky chip row
+       has been measured (initScrollspy sets --chips-h, which scroll-padding uses). */
+    if ($('[data-team-mode="jump"]')) {
+      var target = /^#filter-[\w-]+$/.test(location.hash) && doc.getElementById(location.hash.slice(1));
+      if (target) requestAnimationFrame(function () { target.scrollIntoView({ block: 'start', behavior: 'instant' }); });
+      return;
+    }
     var wrap = $('[data-team-filters]');
     if (!wrap) return;
     var chips = $$('button[data-filter]', wrap);
@@ -302,7 +323,7 @@
       links.forEach(function (a) {
         if (a.getAttribute('href') === '#' + current) {
           a.setAttribute('aria-current', 'true');
-          a.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          revealChip(a);
         } else a.removeAttribute('aria-current');
       });
     }, { rootMargin: '-35% 0px -60% 0px' });
