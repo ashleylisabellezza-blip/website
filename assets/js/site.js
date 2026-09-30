@@ -287,6 +287,15 @@
   }
 
   /* ---------- jump chips scrollspy ---------- */
+  /* bring the current chip into view inside a horizontally scrolling row only;
+     never scroll the page (on phones the row wraps and is not sticky) */
+  function revealChip(a) {
+    var row = a.closest('.chips');
+    if (!row || row.scrollWidth <= row.clientWidth + 1) return;
+    var rr = row.getBoundingClientRect(), ar = a.getBoundingClientRect();
+    if (ar.left < rr.left) row.scrollLeft -= rr.left - ar.left + 16;
+    else if (ar.right > rr.right) row.scrollLeft += ar.right - rr.right + 16;
+  }
   function initScrollspy() {
     var nav = $('.jump-chips');
     if (!nav || !('IntersectionObserver' in window)) return;
@@ -302,7 +311,7 @@
       links.forEach(function (a) {
         if (a.getAttribute('href') === '#' + current) {
           a.setAttribute('aria-current', 'true');
-          a.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          revealChip(a);
         } else a.removeAttribute('aria-current');
       });
     }, { rootMargin: '-35% 0px -60% 0px' });

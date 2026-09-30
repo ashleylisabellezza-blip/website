@@ -28,7 +28,7 @@ What it makes (all new files; no source image is modified or overwritten):
           edge counts as subject; a lifted grey backdrop can trip this).
   sheets  assets/img/team/contact-sheet-{1540,1100}.{avif,webp,jpg}  (7x4, all 28)
           assets/img/team/contact-sheet-800.{avif,webp,jpg}         (4x3, 12 people)
-  owners  assets/img/team/{ashley-basham,lisa-jeffries}-720.{avif,webp,jpg}
+  owners  assets/img/team/{ashley-basham,lisa-jeffries,devon}-720.{avif,webp,jpg}
   brand   assets/img/brand/wordmark.png, wordmark-on-dark.png (56px tall = 2x of
           a 28px header lockup), logo.png, logo-on-dark.png (#faf8f5)
   about   assets/img/about/team-group-{560,1120}.{avif,webp,jpg}  (from join-1.jpg,
@@ -79,6 +79,8 @@ MOBILE_SHEET = [
     "austyn", "paige", "madison", "jesyca", "emma", "mia",
 ]
 OWNERS = ["ashley-basham", "lisa-jeffries"]
+# 720w portraits: the owners (hero frames) plus Devon (Option B bridal 3:5 frame)
+PORTRAITS_720 = OWNERS + ["devon"]
 
 PORTRAIT_WIDTHS = (180, 360, 540)
 EDGE_PX = 8
@@ -342,8 +344,8 @@ def build_team() -> None:
 
 
 def build_owners() -> None:
-    print("owner portraits (720w)")
-    for slug in OWNERS:
+    print("720w portraits (owners, Devon)")
+    for slug in PORTRAITS_720:
         src = IMG / "team" / f"{slug}.jpg"
         crop = portrait(slug)
         if crop.width < 720:
