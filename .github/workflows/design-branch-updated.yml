@@ -1,0 +1,14 @@
+# A push to any design-* branch triggers this; its completion triggers
+# "Design previews" (preview.yml), which runs from main and republishes
+# GitHub Pages with every design. (Pages can only be deployed from main.)
+name: Design branch updated
+
+on:
+  push:
+    branches: ["design-*"]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Design branch ${{ github.ref_name }} updated; the preview will rebuild."

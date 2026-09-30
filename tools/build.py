@@ -26,7 +26,7 @@ TOOLS = os.path.join(ROOT, 'tools')
 def snapshot():
     out = {}
     for base, dirs, files in os.walk(ROOT):
-        dirs[:] = [d for d in dirs if d not in ('.git', 'node_modules', 'font-src', '__pycache__', '.playwright-mcp')]
+        dirs[:] = [d for d in dirs if d not in ('.git', '.worktrees', 'node_modules', 'font-src', '__pycache__', '.playwright-mcp')]
         for f in files:
             if f.endswith(('.html', '.js', '.css', '.xml')):
                 p = os.path.join(base, f)

@@ -9,3 +9,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Design branches checked out side by side (git worktree)
+.worktrees/

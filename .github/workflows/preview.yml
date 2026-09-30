@@ -1,0 +1,76 @@
+# Builds the design-comparison preview on GitHub Pages:
+#   https://<owner>.github.io/<repo>/           chooser page
+#   https://<owner>.github.io/<repo>/<slug>/    one full copy of the site per design branch
+# The branches shown are listed in preview/designs.json (on main).
+# One-time setup: repo Settings > Pages > Build and deployment > Source: "GitHub Actions".
+name: Design previews
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Design branch updated"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main (all branches)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-src
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check out each design branch
+        run: |
+          mkdir -p src
+          python3 - <<'PY'
+          import json, subprocess, os
+          designs = json.load(open('main-src/preview/designs.json'))['designs']
+          for d in designs:
+              dst = os.path.join('src', d['slug'])
+              ref = 'origin/' + d['branch']
+              ok = subprocess.run(['git', '-C', 'main-src', 'rev-parse', '--verify', '--quiet', ref]).returncode == 0
+              if not ok:
+                  print('skipping', d['branch'], '(branch not pushed yet)')
+                  continue
+              subprocess.run(['git', '-C', 'main-src', 'worktree', 'add', '--detach', os.path.abspath(dst), ref], check=True)
+          PY
+
+      - name: Assemble preview site
+        run: |
+          python3 main-src/tools/preview.py \
+            --designs main-src/preview/designs.json \
+            --src-root src \
+            --out _site \
+            --base "/${{ github.event.repository.name }}/"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
