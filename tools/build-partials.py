@@ -19,6 +19,14 @@ It also fills live values from the page content, so numbers never drift:
     <span data-range="salon.html#cuts-women">   "$37–60" from that group or item
     <span data-from="facials.html#facials">     "from $55" (lowest price)
     <time data-asof>                  "Prices as of September 2026"
+    <span data-level="salon.html#cuts-women|Senior">   "$48" (ladder row, or a tier-head item)
+    <span data-price="slay-aesthetics.html#botox">     "$12 per unit" (the item's price text)
+    <div class="unit" data-unit="5">  "[$49 each]" inside a package li.price-item
+    <ul data-who="slug slug" data-who-dept="nails">    "Who does this" squares: first name,
+                                      level word from the our-team.html title, specialty tag
+    <ol data-level-key="hair nails" data-level-price="spec spec" data-level-labels="a|b">
+                                      level key: a cell per level with its price(s), then the
+                                      people whose title carries that level
 and the /* config:start */ block in assets/js/site.js (hours, holidays, URLs).
 
 Data lives in tools/site.json (business facts) and tools/pages.json (titles,
@@ -232,21 +240,239 @@ def nav_price(spec, prefix):
     return text[0].upper() + text[1:]
 
 
+def _plain(fragment):
+    return html.unescape(re.sub(r'<[^>]+>', '', fragment)).strip()
+
+
+def _tier_levels(where):
+    """'tips-and-toes.html#gel-manicure-without-removal' -> ['Associate', 'Senior', 'Expert']:
+    the p.tier-head of the menu group that holds that item ('' when there is none)."""
+    file, _, frag = where.partition('#')
+    try:
+        page = read(file)
+    except FileNotFoundError:
+        return []
+    m = re.search(r'<li\b[^>]*\bid="%s"' % re.escape(frag), page)
+    if not m:
+        return []
+    start = page.rfind('class="menu-group', 0, m.start())
+    head = re.search(r'<p class="tier-head"[^>]*>(.*?)</p>', page[start:m.start()], re.S) if start >= 0 else None
+    return [t.strip() for t in _plain(head.group(1)).split('/')] if head else []
+
+
 def level_price(spec):
-    """'salon.html#cuts-women|Senior' -> '$48': the price on the ladder row whose name
-    starts with that level (derived level facts, DESIGN-OPTIONS §0)."""
+    """'salon.html#cuts-women|Senior' -> '$48' (derived level facts, DESIGN-OPTIONS §0).
+    A ladder group: the price on the row whose name starts with that level.
+    A single item with a tier head ('$44 / 49 / 53' under 'Associate / Senior / Expert'):
+    the matching slash-separated price."""
     where, _, level = spec.partition('|')
     frag = _fragment(where)
     if not frag or not level:
         return None
-    for li in PRICE_ITEM.findall(frag):
+    items = PRICE_ITEM.findall(frag)
+    for li in items:
         name = re.search(r'<span class="name">(.*?)</span>', li, re.S)
         price = re.search(r'<span class="price">(.*?)</span>', li, re.S)
         if name and price:
-            label = html.unescape(re.sub(r'<[^>]+>', '', name.group(1))).strip()
+            label = _plain(name.group(1))
             if label == level or label.startswith(level + ' '):
-                return html.unescape(re.sub(r'<[^>]+>', '', price.group(1))).strip()
+                return _plain(price.group(1))
+    if len(items) == 1 and frag.lstrip().startswith('<li'):
+        tiers = _tier_levels(where)
+        price = re.search(r'<span class="price">(.*?)</span>', items[0], re.S)
+        parts = [p.strip() for p in _plain(price.group(1)).split('/')] if price else []
+        if level in tiers and len(parts) == len(tiers):
+            p = parts[tiers.index(level)]
+            return p if p.startswith('$') else '$' + p
     return None
+
+
+def item_price(spec):
+    """'slay-aesthetics.html#botox' -> '$12 per unit': the literal span.price text of one item."""
+    frag = _fragment(spec)
+    if not frag:
+        return None
+    m = re.search(r'<span class="price">(.*?)</span>', frag, re.S)
+    return _plain(m.group(1)) if m else None
+
+
+# ------------------------------------------------------------------ team data (our-team.html)
+# Level facts come only from the titles on our-team.html (DESIGN-OPTIONS §0): "Senior Hair
+# Stylist" is Senior in hair, "Spa Manager & Expert Nail Artist" is Expert in nails. People
+# whose title names no level (Emma, Mia: owner question 8) get no level and no price line.
+LEVELS = ['Jr Associate', 'Associate', 'Senior', 'Expert', 'Master']
+TITLE_LEVEL = re.compile(r'\b(Jr Associate|Associate|Senior|Expert|Master)\s+(Hair Stylist|Stylist|Nail Artist|Massage Therapist)\b')
+DISCIPLINE = {'Hair Stylist': 'hair', 'Stylist': 'hair', 'Nail Artist': 'nails', 'Massage Therapist': 'massage'}
+_TEAM = None
+
+
+def team():
+    """{slug: {name, first, role, tags, creds, note, levels}} in our-team.html order."""
+    global _TEAM
+    if _TEAM is not None:
+        return _TEAM
+    _TEAM = {}
+    try:
+        page = read('our-team.html')
+    except FileNotFoundError:
+        return _TEAM
+    for part in re.split(r'(?=<li\b[^>]*class="team-item\b)', page)[1:]:
+        m = re.match(r'<li\b([^>]*)>', part)
+        slug = re.search(r'\bid="([^"]+)"', m.group(1)) if m else None
+        if not slug:
+            continue
+        part = part[:part.find('</dialog>') + 9] if '</dialog>' in part else part
+        card = part.split('<dialog', 1)[0]
+        name = re.search(r'<h[23]\b[^>]*>(.*?)</h[23]>', card, re.S)
+        role = re.search(r'<span class="role">(.*?)</span>', card, re.S) or re.search(r'<span class="role">(.*?)</span>', part, re.S)
+        tags = re.search(r'<ul class="tags">(.*?)</ul>', part, re.S)
+        creds = re.search(r'class="creds"[^>]*>(.*?)</(?:p|span)>', part, re.S)
+        name = _plain(name.group(1)) if name else slug.group(1)
+        role = _plain(role.group(1)) if role else ''
+        creds = _plain(creds.group(1)) if creds else ''
+        words = name.replace(',', ' ').split()
+        first = ' '.join(words[:2]) if len(words) > 1 and len(words[1]) == 1 else words[0]
+        note = next((c.strip().rstrip('.') for c in creds.split('·') if 'one day a week' in c), '')
+        _TEAM[slug.group(1)] = {
+            'name': name, 'first': first, 'role': role, 'creds': creds, 'note': note,
+            'tags': [_plain(t) for t in re.findall(r'<li>(.*?)</li>', tags.group(1), re.S)] if tags else [],
+            'levels': {DISCIPLINE[d]: lvl for lvl, d in TITLE_LEVEL.findall(role)},
+        }
+    return _TEAM
+
+
+def _picture(slug, size, sizes=None, lazy=True, cls=''):
+    """A team headshot (3:4 source files). size: 180 | 360 | '360 540' (srcset)."""
+    widths = [int(w) for w in str(size).split()]
+    base = f'assets/img/team/{slug}-'
+    if len(widths) == 1:
+        srcs = {ext: f'{base}{widths[0]}.{ext}' for ext in ('avif', 'webp', 'jpg')}
+        sz = ''
+    else:
+        srcs = {ext: ', '.join(f'{base}{w}.{ext} {w}w' for w in widths) for ext in ('avif', 'webp', 'jpg')}
+        sz = f' sizes="{sizes}"'
+    w = widths[-1] if len(widths) > 1 else widths[0]
+    src = f'{base}{widths[0]}.jpg'
+    srcset = f' srcset="{srcs["jpg"]}"' if len(widths) > 1 else ''
+    lazy_attr = ' loading="lazy"' if lazy else ''
+    klass = f' class="{cls}"' if cls else ''
+    return (f'<picture><source type="image/avif" srcset="{srcs["avif"]}"{sz}><source type="image/webp" srcset="{srcs["webp"]}"{sz}>'
+            f'<img{klass} src="{src}"{srcset}{sz} width="{w}" height="{w * 4 // 3}" alt=""{lazy_attr} decoding="async"></picture>')
+
+
+# "Who does this" rows (D7 service template): which title part names the level on each page,
+# and which profile tags count as that page's specialties.
+WHO_DISC = {'hair': 'hair', 'bridal': 'hair', 'nails': 'nails', 'massage': 'massage', 'skin': 'skin', 'makeup': 'makeup'}
+WHO_TAGS = {
+    'hair': r'^(?!.*makeup)', 'bridal': r'special occasion|updo|bridal|makeup', 'nails': r'nail|manicure|pedicure|gel',
+    'skin': r'facial|dermaplan|wax|skin', 'makeup': r'makeup', 'massage': r'massage',
+}
+
+
+def who_row(slugs, dept, first=False):
+    """<li> squares for a ul[data-who]: black-and-white 1:1 headshot, first name, the level
+    word from the title (or the title where it names no level) and one specialty line from
+    the profile tags. A single provider also shows the credential line. first: the row holds
+    the first image in <main>, so its first picture is not lazy-loaded."""
+    people = [(s, team()[s]) for s in slugs.split() if s in team()]
+    n = len(people)
+    if n == 1:
+        size, sizes = '360 540', '(min-width:768px) 240px, 40vw'
+    elif n <= 3:
+        size, sizes = '360 540', '(min-width:768px) 200px, 30vw'
+    else:
+        size, sizes = '360', None
+    out = []
+    for i, (slug, p) in enumerate(people):
+        disc = WHO_DISC.get(dept, dept)
+        lvl = p['levels'].get(disc) if disc in ('hair', 'nails') else None
+        if lvl:
+            label = lvl
+        elif disc == 'makeup' and 'Makeup Artist' in p['role']:
+            label = 'Makeup artist'
+        elif disc == 'skin' and 'Skin Therapist' in p['role']:
+            label = 'Skin therapist'
+        else:
+            label = p['role']
+        tags = [t for t in p['tags'] if re.search(WHO_TAGS.get(dept, ''), t, re.I)]
+        line = p['note'] or ', '.join(t if i == 0 else t[:1].lower() + t[1:] for i, t in enumerate(tags[:2]))
+        extra = f'<small class="who-cred">{esc(p["creds"])}</small>' if n == 1 and p['creds'] and not p['note'] else ''
+        out.append(f'<li><a href="our-team.html#{slug}"><span class="who-sq">{_picture(slug, size, sizes, lazy=not (first and i == 0))}</span>'
+                   f'<b>{esc(p["first"])}</b> <span class="who-lvl">{esc(label)}</span>'
+                   + (f' <small>{esc(line)}</small>' if line else '') + extra + '</a></li>')
+    return ''.join(out)
+
+
+def _and(names):
+    return names[0] if len(names) == 1 else ', '.join(names[:-1]) + ' and ' + names[-1]
+
+
+def level_key(depts, specs, labels, first=False):
+    """<li> cells for an ol[data-level-key]: one square per level that has a price (level in
+    caps, example price), then 40px black-and-white squares of the people at that level."""
+    depts, specs = depts.split(), specs.split()
+    labels = [l.strip() for l in labels.split('|')] if labels else []
+    out = []
+    for lvl in LEVELS:
+        prices = [level_price(f'{s}|{lvl}') for s in specs]
+        if not any(prices):
+            continue
+        if len(specs) == 1:
+            cell = f'<span class="lk-lvl">{esc(lvl)}</span> <span class="lk-price">{esc(prices[0])}</span>'
+        else:
+            rows = ''.join(f' <span class="lk-row">{esc(labels[i] if i < len(labels) else "")} <b>{esc(p)}</b></span>'
+                           for i, p in enumerate(prices) if p)
+            cell = f'<span class="lk-lvl">{esc(lvl)}</span>{rows}'
+        groups, notes = [], []
+        for d in depts:
+            people = [(s, p) for s, p in team().items() if p['levels'].get(d) == lvl]
+            if not people:
+                continue
+            faces = ''.join(f'<li><a href="our-team.html#{s}">{_picture(s, 180, lazy=not first)}<span>{esc(p["first"])}</span></a></li>'
+                            for s, p in people)
+            first = False
+            head = f'<p class="lk-dept">{esc(d.capitalize())}</p>' if len(depts) > 1 else ''
+            groups.append(f'{head}<ul class="lk-people">{faces}</ul>')
+            notes += [p for _, p in people if p['note']]
+        note = ''
+        if notes:
+            text = notes[0]['note']
+            note = f'<p class="lk-note">{esc(_and([p["first"] for p in notes]))} {"are" if len(notes) > 1 else "is"} {esc(text[0].lower() + text[1:])}.</p>'
+        out.append(f'<li><p class="lk-cell">{cell}</p>{"".join(groups)}{note}</li>')
+    return ''.join(out)
+
+
+def _balanced_end(text, start, tag):
+    """Index just after the </tag> that closes the element opened before `start`."""
+    depth = 1
+    for m in re.finditer(r'<(/?)%s\b[^>]*>' % tag, text[start:]):
+        depth += -1 if m.group(1) else 1
+        if depth == 0:
+            return start + m.end()
+    return -1
+
+
+def fill_blocks(text):
+    """Regenerate the contents of ul[data-who] and ol[data-level-key] elements."""
+    out, pos = [], 0
+    for m in re.finditer(r'<(ul|ol)\b([^>]*\bdata-(?:who|level-key)="[^"]*"[^>]*)>', text):
+        if m.start() < pos:
+            continue
+        tag, attrs = m.group(1), html.unescape(m.group(2))
+        end = _balanced_end(text, m.end(), tag)
+        if end < 0:
+            continue
+        a = dict(re.findall(r'([\w-]+)="([^"]*)"', attrs))
+        main = text.find('<main')
+        first = main >= 0 and '<img' not in text[main:m.start()]
+        if 'data-who' in a:
+            inner = who_row(a['data-who'], a.get('data-who-dept', ''), first)
+        else:
+            inner = level_key(a['data-level-key'], a.get('data-level-price', ''), a.get('data-level-labels', ''), first)
+        out.append(text[pos:m.end()] + inner + f'</{tag}>')
+        pos = end
+    out.append(text[pos:])
+    return ''.join(out)
 
 
 # ------------------------------------------------------------------ team counts
@@ -621,9 +847,27 @@ def fill_values(text, counts):
         val = level_price(html.unescape(m.group(2)))
         return m.group(1) + (esc(val) if val else m.group(3)) + m.group(4)
 
+    def lit(m):
+        val = item_price(m.group(2))
+        return m.group(1) + (esc(val) if val else m.group(3)) + m.group(4)
+
+    def unit(m):
+        """div.unit[data-unit=N] inside a li.price-item: '[$49 each]' from that row's price / N."""
+        li = m.group(0)
+        u = re.search(r'(<div class="unit" data-unit="(\d+)"[^>]*>)(.*?)(</div>)', li, re.S)
+        price = re.search(r'<span class="price">(.*?)</span>', li, re.S)
+        nums = _numbers(_plain(price.group(1))) if price else []
+        if not u or len(nums) != 1 or int(u.group(2)) < 2:
+            return li
+        each = nums[0] / int(u.group(2))
+        return li[:u.start()] + f'{u.group(1)}[${_fmt(round(each, 2))} each]{u.group(4)}' + li[u.end():]
+
+    text = fill_blocks(text)
     text = re.sub(r'(<span\b[^>]*data-range="([^"]+)"[^>]*>)(.*?)(</span>)', rng, text)
     text = re.sub(r'(<span\b[^>]*data-from="([^"]+)"[^>]*>)(.*?)(</span>)', frm, text)
     text = re.sub(r'(<span\b[^>]*data-level="([^"]+)"[^>]*>)(.*?)(</span>)', lvl, text)
+    text = re.sub(r'(<span\b[^>]*data-price="([^"]+)"[^>]*>)(.*?)(</span>)', lit, text)
+    text = re.sub(r'<li\b[^>]*class="price-item\b[^"]*"[^>]*>(?:(?!</li>).)*?data-unit=.*?</li>', unit, text, flags=re.S)
     for key, n in counts.items():
         text = re.sub(r'(<span\b[^>]*data-count="%s"[^>]*>)[^<]*(</span>)' % re.escape(key),
                       lambda m, n=n: f'{m.group(1)}{n}{m.group(2)}', text)

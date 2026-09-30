@@ -192,6 +192,23 @@ hope, jesyca, emma, mia, shannon-francis, melissa, aubree, grace, aeriannah.
 `<span data-from="massages.html">from $42</span>`; `<time data-asof></time>`;
 `<time data-team-updated></time>`.
 
+**Option D (this branch) service-page hooks.** Derived level facts are never typed by hand
+(DESIGN-OPTIONS §0); the build stamps them from the menus and the `our-team.html` titles:
+- `<span data-level="salon.html#cuts-women|Senior">$48</span>`: a ladder row's price, or one
+  item's price under its group's `p.tier-head` (`tips-and-toes.html#gel-manicure-without-removal|Expert` → $53).
+- `<span data-price="slay-aesthetics.html#botox">$12 per unit</span>`: an item's price text, verbatim.
+- `<div class="unit" data-unit="5">[$49 each]</div>` after `.price-head` in a package row.
+- `<ul class="who-row" data-who="stephanie paige …" data-who-dept="nails"></ul>` ("Who does this"):
+  one black-and-white square per person with first name, the level word from their title
+  (or the title when it names no level, e.g. Emma, Mia) and up to two matching profile tags.
+  Ashley and Lisa carry "Behind the chair one day a week". Leave it empty; the build fills it.
+- `<ol class="level-key" data-level-key="hair nails" data-level-price="salon.html#cuts-women tips-and-toes.html#gel-manicure-without-removal" data-level-labels="Women’s cut|Gel manicure"></ol>`:
+  one ink-outlined square per level that has a price, then the people whose title carries that level.
+- Banner H1s of 3 words or fewer get `class="h1-caps"` (expanded caps); longer ones are sentence case.
+- The range line is a `div.range-card` (sibling of the head's text `div`) holding `ul.range` rows:
+  `<li><span>Classic manicure</span><span class="dots"></span><span data-range="…">$31–40</span></li>`.
+- Related services: `<ul class="doors-mini"><li><a href="…"><span class="lb-k">Label</span><span class="lb-s">Named price</span></a></li></ul>`.
+
 **Status line:** `<span data-status="name" hidden></span>` becomes "Open now · until
 8pm" etc.
 
