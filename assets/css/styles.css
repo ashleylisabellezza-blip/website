@@ -918,13 +918,6 @@ body:has(dialog[open]){overflow:hidden}
   .bento .bn-square{grid-column:2;grid-row:2}
   .bento .bn-note{grid-column:1/-1;grid-row:3}
 }
-/* careers page (join-our-team.html) keeps these */
-.wide-photo{margin:0}
-.wide-photo img{width:100%;box-shadow:var(--print-shadow)}
-.wide-photo figcaption,.photo-pair figcaption{margin-top:12px;font-size:var(--b-role);letter-spacing:.12em;text-transform:lowercase;color:var(--b-muted)}
-.photo-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media (min-width:768px){.photo-row{grid-template-columns:repeat(4,1fr)}}
-.photo-row img{width:100%;aspect-ratio:1/1;object-fit:cover}
 
 /* ==== new guests (B7): split titles for the head, pricing and changes; caps heads for the rest ==== */
 .choose-grid{display:grid;gap:var(--sp-4) var(--gutter);max-width:var(--measure);margin:0 auto;align-items:start}
@@ -985,71 +978,8 @@ body:has(dialog[open]){overflow:hidden}
 .ba>figcaption a{white-space:nowrap}
 @media (min-width:1024px){.page-head .ba.head-media{justify-self:end;width:100%;max-width:520px}}
 
-/* ==== boutique ==== */
-.brand-index{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp((100% - 49px) / 4,(900px - 100%) * 999,(100% - 17px) / 2),1fr));gap:16px;margin:0;padding:0;list-style:none}
-.brand-index li{display:flex}
-.brand-card{flex:1;display:grid;grid-template-rows:auto auto 1fr;justify-items:center;gap:12px;min-height:160px;padding:24px 20px;background:var(--white);border:1px solid var(--hair);color:var(--b-text);text-decoration:none;text-align:center;box-shadow:0 18px 30px -24px rgb(57 53 46/.4)}
-.brand-card:hover{border-color:var(--umber);color:var(--b-text)}
-.brand-card[aria-current]{border-color:var(--umber);box-shadow:inset 0 0 0 1px var(--umber)}
-.brand-card .brand-cat{align-self:start;margin-top:-2px;font:600 .6875rem/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--b-muted);text-wrap:balance}
-.brand-card img{width:min(100%,220px);height:60px;object-fit:contain}
-.brand-card .brand-name{margin:0;font:600 var(--b-label)/1.3 var(--sans);letter-spacing:.14em;text-transform:uppercase}
-.brand-section{display:grid;gap:var(--sp-3);padding-block:var(--sp-5);border-top:1px solid var(--hair)}
-@media (min-width:1024px){.brand-section{grid-template-columns:4fr 8fr}}
-.brand-section .logo-box{display:grid;place-items:center;min-height:160px;padding:24px;background:var(--white);border:1px solid var(--hair)}
-.brand-section .logo-box img{max-height:90px;width:auto}
-.product-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px;padding:0;list-style:none}
-@media (min-width:768px){.product-row{grid-template-columns:repeat(4,1fr)}}
-.product-row img{width:100%;aspect-ratio:1/1;object-fit:contain;background:var(--white);border:1px solid var(--hair)}
-.product-row--inset img{padding:clamp(.75rem,.4rem + 1.2vw,1.75rem)}
-.logo-brighten{filter:brightness(1.03)}
-.pickup-panel{padding:clamp(1.5rem,1rem + 2vw,3rem);border:1px solid var(--hair);background:rgb(250 248 245/.72)}
-.pickup-panel>h2{font-size:var(--b-h3)}
-.pickup-panel>.steps{margin-bottom:24px}
-.pickup-feature{padding:clamp(1.5rem,.75rem + 3.5vw,4.5rem);border:1px solid var(--hair);background:rgb(250 248 245/.72)}
-.pickup-feature .steps{grid-template-columns:repeat(auto-fit,minmax(clamp((100% - 97px) / 3,(720px - 100%) * 999,100%),1fr));gap:24px 48px;margin:32px 0 40px}
-.pickup-actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px 32px}
-.pickup-actions>p{margin:0;max-width:62ch}
-@media (max-width:479.98px){.pickup-actions>.btn-row{flex:1 1 100%}}
-@media (min-width:1024px){.grid-7-5.items-start:has(> .pickup-panel){align-items:center}}
-
-/* ==== specials, careers ==== */
-.offer{display:grid;gap:var(--sp-2) clamp(3rem,6vw,7rem);padding-block:var(--sp-5);border-top:1px solid var(--hair)}
-.offer:first-child{border-top:0;padding-top:0}
-.offer:last-child{padding-bottom:0}
-.offer-body{display:grid;gap:12px;justify-items:start;max-width:62ch}
-.offer-body>*{margin:0}
-@media (min-width:1024px){.offer{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}}
-.offer h2{margin:0}
-.offer ul{margin:0;padding-left:1.1em;color:var(--b-text)}
-.offer .dates{font-size:.9375rem;color:var(--b-muted)}
-.job-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--umber)}
-.job-list li{border-bottom:1px solid var(--hair)}
-.job-list a{display:grid;gap:4px clamp(3rem,6vw,7rem);padding:24px 0;color:var(--b-text);text-decoration:none}
-.job-list a b{font:400 var(--b-h3)/1.25 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--b-text)}
-.job-list a span{max-width:60ch}
-.job-list a:hover b{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
-@media (min-width:1024px){.job-list a{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:baseline;padding-block:30px}}
-.perks{display:grid;gap:6px;margin:24px 0;padding:0;list-style:none;color:var(--b-text);font-weight:600}
-.perks li::before{content:"";display:inline-block;width:20px;height:1px;margin-right:12px;vertical-align:middle;background:var(--umber)}
-.job h3{margin-top:var(--sp-4)}
-.job-layout{display:grid;gap:var(--sp-4) var(--gutter);align-items:start}
-@media (min-width:1024px){.job-layout{grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:clamp(3rem,6vw,7rem)}.job-aside{position:sticky;top:calc(var(--header-h) + 24px)}}
-.job-aside{padding:clamp(24px,3vw,40px);border:1px solid var(--hair);background:rgb(250 248 245/.72)}
-.job-aside h2{margin:0 0 18px}
-.job-facts{margin:0 0 24px;padding:0;border-top:1px solid var(--hair)}
-.job-facts div{padding:12px 0;border-bottom:1px solid var(--hair)}
-.job-facts dt{font:600 var(--b-label)/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--b-muted)}
-.job-facts dd{margin:4px 0 0;color:var(--b-text)}
-.job-aside .btn{width:100%}
-.job-aside .microcopy{margin-bottom:0}
-
 /* ==== forms (underlined fields, The Lane) ==== */
 .form{display:grid;gap:24px;max-width:720px}
-.form-split{display:grid;gap:var(--sp-4) var(--gutter);align-items:start}
-.form-split>:first-child,.form-split>:first-child>:last-child{margin-bottom:0}
-.form-split .form{max-width:none}
-@media (min-width:1024px){.form-split{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:clamp(3rem,6vw,7rem)}.form-split>:first-child{position:sticky;top:calc(var(--header-h) + 32px)}}
 .field{display:grid;gap:6px;align-content:start}
 .field label,.field legend,.fieldset legend{padding:0;font:600 .9375rem/1.35 var(--sans);color:var(--b-text)}
 .field .opt{font-weight:400;color:var(--b-muted)}
@@ -1078,22 +1008,228 @@ body:has(dialog[open]){overflow:hidden}
 .steps li::before{content:counter(s);font:600 .8125rem/1 var(--sans);letter-spacing:.1em;color:var(--b-muted)}
 .inquiry-aside{position:sticky;top:calc(var(--header-h) + 24px);padding:clamp(24px,3vw,40px);border:1px solid var(--hair);background:rgb(250 248 245/.72)}
 
-/* ==== policies / prose ==== */
+/* ==== stage 4 (B): boutique, brands, specials, gift cards, pick-up, book online, careers, jobs ==== */
+/* brand labels: each brand hangs as a white-matted print; name left, category right on one baseline */
+.brands-head{margin-bottom:clamp(3rem,2rem + 3vw,5rem)}
+.ph--measure{max-width:var(--measure);margin:0 auto var(--sp-5)}   /* shot 12 (boutique shelf), owner view only */
+.brand-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(2.75rem,2rem + 3vw,5rem) clamp(1rem,.25rem + 3vw,3rem);max-width:var(--measure);margin:0 auto;padding:0;list-style:none}
+@media (min-width:1024px){.brand-index{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.brand-index>li{display:flex;min-width:0;container-type:inline-size}
+.brand-card{flex:1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;align-content:start;column-gap:12px;color:var(--b-text);text-decoration:none}
+.brand-card img{grid-column:1/-1;width:100%;height:auto;aspect-ratio:4/3;margin-bottom:18px;object-fit:contain;padding:17% 13%;background:var(--white);box-shadow:var(--print-shadow);outline:1px solid transparent;outline-offset:8px}
+.brand-card .brand-name{margin:0;font:600 var(--b-label)/1.35 var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--b-text);text-wrap:balance}
+.brand-card .brand-cat{max-width:20ch;text-align:right;font:400 .8125rem/1.45 var(--sans);letter-spacing:.1em;text-transform:lowercase;color:var(--b-muted);text-wrap:balance}
+.brand-card:hover{color:var(--b-text)}
+.brand-card:hover img,.brand-card[aria-current] img{outline-color:var(--umber)}
+.brand-card:hover .brand-name{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
+.brand-card:focus-visible{outline-offset:6px}
+@container (max-width:209.98px){.brand-card{grid-template-columns:minmax(0,1fr)}.brand-card .brand-cat{max-width:none;margin-top:4px;text-align:left}}
+@media (prefers-reduced-motion:no-preference){.brand-card img{transition:outline-color .15s}}
+
+/* brand pages: the logo on a white mat beside the brand's story */
+.brand-about{align-items:center}
+.brand-mat{display:grid;place-items:center;margin:0;aspect-ratio:4/3;padding:12% 14%;background:var(--white);box-shadow:var(--print-shadow)}
+.brand-mat img{width:100%;height:auto;max-height:100%;object-fit:contain}
+@media (min-width:1024px){.brand-mat{grid-column:1/5}.brand-copy{grid-column:6/12}}
+@media (max-width:1023.98px){.brand-mat{width:100%;max-width:520px}}
+@media (max-width:767.98px){.brand-mat{aspect-ratio:3/2;padding:10% 16%}}
+.brand-copy>p{max-width:52ch}
+.brand-copy>.link-list{max-width:52ch;margin-top:30px}
+.brand-salon{max-width:var(--measure);margin-inline:auto;align-items:end}
+.brand-salon h2{margin-bottom:24px}
+.range-intro{max-width:66ch;margin:0 auto;color:var(--b-text)}
+@media (min-width:1024px){.range-intro{text-align:center}}
+/* product shots: object-fit contain on white, framed like prints; the REF files keep their #e5e5e5 ground */
+.product-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1.25rem,.75rem + 2vw,2.5rem);max-width:var(--measure);margin:clamp(2.5rem,2rem + 2vw,4rem) auto 0;padding:0;list-style:none}
+@media (min-width:768px){.product-row{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.product-row>li{min-width:0}
+.product-row img{width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;padding:8%;background:var(--white);box-shadow:var(--print-shadow)}
+.product-row--inset img{padding:13%}
+.product-row--ref img{aspect-ratio:1;padding:0;background:#e5e5e5}
+/* dermalogica-1..4 are 289px wide: never shown larger than 180 CSS px (section 0) */
+.product-row--small{grid-template-columns:repeat(2,minmax(0,180px));justify-content:center}
+@media (min-width:768px){.product-row--small{grid-template-columns:repeat(4,minmax(0,180px));column-gap:clamp(1.5rem,4vw,4rem)}}
+.product-row--small img{aspect-ratio:289/363;padding:0}
+.logo-brighten{filter:brightness(1.03)}
+/* order for pickup: a split title with the three steps in hairline rows */
+.pickup-split .steps--rule{margin:0 0 26px}
+.pickup-split .microcopy{margin-top:18px}
+
+/* specials: The Lane's policy rows; the offer's title left, its terms right */
+.offers{max-width:var(--measure);margin-inline:auto}
+.offer{display:grid;gap:22px clamp(3rem,6vw,6rem);padding-block:clamp(3rem,2.25rem + 3vw,5.5rem);border-top:1px solid var(--hair)}
+.offer:first-child{padding-top:0;border-top:0}
+.offer:last-child{padding-bottom:0}
+@media (min-width:1024px){.offer{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}}
+.offer-title{margin:0;max-width:14ch;font-size:clamp(1.75rem,1.45rem + 1.2vw,2.5rem);line-height:1.12;letter-spacing:.01em;text-transform:none;color:var(--ink)}
+.offer-body{display:grid;gap:16px;justify-items:start}
+.offer-body>*{margin:0}
+.offer-terms{width:100%;padding:0;list-style:none;border-top:1px solid var(--umber)}
+.offer-terms li{padding:13px 0 12px;border-bottom:1px solid var(--hair);font-weight:600;color:var(--ink)}
+.offer .dates{font-size:var(--b-role);letter-spacing:.12em;text-transform:lowercase;color:var(--b-muted)}
+.offer-links{display:flex;flex-wrap:wrap;gap:0 28px}
+.offer-links .text-link{display:inline-flex;align-items:center;min-height:44px}
+.offer .book-this{margin-top:-6px}
+
+/* gift cards: the ideas beside their price rows; questions as a split title with a hairline note */
+.gift-split{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "list" "ctas";gap:28px;max-width:var(--measure);margin-inline:auto}
+@media (min-width:1024px){.gift-split{grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:"copy list" "ctas list";grid-template-rows:auto 1fr;column-gap:clamp(3rem,6vw,7rem);row-gap:4px;align-items:start}.gift-split .gift-ideas{align-self:center}}
+.gs-copy{grid-area:copy}
+.gs-copy>:last-child{margin-bottom:0}
+.gift-split .gift-ideas{grid-area:list}
+.gift-split h2{margin-bottom:20px}
+.gift-split p{max-width:40ch}
+.gift-split .btn-row{grid-area:ctas;gap:10px 26px}
+@media (min-width:1024px){.gift-split .btn-row{margin-top:24px}}
+.gift-split .text-link{display:inline-flex;align-items:center;min-height:44px}
+.gift-split .gift-ideas{grid-template-columns:minmax(0,1fr);max-width:none;margin:0;border-top:1px solid var(--umber)}
+.gift-split .gift-ideas li{padding:18px 0 17px}
+.note-panel{margin-top:34px;padding:clamp(22px,3vw,34px);border:1px solid var(--hair);background:rgb(250 248 245/.72)}
+.note-panel h3{margin:0 0 10px;font-size:clamp(1.25rem,1.15rem + .4vw,1.5rem);line-height:1.25;color:var(--ink)}
+.note-panel>:last-child{margin-bottom:0}
+
+/* book online: three steps between hairlines; the app and the phone side by side */
+.next-head{margin-bottom:clamp(2.5rem,2rem + 2vw,4rem)}
+.step-row{counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);max-width:var(--measure);margin:0 auto;padding:0;list-style:none;border-block:1px solid var(--umber)}
+.step-row>li{counter-increment:s;display:grid;grid-template-columns:3rem minmax(0,1fr);align-items:baseline;padding:20px 0;color:var(--b-text)}
+.step-row>li+li{border-top:1px solid var(--hair)}
+.step-row>li::before{content:"0" counter(s);font:400 var(--b-role)/1.4 var(--sans);letter-spacing:.12em;color:var(--b-muted)}
+@media (min-width:768px){
+  .step-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .step-row>li{display:block;padding:30px clamp(18px,2.4vw,36px) 34px}
+  .step-row>li:first-child{padding-left:0}
+  .step-row>li+li{border-top:0;border-left:1px solid var(--hair)}
+  .step-row>li::before{display:block;margin-bottom:14px}
+}
+.step-note{max-width:var(--measure);margin:28px auto 0;font-size:.9375rem;color:var(--b-muted)}
+.duo{display:grid;gap:var(--sp-5) 0;max-width:var(--measure);margin-inline:auto;border-top:1px solid var(--umber)}
+.duo>div{padding-top:30px}
+.duo>div>:last-child{margin-bottom:0}
+@media (min-width:900px){.duo{grid-template-columns:repeat(2,minmax(0,1fr))}.duo>div{padding:36px 0 0 clamp(28px,4vw,56px)}.duo>div:first-child{padding-left:0;padding-right:clamp(28px,4vw,56px)}.duo>div+div{border-left:1px solid var(--hair)}}
+.duo h2{margin:0 0 16px;font-size:clamp(1.5rem,1.3rem + .8vw,2rem);line-height:1.2;letter-spacing:.01em;text-transform:none;color:var(--ink)}
+.duo .btn-row{margin-top:20px}
+/* Arsenal never sets a phone number (B9 #1): the digits in a head switch to Mulish */
+.h-num{display:block;margin-top:8px;font:600 1rem/1.4 var(--sans);letter-spacing:.14em;color:var(--b-text)}
+
+/* careers: the head's wide print (The Lane's inset photo), roles, education, a candid bento, the apply sheet */
+.careers-head .wide-print{max-width:var(--measure);margin:clamp(3.5rem,2.5rem + 4vw,6.5rem) auto 0}
+.fp-img--pano{aspect-ratio:1200/582}
+.fp-img--pano img{object-position:50% 50%}
+.wide-print figcaption{margin-top:14px}
+.perks{display:grid;margin:4px 0 28px;padding:0;list-style:none;border-top:1px solid var(--hair);font-weight:600;color:var(--ink)}
+.perks li{padding:10px 0;border-bottom:1px solid var(--hair)}
+.perks li::before{content:"";display:inline-block;width:20px;height:1px;margin-right:14px;vertical-align:middle;background:var(--umber)}
+.roles-head{margin-bottom:22px}
+.roles-intro{max-width:52ch;margin:0 auto clamp(2.5rem,2rem + 2vw,3.5rem);text-align:center;color:var(--b-muted)}
+.roles-foot{max-width:var(--measure);margin:28px auto 0;text-align:center}
+.roles-foot .text-link{display:inline-flex;align-items:center;min-height:44px}
+.job-list{max-width:var(--measure);margin:0 auto;padding:0;list-style:none;border-top:1px solid var(--umber)}
+.job-list li{border-bottom:1px solid var(--hair);scroll-margin-top:calc(var(--header-h) + 24px)}
+.job-list a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 24px;align-items:baseline;padding:24px 0;color:var(--b-text);text-decoration:none}
+.job-list a::after{content:"\203A";content:"\203A" / "";grid-column:2;grid-row:1;font-size:1.5rem;line-height:1;color:var(--umber)}
+.job-list a b{grid-column:1;font:400 var(--b-h3)/1.25 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--b-text)}
+.job-list a span{grid-column:1;max-width:60ch}
+.job-list a:hover b{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.job-list li:target{background:rgb(250 248 245/.85)}
+@media (min-width:1024px){.job-list a{grid-template-columns:minmax(0,5fr) minmax(0,7fr) auto;column-gap:clamp(2rem,4vw,4rem);padding-block:30px}.job-list a span{grid-column:2;grid-row:1}.job-list a::after{grid-column:3}}
+@media (prefers-reduced-motion:no-preference){.job-list a::after{transition:transform .2s}.job-list a:hover::after{transform:translateX(2px)}}
+.learn-grid{align-items:center}
+@media (min-width:1024px){.learn-print{grid-column:1/7}.learn-copy{grid-column:8/13}}
+.learn-copy>p:not(.eyebrow){max-width:50ch}
+/* Life at Bellezza: The Lane's gallery bento; the note carries the section head */
+.bento .bn-sq figure{aspect-ratio:1}
+.bento--life .bn-wide{grid-column:1/3;grid-row:1}
+.bento--life .bn-tall{grid-column:3;grid-row:1}
+.bento--life .bn-note{grid-column:1;grid-row:2;padding:clamp(22px,3vw,48px)}
+.bento--life .bn-sq--a{grid-column:2;grid-row:2}
+.bento--life .bn-sq--b{grid-column:3;grid-row:2}
+.bento--life .bn-note h2{margin:0;font-size:var(--b-h3);line-height:1.25;letter-spacing:.15em}
+.bento--life .bn-note .text-link{display:inline-flex;align-items:center;min-height:44px}
+.bento .bn-sq--b img{object-position:50% 20%}
+@media (max-width:767.98px){
+  .bento--life .bn-note{grid-column:1/-1;grid-row:1}
+  .bento--life .bn-wide{grid-column:1/-1;grid-row:2}
+  .bento--life .bn-tall{grid-column:1;grid-row:3}
+  .bento--life .bn-tall figure{aspect-ratio:1}
+  .bento--life .bn-sq--b{grid-column:2;grid-row:3}
+  .bento--life .bn-sq--a{grid-column:1/-1;grid-row:4}
+}
+/* the form sheet (The Lane's "Say hello" card): a bone sheet on the wall, the intro left, the underlined form right */
+.form-sheet{display:grid;gap:var(--sp-5) 0;max-width:calc(var(--measure) + 120px);margin-inline:auto;padding:clamp(28px,5vw,80px) clamp(20px,5vw,80px);background:var(--plaster-hi);box-shadow:0 1px 2px rgb(57 53 46/.08),0 44px 70px -52px rgb(57 53 46/.55)}
+.form-sheet>*{min-width:0}
+.form-sheet-intro>:last-child{margin-bottom:0}
+.form-sheet-intro .b-head,.form-sheet-form>.b-head{margin-bottom:28px}
+.form-sheet-intro .h2-long{margin-bottom:22px}
+.form-sheet-intro p:not(.eyebrow){max-width:44ch}
+.form-sheet .form{max-width:none}
+.form-sheet-form>p{margin-bottom:28px}
+@media (min-width:1200px){
+  .form-sheet{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+  .form-sheet-intro{position:sticky;top:calc(var(--header-h) + 40px);align-self:start;padding-right:clamp(2.5rem,4.5vw,5rem)}
+  .form-sheet>:last-child{padding-left:clamp(2.5rem,4.5vw,5rem);border-left:1px solid var(--hair)}
+}
+@media (max-width:1199.98px){.form-sheet>:last-child{padding-top:clamp(2.5rem,2rem + 2vw,3.5rem);border-top:1px solid var(--hair)}}
+.form-sheet .field input,.form-sheet .field select{background:transparent}
+.form-sheet .field textarea{background:rgb(255 255 255/.5)}
+.sheet-facts{margin:30px 0 0;padding:0}
+.sheet-facts>div{padding:14px 0;border-top:1px solid var(--hair)}
+.sheet-facts dt{font:600 var(--b-label)/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--b-muted)}
+.sheet-facts dd{margin:4px 0 0;color:var(--b-text)}
+
+/* job pages: the role left, the glance sheet right (sticky); a 3:5 print of who you would learn from */
+.job-layout{display:grid;gap:var(--sp-5) var(--gutter);align-items:start}
+@media (min-width:1024px){.job-layout{grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:clamp(3rem,6vw,6rem)}.job-aside{position:sticky;top:calc(var(--header-h) + 32px)}}
+.job-layout--b{max-width:calc(var(--measure) + 2 * var(--pad) + 120px)}
+.job-aside{padding:clamp(24px,3vw,40px);border:1px solid var(--hair);background:rgb(250 248 245/.72)}
+.job-aside h2{margin:0 0 20px;font-size:var(--b-h3);letter-spacing:.15em}
+.job-facts{margin:0 0 26px;padding:0;border-top:1px solid var(--umber)}
+.job-facts>div{padding:13px 0;border-bottom:1px solid var(--hair)}
+.job-facts dt{font:600 var(--b-label)/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--b-muted)}
+.job-facts dd{margin:4px 0 0;color:var(--b-text)}
+.job-aside .btn{width:100%}
+.job-aside .microcopy{margin-bottom:0}
+.job>h2.b-head{margin-bottom:30px}
+.job.prose h3{margin:44px 0 12px;font:600 var(--b-label)/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--b-muted)}
+.job ul,.doc-row .prose ul:not(.escalation){padding:0;list-style:none;border-top:1px solid var(--hair)}
+.job li,.doc-row .prose ul:not(.escalation)>li{position:relative;margin:0;padding:11px 0 11px 34px;border-bottom:1px solid var(--hair)}
+.job li::before,.doc-row .prose ul:not(.escalation)>li::before{content:"";position:absolute;left:0;top:1.45em;width:20px;height:1px;background:var(--umber)}
+.person-grid{align-items:center}
+@media (min-width:1024px){.person-frame{grid-column:2/5}.person-copy{grid-column:6/12}}
+@media (max-width:1023.98px){.person-frame{max-width:300px}}
+@media (max-width:767.98px){.person-frame{max-width:250px}}
+.person-copy>p:not(.eyebrow){max-width:52ch}
+.person-copy p:has(>.text-link:only-child){margin-bottom:.25em}
+.person-copy .text-link{display:inline-flex;align-items:center;min-height:44px}
+
+/* ==== policies (The Lane's Salon Policies page: the head left, the text right, big quiet gaps) ==== */
+.doc-list{max-width:calc(var(--measure) + 2 * var(--pad))}
+.jump-chips+.section--after-chips{padding-top:0}
+@media (max-width:767.98px){.jump-chips+.section--after-chips{margin-top:-16px}}
 .prose>*{max-width:62ch}
-.prose h2{margin-top:var(--sp-5);scroll-margin-top:calc(var(--header-h) + 72px)}
-.prose h3{margin-top:var(--sp-4);font-size:1.25rem}
+.prose h2{margin-top:var(--sp-5);scroll-margin-top:calc(var(--header-h) + var(--chips-h) + 24px)}
+.prose h3{margin:var(--sp-4) 0 10px;font-size:1.25rem;letter-spacing:.01em;color:var(--ink)}
 .prose h2:first-child{margin-top:0}
 .prose li{margin-bottom:.4em}
-.doc-row{display:grid;gap:var(--sp-2) var(--gutter);padding-block:var(--sp-5);border-top:1px solid var(--hair)}
+.doc-row{display:grid;gap:18px var(--gutter);padding-block:clamp(3rem,2.25rem + 3vw,5.5rem);border-top:1px solid var(--hair)}
 .doc-row:first-child{padding-top:0;border-top:0}
 .doc-row:last-child{padding-bottom:0}
-.doc-row>h2{margin:0}
+.doc-row>h2{margin:0;font-size:var(--b-h3);line-height:1.3;letter-spacing:.15em;scroll-margin-top:calc(var(--header-h) + var(--chips-h) + 24px)}
 .doc-row>.prose>:last-child{margin-bottom:0}
 .doc-row>.prose>h3:first-child{margin-top:0}
-@media (min-width:1024px){.doc-row{grid-template-columns:minmax(0,4fr) minmax(0,8fr);column-gap:clamp(3rem,6vw,7rem)}.doc-row>h2{position:sticky;top:calc(var(--header-h) + var(--chips-h) + 24px);align-self:start;max-width:16ch}}
+@media (min-width:1024px){.doc-row{grid-template-columns:minmax(0,4fr) minmax(0,8fr);column-gap:clamp(3rem,5vw,5rem)}.doc-row>h2{position:sticky;top:calc(var(--header-h) + var(--chips-h) + 32px);align-self:start;max-width:14ch}}
+/* the no-show steps: a three-cell hairline row */
+.escalation{display:grid;margin:6px 0 1em;padding:0;list-style:none;border-block:1px solid var(--umber)}
+.prose .escalation{max-width:none}
+.escalation>li{margin:0;padding:16px 0}
+.escalation>li+li{border-top:1px solid var(--hair)}
+.escalation strong{display:block;margin-bottom:4px;font:400 var(--b-role)/1.4 var(--sans);letter-spacing:.12em;text-transform:lowercase;color:var(--b-muted)}
+@media (min-width:768px){.escalation{grid-template-columns:repeat(3,minmax(0,1fr))}.escalation>li{padding:18px 20px 20px}.escalation>li:first-child{padding-left:0}.escalation>li+li{border-top:0;border-left:1px solid var(--hair)}}
 
-/* ==== 404 ==== */
-.notfound .big{font:400 clamp(5rem,3rem + 10vw,10rem)/1 var(--display);letter-spacing:.1em;color:var(--b-muted)}
+/* 404 and thank you: the popular pages under the split title's column */
+.page-links{margin-top:34px}
+.page-links .link-list a{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:2px;align-items:center}
+.page-links .link-list a small{grid-column:1;grid-row:2}
+.page-links .link-list a::after{grid-column:2;grid-row:1/span 2;margin-left:0}
 
 /* ==== small components & utilities ==== */
 .caption-heading{margin:0 0 10px;font:600 var(--b-label)/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--b-muted)}

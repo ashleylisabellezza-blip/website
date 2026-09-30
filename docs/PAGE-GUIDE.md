@@ -322,3 +322,49 @@ per anchor) and `.lk-whos` (one `.lk-who` per department: a `.lk-dept` label and
 **About bento** (`ul.bento`, 10px gutters): `bn-tall` (1/3) + `bn-wide` (2/3), then
 `bn-note` (2/3) + `bn-square` (1/3). `join/gallery-3` only ever appears as the
 `gallery-3-sq-*` 1:1 top crop.
+
+## 8. Option B (branch design-b): every other page
+
+The boutique, brand, specials, gift card, pick-up, book online, careers, job,
+policies, 404 and thank-you pages also open with the split-title head from
+section 6. In these heads the primary is one pill (gold Book, or Strong for a
+non-book action: Order for pickup, Buy an eGift card, Apply for this role) and the
+second action is a text link (Call, Book a facial, See all roles). At most 3
+split titles per page, never two in a row.
+
+**Brand labels** (`products.html` and "More from The Boutique"): keep `a.brand-card >
+img + h3.brand-name + span.brand-cat`. The logo becomes a white-matted print; the
+name sits left and the category right on one baseline (stacked on narrow cards).
+`aria-current="page"` outlines the current brand.
+
+**Brand pages:** `.brand-about` = `figure.brand-mat` (the logo on a white mat, the
+first image in `<main>`, so never lazy) beside `.brand-copy` (caps `h2.b-head`, text,
+the salon link row). Product shots sit in `ul.product-row` (white ground,
+`object-fit:contain`); `product-row--ref` keeps REF's #e5e5e5 ground and
+`product-row--small` caps the 289px Dermalogica shots at 180 CSS px. Pickup is the
+shared `split-title.pickup-split` with `ol.steps.steps--rule`.
+
+**Specials:** `.offers > article.offer` rows (title left in Arsenal sentence case,
+`ul.offer-terms` hairline rows, `.dates`, `.offer-links` right). Keep `id` and
+`data-ends` on each article.
+
+**Forms:** `.form-sheet` (a bone sheet on the wall) holds `.form-sheet-intro`
+(left, sticky from 1200px) and the form column (right, underlined fields). Netlify
+attributes, the honeypot and every field name stay as they are.
+
+**Careers:** the head carries `join-3` as a wide print (`fp-img--pano`,
+`join-3-1200` set). "Life at Bellezza" is `ul.bento.bento--life`: `bn-note` (the h2
+and the Paige line) placed first in the DOM, `bn-wide` gallery-1, `bn-tall`
+gallery-4, `bn-sq--a` gallery-3 (1:1 top crop only) and `bn-sq--b` gallery-2 (the
+`gallery-2-c80-*` centre-80% crop only).
+
+**Job pages:** `article.job > h2` stays (with `class="b-head"`); `h3` labels are
+caps Mulish, lists are hairline rows. The glance sheet (`aside.job-aside`) is
+sticky beside it. The person section is a 3:5 `frame-print` (`person-frame`), whose
+`img src` stays the 360 file so the JSON-LD page image does not change.
+
+**Policies:** `.doc-list > .doc-row` = caps `h2` left (sticky from 1024px), `.prose`
+right; the no-show steps are `ul.escalation` (three hairline cells).
+
+**Phone numbers in heads** (Arsenal never sets one): wrap the digits in
+`span.h-num` (Mulish).

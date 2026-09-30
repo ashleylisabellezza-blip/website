@@ -36,7 +36,9 @@ What it makes (all new files; no source image is modified or overwritten):
           4:3, gentle de-vignette + clarity reduction)
   join    assets/img/join/{join-2,join-3,gallery-1..4}-{400,800}.{avif,webp,jpg}
           assets/img/join/gallery-3-sq-{400,800,900}.{avif,webp,jpg} (1:1 from the top),
-          gallery-1-1200 and gallery-4-900 (native width, for the About bento)
+          gallery-1-1200 and gallery-4-900 (native width, for the About bento),
+          gallery-2-c80-{400,800,918} (centre 80%, drops the baked vignette),
+          join-2-1200 and join-3-1200 (native width, careers prints)
   brows   assets/img/work/brows-{before,after}-{400,470}.{avif,webp,jpg}
           (the two photos cut out of services/bella-brows.png without the baked
           text; the source only has ~470px of clean width, so the large variant
@@ -505,6 +507,22 @@ def build_join() -> None:
     for name, w in (("gallery-1", 1200), ("gallery-4", 900)):
         src = IMG / "join" / f"{name}.jpg"
         build_set(IMG / "join" / f"{name}-{w}", [src], lambda s=src, w=w: resize_w(load_rgb(s), w))
+    # gallery-2 has a white vignette baked in, so it is only ever shown cropped to its
+    # centre 80% (DESIGN-OPTIONS section 0): 1148x1200 -> 918x960, then 800/400.
+    src = IMG / "join" / "gallery-2.jpg"
+
+    def centre80(s=src):
+        im = load_rgb(s)
+        w, h = im.size
+        dx, dy = round(w * .1), round(h * .1)
+        return im.crop((dx, dy, w - dx, h - dy))
+    for w in (400, 800, 918):
+        build_set(IMG / "join" / f"gallery-2-c80-{w}", [src], lambda w=w: resize_w(centre80(), w))
+    # Option B's careers page hangs join-3 (and join-2) as wide prints at the 1060 measure,
+    # so both also get a set at their native 1200 width (2x rule, never upscaled).
+    for name in ("join-2", "join-3"):
+        src = IMG / "join" / f"{name}.jpg"
+        build_set(IMG / "join" / f"{name}-1200", [src], lambda s=src: resize_w(load_rgb(s), 1200))
 
 
 # --------------------------------------------------------------------------
