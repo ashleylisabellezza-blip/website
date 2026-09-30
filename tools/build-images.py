@@ -28,12 +28,15 @@ What it makes (all new files; no source image is modified or overwritten):
           edge counts as subject; a lifted grey backdrop can trip this).
   sheets  assets/img/team/contact-sheet-{1540,1100}.{avif,webp,jpg}  (7x4, all 28)
           assets/img/team/contact-sheet-800.{avif,webp,jpg}         (4x3, 12 people)
-  owners  assets/img/team/{ashley-basham,lisa-jeffries,devon}-720.{avif,webp,jpg}
+  owners  assets/img/team/{slug}-720.{avif,webp,jpg} for every 720-wide source, and
+          {slug}-{native}.{avif,webp,jpg} for the narrower ones (emilie-600 ...)
   brand   assets/img/brand/wordmark.png, wordmark-on-dark.png (56px tall = 2x of
           a 28px header lockup), logo.png, logo-on-dark.png (#faf8f5)
   about   assets/img/about/team-group-{560,1120}.{avif,webp,jpg}  (from join-1.jpg,
           4:3, gentle de-vignette + clarity reduction)
   join    assets/img/join/{join-2,join-3,gallery-1..4}-{400,800}.{avif,webp,jpg}
+          assets/img/join/gallery-3-sq-{400,800,900}.{avif,webp,jpg} (1:1 from the top),
+          gallery-1-1200 and gallery-4-900 (native width, for the About bento)
   brows   assets/img/work/brows-{before,after}-{400,470}.{avif,webp,jpg}
           (the two photos cut out of services/bella-brows.png without the baked
           text; the source only has ~470px of clean width, so the large variant
@@ -79,8 +82,7 @@ MOBILE_SHEET = [
     "austyn", "paige", "madison", "jesyca", "emma", "mia",
 ]
 OWNERS = ["ashley-basham", "lisa-jeffries"]
-# 720w portraits: the owners (hero frames) plus Devon (Option B bridal 3:5 frame)
-PORTRAITS_720 = OWNERS + ["devon"]
+# Every portrait also gets a large variant (720w, or its native width): see build_owners.
 
 PORTRAIT_WIDTHS = (180, 360, 540)
 EDGE_PX = 8
@@ -344,15 +346,19 @@ def build_team() -> None:
 
 
 def build_owners() -> None:
-    print("720w portraits (owners, Devon)")
-    for slug in PORTRAITS_720:
+    print("large portraits (720w, or the native width when the source is narrower)")
+    # Option B's 3-up team cards render about 382 CSS px wide, so every card
+    # offers its source's full width (section 0: 2x the rendered width, up to
+    # the native size). 720w for 720-wide sources; the narrower sources get
+    # one set at their own width (e.g. emilie-600). Nothing is upscaled.
+    for slug in team_slugs():
         src = IMG / "team" / f"{slug}.jpg"
         crop = portrait(slug)
-        if crop.width < 720:
-            print(f"  skip {slug}: source only {crop.width}px wide")
+        w = min(720, crop.width)
+        if w <= 540:
             continue
-        build_set(IMG / "team" / f"{slug}-720", [src],
-                  lambda c=crop: resize_w(c, 720), "portrait-720")
+        build_set(IMG / "team" / f"{slug}-{w}", [src],
+                  lambda c=crop, w=w: resize_w(c, w), "portrait-720")
 
 
 # --------------------------------------------------------------------------
@@ -487,6 +493,18 @@ def build_join() -> None:
         for w in (400, 800):
             build_set(IMG / "join" / f"{name}-{w}", [src],
                       lambda s=src, w=w: resize_w(load_rgb(s), w))
+    # gallery-3 is only ever shown as a 1:1 crop from the top (DESIGN-OPTIONS section 0):
+    # it keeps the sign and both faces and drops the retail packaging and the
+    # "$70" counter card lower in the frame. 900x1200 source -> 900x900 -> 800/400.
+    src = IMG / "join" / "gallery-3.jpg"
+    for w in (400, 800, 900):
+        build_set(IMG / "join" / f"gallery-3-sq-{w}", [src],
+                  lambda s=src, w=w: resize_w(crop_to_ratio(load_rgb(s), 1, 1, anchor_y=0.0), w))
+    # Option B's About bento shows gallery-1 at two thirds and gallery-4 at one third of
+    # the container, so both also get a set at their native width (2x rule, never upscaled).
+    for name, w in (("gallery-1", 1200), ("gallery-4", 900)):
+        src = IMG / "join" / f"{name}.jpg"
+        build_set(IMG / "join" / f"{name}-{w}", [src], lambda s=src, w=w: resize_w(load_rgb(s), w))
 
 
 # --------------------------------------------------------------------------

@@ -277,3 +277,48 @@ every row.
 (4 words or fewer). Long group heads may wrap existing substrings in
 `span.h3-pre` / `span.h3-sub`; `check.py` (menu-h3-vs-main) fails if the text
 differs from `main`.
+
+## 7. Option B (branch design-b): team, about, new guests, contact
+
+`our-team.html`, `about.html`, `new-guests.html` and `contact-us.html` follow
+docs/DESIGN-OPTIONS.md B7. Each opens with the split-title head from section 6.
+
+**Team blocks:** the team is one `div.dept` per department, each with its own
+`<h2>` and `ul.team-grid`, all inside `.team-blocks` (a 3-column grid from 1024px,
+2 below; the lists are subgrids so every card lines up). Every person appears once,
+in A's default order. `dept--1` / `dept--2` let a small block share a row
+(Skin & waxing beside Massage), `dept--center` hangs Shannon's single print in the
+middle column and `dept--desk` sets the front desk four across. `site.js` hides a
+block (`data-team-block`) when a filter leaves it with no visible card.
+
+**Team card** (the parser contract still holds: `div.card` contains no other `div`):
+```html
+<li class="team-item" id="austyn" data-dept="hair">
+  <div class="card">
+    <span class="ph-frame"><picture>… 360/540/720w …</picture></span>
+    <header class="card-id"><h3>Austyn</h3><span class="role">Senior Hair Stylist</span></header>
+    <p class="card-level" data-level-line="austyn"></p>
+    <ul class="tags">…</ul>
+    <p class="creds">…</p>
+    <span class="card-actions"><button type="button" class="card-bio" data-bio="bio-austyn" aria-haspopup="dialog"><span class="sr-only">Read Austyn&rsquo;s </span>bio</button><a data-book …>Book<span class="sr-only"> an appointment (ask for Austyn)</span></a><a class="card-ig" href="…" rel="noopener"><span class="sr-only">See Austyn&rsquo;s work on </span>Instagram</a></span>
+  </div>
+</li>
+```
+`data-level-line` is stamped by the build from the title's level and the menus:
+"women's cut $48 · all-over color $75" for hair, "gel manicure $49" for nails, and
+nothing for a title without a level (Emma and Mia until owner question 8) or for
+massage (priced by duration). Put it only on hair and nail cards.
+
+**Bio sheet:** the frame, `h2`, `span.role`, then `<div class="bio-level"
+data-level-line="austyn" data-level-prefix></div>` ("At Senior level: …"), then the
+bio `<p>`. `build-schema.py` skips that div, so the bio stays the Person description.
+The gold Book pill in `.bio-foot` is the only gold on the sheet.
+
+**New guests levels** (`#level-jr-associate` … `#level-master` sit on the cells):
+`ul.lk-row.lk-row--guide`, each cell with `.lk-level`, `.lk-prices` (one `.lk-price`
+per anchor) and `.lk-whos` (one `.lk-who` per department: a `.lk-dept` label and a
+`data-level-who` span). Jr Associate and Master carry the hair line only.
+
+**About bento** (`ul.bento`, 10px gutters): `bn-tall` (1/3) + `bn-wide` (2/3), then
+`bn-note` (2/3) + `bn-square` (1/3). `join/gallery-3` only ever appears as the
+`gallery-3-sq-*` 1:1 top crop.

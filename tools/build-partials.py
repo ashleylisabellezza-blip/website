@@ -24,6 +24,9 @@ It also fills live values from the page content, so numbers never drift:
                                       (from the titles on our-team.html)
     <small data-artist="madison" data-anchor="tips-and-toes.html#gel-manicure-without-removal"
            data-anchor-label="gel manicure">   "senior · gel manicure $49" (or the title)
+    <p data-level-line="austyn">      "women's cut $48 · all-over color $75" (team card; empty
+                                      without a verified level); add data-level-prefix for
+                                      the bio's "At Senior level: ..."
     <time data-asof>                  "Prices as of September 2026"
 and the /* config:start */ block in assets/js/site.js (hours, holidays, URLs).
 
@@ -316,6 +319,35 @@ def artist_line(slug, anchor, label):
     if p['chair_note']:
         out += '<span class="af-note">behind the chair one day a week</span>'
     return out
+
+
+# B7 team cards and bios: the anchor prices a person's level buys (section 0 table).
+LEVEL_LINE_ANCHORS = {
+    'hair': [('salon.html#cuts-women', 'women’s cut'), ('salon.html#color-all-over', 'all-over color')],
+    'nails': [('tips-and-toes.html#gel-manicure-without-removal', 'gel manicure')],
+}
+
+
+def level_line(slug, prefix=False):
+    """'austyn' -> "women's cut $48 · all-over color $75" (prefix: "At Senior level: ...").
+    Empty when the title carries no verified level (Emma and Mia until owner
+    question 8) or the department is priced another way (massage by duration)."""
+    p = PEOPLE.get(slug)
+    if not p or not p['level']:
+        return ''
+    for dept, anchors in LEVEL_LINE_ANCHORS.items():
+        if dept not in p['depts']:
+            continue
+        parts = []
+        for ref, label in anchors:
+            price = level_price(f'{ref}@{p["level"]}')
+            if price:
+                parts.append(f'{esc(label)} {esc(price)}')
+        if parts:
+            if prefix:  # the bio line stays plain text (build-schema skips it as div.bio-level)
+                return f'At {esc(p["level"])} level: ' + ' · '.join(parts)
+            return ' · '.join(f'<span>{x}</span>' for x in parts)  # each pair unbroken on narrow cards
+    return ''
 
 
 def nav_price(spec, prefix):
@@ -730,6 +762,9 @@ def fill_values(text, counts):
     text = re.sub(r'(<span\b[^>]*data-level-price="([^"]+)"[^>]*>)(.*?)(</span>)', lvl, text)
     text = re.sub(r'(<span\b[^>]*data-level-who="([^"]+)"[^>]*>)(.*?)(</span>)', who, text, flags=re.S)
     text = re.sub(r'(<small\b[^>]*data-artist="([^"]+)"[^>]*>)(.*?)(</small>)', artist, text, flags=re.S)
+    text = re.sub(r'(<(p|div)\b[^>]*data-level-line="([^"]+)"[^>]*>)(.*?)(</\2>)',
+                  lambda m: m.group(1) + level_line(m.group(3), 'data-level-prefix' in m.group(1)) + m.group(5),
+                  text, flags=re.S)
     text = re.sub(r'(<span\b[^>]*data-range="([^"]+)"[^>]*>)(.*?)(</span>)', rng, text)
     text = re.sub(r'(<span\b[^>]*data-from="([^"]+)"[^>]*>)(.*?)(</span>)', frm, text)
     for key, n in counts.items():

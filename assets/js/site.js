@@ -266,8 +266,16 @@
   function initTeamFilters() {
     var wrap = $('[data-team-filters]');
     if (!wrap) return;
+    /* jump mode (section 0): chips are links to department blocks; #filter-{dept} scrolls to the block with that id */
+    if (wrap.closest('[data-team-mode="jump"]')) {
+      var m0 = /^#filter-([\w-]+)$/.exec(location.hash);
+      var target = m0 && doc.getElementById('filter-' + m0[1]);
+      if (target) target.scrollIntoView();
+      return;
+    }
     var chips = $$('button[data-filter]', wrap);
     var items = $$('.team-item');
+    var blocks = $$('[data-team-block]');
     var live = $('[data-filter-count]');
     function apply(key, fromHash) {
       var shown = 0;
@@ -277,6 +285,8 @@
         var on = key === 'all' || depts.indexOf(key) > -1;
         li.hidden = !on; if (on) shown++;
       });
+      /* a department block with no visible cards is hidden with its head */
+      blocks.forEach(function (b) { b.hidden = !b.querySelector('.team-item:not([hidden])'); });
       var chip = chips.filter(function (c) { return c.getAttribute('data-filter') === key; })[0];
       if (live) live.textContent = 'Showing ' + shown + ' ' + (key === 'all' ? 'people' : (chip ? chip.getAttribute('data-noun') || chip.textContent.trim().toLowerCase() : ''));
       if (!fromHash) history.replaceState(null, '', key === 'all' ? location.pathname : '#filter-' + key);

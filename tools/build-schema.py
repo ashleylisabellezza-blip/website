@@ -619,7 +619,10 @@ def team_people(page, url):
             person['worksFor'] = {'@type': 'MedicalBusiness', '@id': 'https://www.slay-aesthetics.com/#business',
                                   'name': 'Slay Aesthetics & Wellness', 'url': 'https://www.slay-aesthetics.com'}
         for _, _, dlg in elements(page, 'dialog', 'bio', id='bio-' + slug):
-            bio = re.search(r'<span\b[^>]*class="[^"]*\brole\b[^"]*"[^>]*>.*?</span>\s*<p\b[^>]*>(.*?)</p>', dlg, re.S)
+            # Option B puts a stamped level line (div.bio-level) between the role and the bio
+            bio = re.search(r'<span\b[^>]*class="[^"]*\brole\b[^"]*"[^>]*>.*?</span>\s*'
+                            r'(?:<div\b[^>]*class="[^"]*\bbio-level\b[^"]*"[^>]*>[^<]*</div>\s*)?'
+                            r'<p\b[^>]*>(.*?)</p>', dlg, re.S)
             if bio:
                 person['description'] = text(bio.group(1))
             break
