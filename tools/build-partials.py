@@ -7,17 +7,21 @@ Each page keeps only its own content. Between these markers the build
 writes generated HTML (never edit inside them; the next run overwrites):
 
     <!-- partial:head:start -->        <title>, meta, canonical, fonts, CSS
-    <!-- partial:top:start -->         skip link, utility bar, header, mobile menu
+    <!-- partial:top:start -->         skip link, bronze header bar, mega panel, menu dialog
     <!-- partial:breadcrumb:start -->  breadcrumb trail (inner pages)
     <!-- partial:hours:start -->       weekly hours table
     <!-- partial:holidays:start -->    upcoming holiday hours (next 12 months)
-    <!-- partial:bottom:start -->      booking band, footer, mobile book bar, scripts
+    <!-- partial:band:start -->        the sand booking band, where a page places it (home);
+                                       on every other page the bottom partial carries it
+    <!-- partial:bottom:start -->      booking band, footer, scripts
 
 It also fills live values from the page content, so numbers never drift:
     <span data-count="team">          number of team cards on our-team.html
     <span data-count="dept-hair">     team cards whose data-dept includes "hair"
     <span data-range="salon.html#cuts-women">   "$37–60" from that group or item
     <span data-from="facials.html#facials">     "from $55" (lowest price)
+    <span data-unit="slay-aesthetics.html#botox">          "$12/unit"
+    <span data-level-price="salon.html#cuts-women" data-level="Senior">   "$48"
     <time data-asof>                  "Prices as of September 2026"
 and the /* config:start */ block in assets/js/site.js (hours, holidays, URLs).
 
@@ -53,6 +57,7 @@ def icon(name, label=None):
         'facebook': '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
         'gift': '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
         'clock': '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        'arrow': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
     }
     a11y = f' role="img" aria-label="{esc(label)}"' if label else ' aria-hidden="true" focusable="false"'
     return (f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" '
@@ -92,37 +97,39 @@ ADDR_LINE = f"{ADDR['street']}, {ADDR['city']}, {ADDR['region']} {ADDR['zip']}"
 
 # Short page labels for breadcrumbs and nav
 LABELS = {
-    'index.html': 'Home', 'services.html': 'Services & Prices', 'salon.html': 'Hair',
+    'index.html': 'Home', 'services.html': 'Services & prices', 'salon.html': 'Hair',
     'tips-and-toes.html': 'Nails', 'massages.html': 'Massage', 'facials.html': 'Facials',
-    'hair-removal.html': 'Waxing', 'makeup-and-eyes.html': 'Brows, Lashes & Makeup',
-    'spray-tans.html': 'Spray Tans', 'mens-care.html': "Men's", 'brides.html': 'Bridal',
+    'hair-removal.html': 'Waxing', 'makeup-and-eyes.html': 'Brows, lashes & makeup',
+    'spray-tans.html': 'Spray tans', 'mens-care.html': "Men's", 'brides.html': 'Bridal',
     'slay-aesthetics.html': 'Slay Aesthetics', 'specials.html': 'Specials',
-    'book-online.html': 'Book Online', 'products.html': 'The Boutique',
+    'book-online.html': 'Book online', 'products.html': 'The boutique',
     'products-dermalogica.html': 'Dermalogica', 'products-ref.html': 'REF', 'products-lakme.html': 'Lakmé',
     'products-voesh.html': 'VOESH', 'products-olaplex.html': 'Olaplex', 'products-smashbox.html': 'Smashbox',
     'products-calecim.html': 'Calecim', 'products-ecru-new-york.html': 'ECRU New York',
-    'our-team.html': 'Meet the Team', 'about.html': 'Our Story', 'new-guests.html': 'New Guests',
-    'join-our-team.html': 'Careers', 'job-massage-therapist.html': 'Massage Therapist',
-    'job-nail-therapist.html': 'Nail Therapist', 'job-experienced-hair-stylist.html': 'Experienced Hair Stylist',
-    'job-new-talent.html': 'New Talent', 'job-internship.html': 'Internship', 'contact-us.html': 'Visit & Contact',
-    'gift-cards.html': 'Gift Cards', 'pick-up-orders.html': 'Pick-up Orders', 'policies.html': 'Policies',
+    'our-team.html': 'Meet the team', 'about.html': 'Our story', 'new-guests.html': 'New guests',
+    'join-our-team.html': 'Careers', 'job-massage-therapist.html': 'Massage therapist',
+    'job-nail-therapist.html': 'Nail therapist', 'job-experienced-hair-stylist.html': 'Experienced hair stylist',
+    'job-new-talent.html': 'New talent', 'job-internship.html': 'Internship', 'contact-us.html': 'Visit & contact',
+    'gift-cards.html': 'Gift cards', 'pick-up-orders.html': 'Pick-up orders', 'policies.html': 'Policies',
     '404.html': 'Page not found', 'thank-you.html': 'Thank you',
 }
 
-# Services dropdown: (column, label, file, price spec). Price spec is filled
-# from the page content by fill_values(), e.g. data-from="massages.html".
+# Services: (label, file, anchor, price spec, bracket). The named range always
+# names its anchor service (DESIGN-OPTIONS section 0: never a bare "Hair $37-60")
+# and is stamped from the service page by nav_price(), so it can never drift.
 SERVICES = [
-    ('Hair', 'Hair', 'salon.html', 'range:salon.html#cuts-women', "Women's cuts "),
-    ('Hair', "Men's", 'mens-care.html', 'from:salon.html#cuts-men', 'Cuts '),
-    ('Hair', 'Bridal', 'brides.html', 'from:brides.html#bridal-hair-style', 'Bridal style '),
-    ('Nails & Skin', 'Nails', 'tips-and-toes.html', 'range:tips-and-toes.html#classic-manicure', 'Manicures '),
-    ('Nails & Skin', 'Facials', 'facials.html', 'from:facials.html#focus-facial', ''),
-    ('Nails & Skin', 'Waxing', 'hair-removal.html', 'from:hair-removal.html', ''),
-    ('Spa & Beauty', 'Massage', 'massages.html', 'from:massages.html', ''),
-    ('Spa & Beauty', 'Brows, Lashes & Makeup', 'makeup-and-eyes.html', 'from:makeup-and-eyes.html#brows', ''),
-    ('Spa & Beauty', 'Spray Tans', 'spray-tans.html', 'from:spray-tans.html', ''),
-    ('Medical', 'Slay Aesthetics', 'slay-aesthetics.html', 'text:Medical aesthetics · Fridays', ''),
+    ('Hair', 'salon.html', "Women's cut", 'range:salon.html#cuts-women', 'by level'),
+    ('Nails', 'tips-and-toes.html', 'Manicures', 'range:tips-and-toes.html#classic-manicure', 'by level'),
+    ('Facials', 'facials.html', 'Facials', 'from:facials.html#focus-facial', 'by level'),
+    ('Massage', 'massages.html', 'Relaxation massage', 'range:massages.html#relaxation', '30–75 min'),
+    ('Waxing', 'hair-removal.html', 'Waxing', 'from:hair-removal.html', 'by level'),
+    ('Brows, lashes & makeup', 'makeup-and-eyes.html', 'Brows, lashes & makeup', 'from:makeup-and-eyes.html#brows', ''),
+    ('Spray tans', 'spray-tans.html', 'Spray tans', 'from:spray-tans.html', ''),
+    ("Men's", 'mens-care.html', "Men's cut", 'from:salon.html#cuts-men', 'by level'),
+    ('Bridal', 'brides.html', 'Bridal style', 'from:brides.html#bridal-hair-style', ''),
+    ('Slay Aesthetics', 'slay-aesthetics.html', 'Botox', 'unit:slay-aesthetics.html#botox', 'Slay'),
 ]
+SLAY_LINE = 'Slay Aesthetics · medical aesthetics · Fridays'
 
 
 # ------------------------------------------------------------------ price data from pages
@@ -184,15 +191,41 @@ def price_value(kind, spec):
     return f'${_fmt(lo)}' if lo == hi else f'${_fmt(lo)}–{_fmt(hi)}'
 
 
-def nav_price(spec, prefix):
+def unit_value(spec):
+    """'slay-aesthetics.html#botox' ("$12 per unit") -> "$12/unit"."""
+    frag = _fragment(spec)
+    m = frag and re.search(r'<span class="price">(.*?)</span>', frag, re.S)
+    if not m:
+        return None
+    txt = html.unescape(re.sub(r'<[^>]+>', '', m.group(1))).strip()
+    return re.sub(r'\s*per\s+unit$', '/unit', txt)
+
+
+def level_price(spec, level):
+    """Price of one level row in a ladder group: ('salon.html#cuts-women', 'Senior') -> '$48'.
+    DESIGN-OPTIONS section 0: derived level facts are stamped, never typed."""
+    frag = _fragment(spec)
+    if frag is None:
+        return None
+    for li in PRICE_ITEM.findall(frag):
+        n = re.search(r'<span class="name">(.*?)</span>(?=<span class="dots")', li, re.S)
+        p = re.search(r'<span class="price">(.*?)</span>', li, re.S)
+        if not (n and p):
+            continue
+        name = html.unescape(re.sub(r'<[^>]+>', '', n.group(1))).strip()
+        name = re.sub(r'\s+Stylist$', '', name)
+        if name == level:
+            return html.unescape(re.sub(r'<[^>]+>', '', p.group(1))).strip()
+    return None
+
+
+def nav_price(spec):
     kind, _, arg = spec.partition(':')
     if kind == 'text':
         return arg
-    val = price_value(kind, arg)
-    if not val:
-        return ''
-    text = f'{prefix}{val}'
-    return text[0].upper() + text[1:]
+    if kind == 'unit':
+        return unit_value(arg) or ''
+    return price_value(kind, arg) or ''
 
 
 # ------------------------------------------------------------------ team counts
@@ -265,18 +298,45 @@ def holiday_table():
 
 
 # ------------------------------------------------------------------ partials
-def book_link(page, placement, cls='btn btn--book', label=None, extra=''):
+# Option C (Bronze & Sand), docs/DESIGN-OPTIONS.md section C5: a sticky bronze bar
+# with the Book capsule at every width, a 4/8 mega panel, a full-screen bronze
+# drawer, a sand booking band and a bronze footer. No utility bar, no bottom bar.
+
+# Chrome Book (header, drawer) follows the page's override only on these pages
+# (DESIGN-OPTIONS section 0); elsewhere it stays gold Bellezza booking.
+CHROME_OVERRIDES = ('slay', 'gift')
+# Short chrome labels, so the compact mobile capsule fits beside the logo and Menu.
+# The long part stays in the accessible name (visually hidden when narrow).
+CHROME_LABELS = {
+    None: ('Book', ' now'),
+    'slay': ('Book', ' with Slay'),
+    'gift': ('eGift card', ''),
+}
+
+
+def book_link(page, placement, cls='btn btn--book', label=None, extra='', chrome=False):
     ov = page.get('bookOverride')
-    # Header and drawer keep Bellezza booking, except on Slay (no gold anywhere there)
-    if ov and (placement not in ('header', 'drawer', 'header-t') or ov['cta'] == 'slay'):
+    if ov and (not chrome or ov['cta'] in CHROME_OVERRIDES):
+        # an override is never gold: Slay has no gold at all, gift cards are not booking
         cls = cls.replace('btn--book', 'btn--strong')
-        tgt = ov['href']
         lab = label or ov['label']
-        return (f'<a class="{cls}" href="{esc(tgt)}" data-cta="{ov["cta"]}" data-placement="{placement}"{extra}>'
-                f'{esc(lab)}</a>')
+        ext = ' rel="noopener"' if ov.get('external') else ''
+        return (f'<a class="{cls}" href="{esc(ov["href"])}" data-cta="{ov["cta"]}" '
+                f'data-placement="{placement}"{ext}{extra}>{lab if "<" in lab else esc(lab)}</a>')
     lab = label or 'Book an appointment'
     return (f'<a class="{cls}" href="{esc(U["book"])}" data-book data-cta="book" data-placement="{placement}"{extra}>'
-            f'{esc(lab)}</a>')
+            f'{lab if "<" in lab else esc(lab)}</a>')
+
+
+def chrome_book(page, placement):
+    ov = page.get('bookOverride') or {}
+    key = ov.get('cta') if ov.get('cta') in CHROME_OVERRIDES else None
+    short, long = CHROME_LABELS[key]
+    if key == 'gift':
+        label = '<span class="bk-long">Buy an </span><span class="nocase">e</span>Gift card'
+    else:
+        label = f'{short}<span class="bk-long">{long}</span>'
+    return book_link(page, placement, cls='btn btn--book btn--compact chrome-book', label=label, chrome=True)
 
 
 def part_head(file, page):
@@ -298,7 +358,7 @@ def part_head(file, page):
     else:
         lines.append(f'<link rel="canonical" href="{url}">')
     lines += [
-        '<meta name="theme-color" content="#faf8f5">',
+        '<meta name="theme-color" content="#6a552f">',
         '<meta property="og:type" content="website">',
         '<meta property="og:site_name" content="Bellezza &amp; Co.">',
         f'<meta property="og:title" content="{esc(page["title"])}">',
@@ -311,17 +371,16 @@ def part_head(file, page):
         '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">',
         '<meta name="twitter:card" content="summary_large_image">',
         f'<link rel="icon" href="{v("assets/img/favicon.png")}">',
-        f'<link rel="preload" href="{v("assets/fonts/bodoni-moda-roman-latin.woff2")}" as="font" type="font/woff2" crossorigin>',
+        f'<link rel="preload" href="{v("assets/fonts/manrope-var-latin.woff2")}" as="font" type="font/woff2" crossorigin>',
+        f'<link rel="stylesheet" href="{v("assets/css/styles.css")}">',
     ]
-    if page.get('italic'):
-        lines.append(f'<link rel="preload" href="{v("assets/fonts/bodoni-moda-italic-latin.woff2")}" as="font" type="font/woff2" crossorigin>')
-    lines.append(f'<link rel="stylesheet" href="{v("assets/css/styles.css")}">')
     if file in ('new-guests.html', 'book-online.html'):
         lines.append(f'<meta name="apple-itunes-app" content="app-id={U["iosAppId"]}">')
     if file == 'index.html':
-        lines.append('<link rel="preload" as="image" href="assets/img/team/contact-sheet-1540.avif" '
-                     'imagesrcset="assets/img/team/contact-sheet-1100.avif 1100w, assets/img/team/contact-sheet-1540.avif 1540w" '
-                     'imagesizes="58vw" type="image/avif" fetchpriority="high" media="(min-width: 1024px)">')
+        lines.append('<link rel="preload" as="image" href="assets/img/join/gallery-3-sq-800.avif" '
+                     'imagesrcset="assets/img/join/gallery-3-sq-400.avif 400w, assets/img/join/gallery-3-sq-800.avif 800w, '
+                     'assets/img/join/gallery-3-sq-900.avif 900w" '
+                     'imagesizes="(min-width: 768px) min(44vw, 560px), 100vw" type="image/avif" fetchpriority="high">')
     if not noindex:
         lines.append('<script type="speculationrules">{"prefetch":[{"where":{"and":['
                      '{"href_matches":{"pathname":"/*.html","search":""}},'
@@ -331,94 +390,90 @@ def part_head(file, page):
     return '\n'.join(lines)
 
 
-def services_panel():
-    cols = {}
-    for col, label, file, spec, prefix in SERVICES:
-        cols.setdefault(col, []).append((label, file, nav_price(spec, prefix)))
-    out = []
-    for col, items in cols.items():
-        if col == 'Medical':
-            continue  # shown in the feature column, apart from the beauty menu
-        lis = ''.join(f'<li><a href="{f}"><span>{esc(l)}</span><small>{esc(p)}</small></a></li>' for l, f, p in items)
-        out.append(f'<div class="panel-col"><h2>{esc(col)}</h2><ul>{lis}</ul></div>')
-    out.append('<div class="panel-feature"><h2>Not sure where to start?</h2>'
-               '<p>See every service and price on one page, or learn how our level pricing works before you book.</p>'
-               '<ul><li><a href="services.html"><span>All services &amp; prices</span></a></li>'
-               '<li><a href="new-guests.html"><span>Your first visit</span></a></li>'
-               '<li><a href="gift-cards.html"><span>Gift cards</span></a></li></ul>'
-               '<p class="panel-slay">Also in the building: <a href="slay-aesthetics.html">Slay Aesthetics</a>, '
-               'medical aesthetics by Shannon Francis, CNP, on Fridays.</p></div>')
-    return ''.join(out)
+def leader_row(href, name, price, cur=''):
+    return (f'<li><a href="{href}"{cur}><span class="lr-name">{esc(name)}</span>'
+            f'<span class="lr-rule" aria-hidden="true"></span><span class="lr-price">{esc(price)}</span></a></li>')
+
+
+def services_panel(file):
+    rows = ''.join(leader_row(f, anchor, nav_price(spec), ' aria-current="page"' if f == file else '')
+                   for label, f, anchor, spec, _ in SERVICES if f != 'slay-aesthetics.html')
+    return (f'<div class="nav-panel" id="nav-services" hidden><div class="panel-inner">'
+            f'<div class="panel-head"><p class="panel-title">Services &amp; prices</p>'
+            f'<p class="bracket">[Prices by level, published for nearly every service]</p>'
+            f'<a class="btn btn--strong" href="services.html">All services &amp; prices</a></div>'
+            f'<ul class="panel-list">{rows}</ul>'
+            f'<p class="panel-slay"><a href="slay-aesthetics.html">Slay Aesthetics</a> · medical aesthetics · Fridays</p>'
+            f'</div></div>')
 
 
 def part_top(file, page):
     nav = page.get('nav')
 
     def navlink(key, href, label):
-        attr = ' aria-current="page"' if href == file else (' aria-current="true"' if key == nav and key in ('services', 'about', 'bridal', 'team', 'guests') and href != file else '')
+        attr = ' aria-current="page"' if href == file else (' aria-current="true"' if key == nav and key in ('services', 'about', 'bridal', 'team', 'guests') else '')
         return f'<a href="{href}"{attr}>{label}</a>'
 
-    special = next(iter(SITE.get('specials') or []), None)
-    special_link = (f'<a class="u-desktop" href="specials.html" data-cta="special" data-placement="utility">'
-                    f'{esc(special["title"])}</a>') if special else ''
-    util = f'''<div class="utility dark">
-<div class="container">
-<a class="u-desktop" href="{esc(U['directions'])}" data-cta="directions" data-placement="utility">{icon('pin')}{esc(ADDR['street'])}, {esc(ADDR['city'])}, {ADDR['region']}</a>
-<a class="u-desktop" href="{SITE['tel']}" data-cta="call" data-placement="utility">{icon('phone')}{SITE['phone']}</a>
-<span class="status-slot" data-status="utility"><a href="contact-us.html#hours">Hours &amp; holidays</a></span>
-<span class="u-right">
-<span class="u-desktop gift-slot"><a href="gift-cards.html" data-gift-label="off" data-cta="gift" data-placement="utility">{icon('gift')}Gift cards</a><a href="gift-cards.html" data-gift-label="on" hidden data-cta="gift" data-placement="utility">{icon('gift')}Send a Bellezza eGift card</a></span>
-{special_link}
-<span class="u-desktop u-social"><a href="{U['instagram']}" aria-label="Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Facebook">{icon('facebook')}</a></span>
-</span>
-</div>
-</div>'''
-
-    services_cur = ' aria-current="true"' if nav == 'services' or file == 'services.html' else ''
+    services_cur = ' aria-current="page"' if file == 'services.html' else (' aria-current="true"' if nav == 'services' else '')
+    logo = ('<a class="brand" href="index.html"><img src="assets/img/brand/logo-on-dark.png" '
+            'alt="Bellezza &amp; Co. home" width="786" height="257"></a>')
     header = f'''<header class="site-header" id="top">
-<div class="container">
-<a class="wordmark" href="index.html"><img src="assets/img/brand/wordmark.png" alt="Bellezza &amp; Co. home" width="185" height="28"></a>
-<nav class="nav-main" aria-label="Main">
+<div class="bar">
+<div class="cell cell-brand">{logo}</div>
+<nav class="cell nav-main" aria-label="Main">
 <ul>
-<li class="nav-services"><a href="services.html"{services_cur}>Services &amp; Prices</a><button class="chev" type="button" aria-expanded="false" aria-controls="nav-services" hidden>{icon('chevron')}<span class="sr-only">Show services</span></button>
-<div class="nav-panel" id="nav-services" hidden><div class="container panel-grid">{services_panel()}</div></div></li>
-<li>{navlink('team', 'our-team.html', 'Meet the Team')}</li>
-<li>{navlink('guests', 'new-guests.html', 'New Guests')}</li>
+<li class="nav-services"><a href="services.html"{services_cur}>Services &amp; prices</a><button class="chev" type="button" aria-expanded="false" aria-controls="nav-services" hidden>{icon('chevron')}<span class="sr-only">Show services</span></button>
+{services_panel(file)}</li>
+<li>{navlink('team', 'our-team.html', 'Meet the team')}</li>
+<li>{navlink('guests', 'new-guests.html', 'New guests')}</li>
 <li>{navlink('bridal', 'brides.html', 'Bridal')}</li>
 <li>{navlink('about', 'about.html', 'About')}</li>
+<li class="nav-gift">{navlink('gift', 'gift-cards.html', 'Gift cards')}</li>
 </ul>
 </nav>
-<div class="header-actions">
-<a class="header-gift" href="gift-cards.html" data-cta="gift" data-placement="header">Gift cards</a>
-{book_link(page, 'header', cls='btn btn--book header-book', label='Book now' if page.get('bookOverride', {}).get('cta') != 'slay' else 'Book with Slay')}
-<a class="menu-toggle" href="#footer-nav" data-menu-toggle>{icon('menu')}<span>Menu</span></a>
+<div class="cell cell-book">
+<a class="header-tel" href="{SITE['tel']}" data-cta="call" data-placement="header">{icon('phone')}{SITE['phone']}</a>
+{chrome_book(page, 'header')}
 </div>
+<div class="cell cell-menu"><a class="menu-toggle" href="#footer-nav" data-menu-toggle>{icon('menu')}<span>Menu</span></a></div>
 </div>
 </header>'''
 
-    svc_links = ''.join(f'<li><a href="{f}">{esc(l)}<small>{esc(nav_price(s, p))}</small></a></li>'
-                        for _, l, f, s, p in SERVICES)
+    def drow(href, name, small=''):
+        cur = ' aria-current="page"' if href == file else ''
+        sm = f'<small>{esc(small)}</small>' if small else ''
+        return f'<li><a href="{href}"{cur}><span>{esc(name)}</span>{sm}</a></li>'
+
+    def named(label, anchor, spec):
+        # the row label names the anchor when they match ("Waxing"), so only the price follows
+        text = nav_price(spec) if anchor == label else f'{anchor} {nav_price(spec)}'
+        return text + (' · Fridays' if spec.startswith('unit:') else '')
+
+    svc = ''.join(drow(f, label, named(label, anchor, spec)) for label, f, anchor, spec, _ in SERVICES)
+    special = next(iter(SITE.get('specials') or []), None)
     drawer = f'''<dialog class="drawer" id="drawer" aria-label="Menu">
+<div class="drawer-bar">
+<div class="cell cell-brand"><a class="brand" href="index.html"><img src="assets/img/brand/logo-on-dark.png" alt="Bellezza &amp; Co. home" width="786" height="257"></a></div>
+<div class="cell cell-book">{chrome_book(page, 'drawer')}</div>
+<div class="cell cell-menu"><button class="menu-toggle drawer-close" type="button" data-drawer-close autofocus>{icon('close')}<span>Close</span></button></div>
+</div>
 <div class="drawer-inner">
-<div class="drawer-top"><a class="wordmark" href="index.html"><img src="assets/img/brand/wordmark.png" alt="Bellezza &amp; Co. home" width="158" height="24"></a><button class="icon-btn" type="button" data-drawer-close autofocus>{icon('close')}<span class="sr-only">Close menu</span></button></div>
-{book_link(page, 'drawer')}
-<a class="btn btn--outline" href="{SITE['tel']}" data-cta="call" data-placement="drawer">Call {SITE['phone']}</a>
-<div class="drawer-extras"><a href="gift-cards.html" data-gift-label="on" hidden data-cta="gift" data-placement="drawer">Send a Bellezza eGift card</a>{f'<a href="specials.html">{esc(special["title"])}</a>' if special else ''}</div>
-<h2>Services &amp; Prices</h2>
-<ul>{svc_links}<li><a href="services.html">All services &amp; prices</a></li></ul>
-<h2>Bellezza &amp; Co.</h2>
-<ul><li><a href="our-team.html">Meet the Team</a></li><li><a href="new-guests.html">New Guests</a></li><li><a href="brides.html">Bridal</a></li><li><a href="about.html">Our Story</a></li></ul>
-<h2>Plan your visit</h2>
-<ul><li><a href="gift-cards.html">Gift Cards</a></li><li><a href="specials.html">Specials</a></li><li><a href="products.html">The Boutique</a></li><li><a href="pick-up-orders.html">Pick-up Orders</a></li><li><a href="join-our-team.html">Careers</a></li><li><a href="contact-us.html">Visit &amp; Contact</a></li></ul>
-<h2>Visit</h2>
-<p><span class="status" data-status="drawer">Hours &amp; holidays below</span></p>
-<address class="addr">{esc(ADDR['street'])}<br>{esc(ADDR['city'])}, {ADDR['region']} {ADDR['zip']}</address>
+<p class="drawer-door"><a href="new-guests.html">New to Bellezza? Start with your first visit</a></p>
+<h2 class="drawer-h">Services &amp; prices</h2>
+<ul class="drawer-list drawer-services">{svc}{drow('services.html', 'All services & prices')}</ul>
+<h2 class="drawer-h">Bellezza &amp; Co.</h2>
+<ul class="drawer-list">{drow('our-team.html', 'Meet the team')}{drow('new-guests.html', 'New guests')}{drow('brides.html', 'Bridal')}{drow('about.html', 'About')}</ul>
+<a class="btn btn--light drawer-call" href="{SITE['tel']}" data-cta="call" data-placement="drawer">Call {SITE['phone']}</a>
+<ul class="drawer-list drawer-more"><li><a href="gift-cards.html"{' aria-current="page"' if file == 'gift-cards.html' else ''} data-cta="gift" data-placement="drawer"><span>Gift cards</span></a></li>{drow('specials.html', 'Specials', special['title'] if special else '')}{drow('products.html', 'The boutique')}{drow('pick-up-orders.html', 'Pick-up orders')}{drow('join-our-team.html', 'Careers')}{drow('policies.html', 'Policies')}{drow('contact-us.html', 'Visit & contact')}</ul>
+<h2 class="drawer-h">Hours</h2>
+<p class="drawer-status"><span data-status="drawer">Book online 24/7</span></p>
+<address class="addr"><a href="{esc(U['directions'])}" data-cta="directions" data-placement="drawer">{esc(ADDR['street'])}, {esc(ADDR['city'])}, {ADDR['region']} {ADDR['zip']}</a></address>
 {hours_table(caption=False)}
 <div class="badges"><a href="{U['ios']}"><img src="assets/img/badge-app-store.jpg" alt="Download the Bellezza app on the App Store" width="123" height="44" loading="lazy"></a><a href="{U['android']}"><img src="assets/img/badge-google-play.png" alt="Get the Bellezza app on Google Play" width="150" height="44" loading="lazy"></a></div>
-<div class="social drawer-social"><a href="{U['instagram']}" aria-label="Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Facebook">{icon('facebook')}</a></div>
+<div class="social"><a href="{U['instagram']}" aria-label="Bellezza on Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Bellezza on Facebook">{icon('facebook')}</a></div>
 </div>
 </dialog>'''
-    return f'<a class="skip-link" href="#main">Skip to main content</a>\n{util}\n{header}\n{drawer}'
+    return f'<a class="skip-link" href="#main">Skip to main content</a>\n{header}\n{drawer}'
 
 
 def part_breadcrumb(file, page):
@@ -426,7 +481,7 @@ def part_breadcrumb(file, page):
     if crumbs is None or file in ('index.html', '404.html'):
         return ''
     items = ['<li><a href="index.html">Home</a></li>']
-    items += [f'<li><a href="{c["href"]}">{esc(c["label"])}</a></li>' for c in crumbs]
+    items += [f'<li><a href="{c["href"]}">{esc(LABELS.get(c["href"].split("#")[0], c["label"]))}</a></li>' for c in crumbs]
     items.append(f'<li><span aria-current="page">{esc(LABELS.get(file, page["title"]))}</span></li>')
     return f'<nav class="breadcrumb container" aria-label="Breadcrumb"><ol>{"".join(items)}</ol></nav>'
 
@@ -436,60 +491,72 @@ def booking_microcopy(dark=False):
             'or call us. Changes need 24 hours&rsquo; notice. <a href="policies.html#changes">Policies</a></p>')
 
 
-def part_bottom(file, page):
+def part_band(file, page):
+    """The sand "Book an appointment" band (DESIGN-OPTIONS C6 #11). Stamped at the end of
+    every page, or wherever a page places <!-- partial:band:start/end --> (home)."""
+    if file == '404.html':
+        return ''
     ov = page.get('bookOverride')
-    slay = bool(ov) and ov.get('cta') == 'slay'
-    band_h = 'Book with Slay Aesthetics on its website.' if slay else f"Book online any time, or call {SITE['phone']}."
-    band_call = '' if slay else f'<a class="btn btn--outline" href="{SITE["tel"]}" data-cta="call" data-placement="band">Call {SITE["phone"]}</a>'
-    band_micro = ('<p class="microcopy">Booking opens the Slay Aesthetics website. Bellezza gift cards are not accepted at Slay Aesthetics.</p>'
-                  if slay else booking_microcopy(True))
-    if ov and ov.get('cta') == 'gift':
-        band_h = f"Give time at Bellezza, or call {SITE['phone']}."
-        band_micro = ('<p class="microcopy">eGift cards are sold on our online gift card page (Meevo) and can&rsquo;t be used '
-                      'at Slay Aesthetics. <a href="policies.html#gift-cards">Gift card policy</a></p>')
-    band = ''
-    if file != '404.html':
-        band = f'''<section class="cta-band dark" aria-labelledby="band-h" data-band>
+    cta = ov.get('cta') if ov else None
+    status = '<p class="band-status" data-status="band">Book online 24/7</p>'
+    heading = 'Book an appointment'
+    call = f'<a class="btn btn--strong" href="{SITE["tel"]}" data-cta="call" data-placement="band">Call {SITE["phone"]}</a>'
+    micro = booking_microcopy()
+    if cta == 'slay':
+        status = '<p class="band-status">Slay Aesthetics · Fridays, 10am–6pm</p>'
+        heading = 'Book with Slay Aesthetics'
+        call = ''
+        micro = ('<p class="microcopy">Booking opens the Slay Aesthetics website. '
+                 'Bellezza gift cards are not accepted at Slay Aesthetics.</p>')
+    elif cta == 'gift':
+        heading = 'Give time at Bellezza'
+        call = f'<a class="btn btn--outline" href="{SITE["tel"]}" data-cta="call" data-placement="band">Call {SITE["phone"]}</a>'
+        micro = ('<p class="microcopy">eGift cards are sold on our online gift card page (Meevo) and can&rsquo;t be used '
+                 'at Slay Aesthetics. <a href="policies.html#gift-cards">Gift card policy</a></p>')
+    elif cta:
+        heading = page['bookLabel']
+        call = f'<a class="btn btn--outline" href="{SITE["tel"]}" data-cta="call" data-placement="band">Call {SITE["phone"]}</a>'
+    return f'''<section class="cta-band" aria-labelledby="band-h" data-band>
 <div class="container">
-<p class="band-status" data-status="band" hidden></p>
-<h2 id="band-h">{band_h}</h2>
-<div class="band-facts"><p>Today: <span data-today-hours>see our <a href="contact-us.html#hours">hours</a></span></p><p><a href="{esc(U['directions'])}" data-cta="directions" data-placement="band">{esc(ADDR_LINE)}</a></p></div>
-<div class="btn-row">{book_link(page, 'band', label=page['bookLabel'] if ov else 'Book an appointment')}{band_call}</div>
-{band_micro}
+{status}
+<h2 id="band-h">{esc(heading)}</h2>
+<div class="band-actions">
+<div class="btn-row">{book_link(page, 'band', label=page['bookLabel'] if ov else 'Book an appointment')}{call}</div>
+{micro}
+</div>
 </div>
 </section>'''
-    svc_links = ''.join(f'<li><a href="{f}">{esc(l)}</a></li>' for _, l, f, _, _ in SERVICES)
+
+
+def part_bottom(file, page):
+    band = '' if '<!-- partial:band:start -->' in read(file) else part_band(file, page)
+    svc_links = ''.join(f'<li><a href="{f}">{esc(l)}</a></li>' for l, f, _, _, _ in SERVICES)
     year = TODAY.year
-    footer = f'''<footer class="site-footer dark">
+    footer = f'''<footer class="site-footer">
 <div class="container">
 <div class="footer-grid">
-<div class="f-visit">
-<img class="footer-lockup" src="assets/img/brand/logo-on-dark.png" alt="Bellezza &amp; Co., established 2009. Salon, spa, boutique." width="200" height="65" loading="lazy">
-<p class="footer-lockup-tag">Est. 2009 • Salon • Spa • Boutique</p>
+<div class="f-col f-visit">
+<h2>Visit</h2>
 <address><a href="{esc(U['directions'])}" data-cta="directions" data-placement="footer">{esc(ADDR['street'])}<br>{esc(ADDR['city'])}, {ADDR['region']} {ADDR['zip']}</a><br><a href="{SITE['tel']}" data-cta="call" data-placement="footer">{SITE['phone']}</a></address>
-{hours_table()}
+{hours_table(caption=False)}
 <p class="footer-holidays"><a href="policies.html#holidays">Holiday hours</a></p>
 <p class="footer-bridal">Bridal inquiries: <a href="mailto:{SITE['bridalEmail']}">{SITE['bridalEmail']}</a></p>
 </div>
 <nav class="footer-nav" id="footer-nav" aria-label="Footer">
-<div><h2>Services &amp; Prices</h2><ul>{svc_links}<li><a href="services.html">All services &amp; prices</a></li></ul></div>
-<div><h2>Plan your visit</h2><ul><li><a href="new-guests.html">New Guests</a></li><li><a href="book-online.html">Book Online</a></li><li><a href="gift-cards.html">Gift Cards</a></li><li><a href="specials.html">Specials</a></li><li><a href="products.html">The Boutique</a></li><li><a href="pick-up-orders.html">Pick-up Orders</a></li></ul>
+<div class="f-col"><h2>Services &amp; prices</h2><ul>{svc_links}<li><a href="services.html">All services &amp; prices</a></li></ul></div>
+<div class="f-col"><h2>Plan your visit</h2><ul><li><a href="new-guests.html">New guests</a></li><li><a href="book-online.html">Book online</a></li><li><a href="gift-cards.html">Gift cards</a></li><li><a href="specials.html">Specials</a></li><li><a href="products.html">The boutique</a></li><li><a href="pick-up-orders.html">Pick-up orders</a></li></ul>
 <div class="badges"><a href="{U['ios']}"><img src="assets/img/badge-app-store.jpg" alt="Download the Bellezza app on the App Store" width="112" height="40" loading="lazy"></a><a href="{U['android']}"><img src="assets/img/badge-google-play.png" alt="Get the Bellezza app on Google Play" width="137" height="40" loading="lazy"></a></div></div>
-<div><h2>About</h2><ul><li><a href="about.html">Our Story</a></li><li><a href="our-team.html">Meet the Team</a></li><li><a href="join-our-team.html">Careers</a></li><li><a href="policies.html">Policies</a></li><li><a href="policies.html#privacy">Privacy</a></li><li><a href="policies.html#sms-privacy">SMS Privacy</a></li><li><a href="contact-us.html">Contact</a></li></ul></div>
+<div class="f-col"><h2>About</h2><ul><li><a href="about.html">Our story</a></li><li><a href="our-team.html">Meet the team</a></li><li><a href="join-our-team.html">Careers</a></li><li><a href="policies.html">Policies</a></li><li><a href="policies.html#privacy">Privacy</a></li><li><a href="policies.html#sms-privacy">SMS privacy</a></li><li><a href="contact-us.html">Contact</a></li></ul></div>
 </nav>
+<a class="footer-logo" href="index.html"><img src="assets/img/brand/logo-on-dark.png" alt="Bellezza &amp; Co., established 2009. Salon, spa, boutique." width="786" height="257" loading="lazy"></a>
 </div>
 <div class="footer-bottom"><span>&copy; {year} Bellezza &amp; Co. (formerly Bellezza Salon and Day Spa)</span><span class="social"><a href="{U['instagram']}" aria-label="Bellezza on Instagram">{icon('instagram')}</a><a href="{U['facebook']}" aria-label="Bellezza on Facebook">{icon('facebook')}</a></span></div>
 </div>
 </footer>'''
-    bar = ''
-    if file != '404.html':
-        bar = (f'<nav class="bookbar" aria-label="Book or call" data-bookbar data-hidden="true">'
-               f'{book_link(page, "bookbar", label=page["bookLabel"])}'
-               f'<a class="btn btn--outline" href="{SITE["tel"]}" data-cta="call" data-placement="bookbar" data-call-label>{icon("phone")}Call</a></nav>')
     scripts = f'<script src="{v("assets/js/site.js")}" defer></script>'
     if file in ('brides.html', 'join-our-team.html', 'pick-up-orders.html'):
         scripts += f'\n<script src="{v("assets/js/forms.js")}" defer></script>'
-    return '\n'.join(x for x in (band, footer, bar, scripts) if x)
+    return '\n'.join(x for x in (band, footer, scripts) if x)
 
 
 # ------------------------------------------------------------------ stamping
@@ -507,8 +574,20 @@ def fill_values(text, counts):
         val = price_value('from', m.group(2))
         return m.group(1) + (val or m.group(3)) + m.group(4)
 
+    def unit(m):
+        val = unit_value(m.group(2))
+        return m.group(1) + (esc(val) if val else m.group(3)) + m.group(4)
+
+    def lvl(m):
+        val = level_price(m.group(2), html.unescape(m.group(3)))
+        return m.group(1) + (esc(val) if val else m.group(4)) + m.group(5)
+
     text = re.sub(r'(<span\b[^>]*data-range="([^"]+)"[^>]*>)(.*?)(</span>)', rng, text)
     text = re.sub(r'(<span\b[^>]*data-from="([^"]+)"[^>]*>)(.*?)(</span>)', frm, text)
+    # <span data-unit="slay-aesthetics.html#botox">$12/unit</span>
+    text = re.sub(r'(<span\b[^>]*data-unit="([^"]+)"[^>]*>)(.*?)(</span>)', unit, text)
+    # <span data-level-price="salon.html#cuts-women" data-level="Senior">$48</span>
+    text = re.sub(r'(<span\b[^>]*data-level-price="([^"]+)"[^>]*data-level="([^"]+)"[^>]*>)(.*?)(</span>)', lvl, text)
     for key, n in counts.items():
         text = re.sub(r'(<span\b[^>]*data-count="%s"[^>]*>)[^<]*(</span>)' % re.escape(key),
                       lambda m, n=n: f'{m.group(1)}{n}{m.group(2)}', text)
@@ -568,11 +647,12 @@ def main():
         new = stamp(new, 'top', part_top(file, page))
         new = stamp(new, 'breadcrumb', part_breadcrumb(file, page))
         new = stamp(new, 'bottom', part_bottom(file, page))
+        new = stamp(new, 'band', part_band(file, page))
         new = stamp(new, 'hours', hours_table())
         new = stamp(new, 'holidays', holiday_table())
         new = fill_values(new, counts)
-        if 'data-bookbar' in new and 'class="has-bookbar"' not in new:
-            new = re.sub(r'<body\b([^>]*)>', lambda m: '<body class="has-bookbar">' if 'class=' not in m.group(1) else m.group(0), new, count=1)
+        # Option C has no mobile bottom bar (DESIGN-OPTIONS C5): Book lives in the header
+        new = new.replace('<body class="has-bookbar">', '<body>')
         if new != text:
             open(path, 'w', encoding='utf-8', newline='\n').write(new)
             changed += 1

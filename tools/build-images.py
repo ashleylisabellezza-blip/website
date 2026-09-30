@@ -8,7 +8,7 @@ Usage (from the project root):
     python tools/build-images.py --strict   # exit 1 if a portrait's outer 8px
                                             # mean luma is above 3% (brief 2.6)
 
-Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, og
+Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, og, squares
 
 What it makes (all new files; no source image is modified or overwritten):
 
@@ -41,6 +41,14 @@ What it makes (all new files; no source image is modified or overwritten):
   slay    assets/img/slay/shannon-{360,497}.{avif,webp,jpg} (source is 497 wide,
           so no 540), assets/img/slay/slay-logo-{240,480}.{png,webp}
   og      assets/img/og-image.jpg (1200x630)
+  squares (Option C, docs/DESIGN-OPTIONS.md C4/C6)
+          assets/img/join/gallery-3-sq-{400,800,900}.{avif,webp,jpg}  1:1 from the TOP
+          of the 900x1200 source (keeps the wall sign and both faces, drops the
+          retail packaging and the "$70" counter card lower in the frame; brief 0)
+          assets/img/join/gallery-1-sq-{400,800}  1:1 centre crop of the 1200x900 source
+          assets/img/join/gallery-4-sq-{400,800}  1:1 from the top of the 900x1200 source
+          assets/img/team/{devon,stephanie}-720  (the C bridal and credentials portraits;
+          both sources are 720 wide, so this is native, not upscaled)
 
 Idempotent: an output is skipped when it exists and is newer than both its
 source(s) and this script. Every run ends with a table of every output path,
@@ -487,6 +495,33 @@ def build_join() -> None:
                       lambda s=src, w=w: resize_w(load_rgb(s), w))
 
 
+SQUARES = [
+    # (source, output name, widths, anchor_x, anchor_y)
+    ("gallery-3", "gallery-3-sq", (400, 800, 900), 0.5, 0.0),
+    ("gallery-1", "gallery-1-sq", (400, 800), 0.5, 0.5),
+    ("gallery-4", "gallery-4-sq", (400, 800), 0.5, 0.0),
+]
+C_PORTRAITS_720 = ["devon", "stephanie"]
+
+
+def build_squares() -> None:
+    print("option C: 1:1 candid crops + 720w portraits")
+    for name, out, widths, ax, ay in SQUARES:
+        src = IMG / "join" / f"{name}.jpg"
+        for w in widths:
+            build_set(IMG / "join" / f"{out}-{w}", [src],
+                      lambda s=src, w=w, ax=ax, ay=ay: resize_w(
+                          crop_to_ratio(load_rgb(s), 1, 1, anchor_y=ay, anchor_x=ax), w))
+    for slug in C_PORTRAITS_720:
+        src = IMG / "team" / f"{slug}.jpg"
+        crop = portrait(slug)
+        if crop.width < 720:
+            print(f"  skip {slug}: source only {crop.width}px wide")
+            continue
+        build_set(IMG / "team" / f"{slug}-720", [src],
+                  lambda c=crop: resize_w(c, 720), "portrait-720")
+
+
 # --------------------------------------------------------------------------
 # e) brows, f) slay
 # --------------------------------------------------------------------------
@@ -563,6 +598,7 @@ GROUPS = {
     "team": build_team, "sheets": build_sheets, "owners": build_owners,
     "brand": build_brand, "about": build_about, "join": build_join,
     "brows": build_brows, "slay": build_slay, "og": build_og,
+    "squares": build_squares,
 }
 
 

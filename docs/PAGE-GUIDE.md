@@ -229,3 +229,36 @@ and `<button class="btn btn--strong" type="submit">Send inquiry</button>` (never
 - Brand logos: `assets/img/brands/{dermalogica,ref,lakme}-logo.jpg`, `voesh-logo.jpg`, `olaplex-logo.png`, `smashbox-logo.jpg`, `calecim-logo.jpg`, `ecru-logo.jpg`; product shots in `assets/img/brands/gallery/`.
 - App badges: `assets/img/badge-app-store.jpg` (438×156), `assets/img/badge-google-play.png` (461×135).
 - Check real pixel sizes with Python/Pillow before writing width/height.
+
+## 6. Option C · Bronze & Sand components (branch `design-c`)
+
+Spec: `docs/DESIGN-OPTIONS.md` sections 0 and C1-C9. Manrope only (400/600), no
+italics, no tracked caps. `index.html` is the reference implementation.
+
+- **Grounds:** white by default; `section--sand` (decisions: prices, levels,
+  booking) and `section--bronze` (people and story). Never two bronze sections in a
+  row. `.dark` renders as bronze.
+- **Arrow capsule** (`.btn`, the only button shape): `btn--book` gold (booking at
+  Bellezza only), `btn--strong` bronze primary, `btn--outline` outlined, `btn--light`
+  cream on bronze. On bronze, `btn--strong` turns cream and `btn--book` gets the
+  cream ring automatically. Labels are plain text (no arrow characters); the CSS
+  draws the circle and arrow.
+- **Small text-link form:** `.book-this` / `.arrow-link` (label + 28px bronze circle)
+  for per-group and per-department Book links.
+- **Devices:** `.bracket` ("[by level]" notes), `.brackets` (offset corner frame on a
+  wrapper around a photo; max 2 per page), `.ghost-card` > `span.ghost[aria-hidden]` +
+  `.float-card` (max 2 per page), `h1/h2.two-tone` > `span.tt-lead` + payoff (max 3
+  per page), `span.hl` (the one highlighter, services.html H1 only).
+- **Layouts:** `.intro-row` (eyebrow | H2 | paragraph), `.flush-split` +
+  `--media-start`/`--media-end` with `.fs-text` and `.fs-media` (photo to the
+  viewport edge), `.split-48` (4/8), leader rows (`.lead-list`, `.detail-rows`,
+  `.lr-rule`), `.ritual` steps on bronze, `.line-cards` (flat 1px cards).
+- **Price menus:** `.menu-group` renders as the 4/8 list automatically (heading,
+  tier and intro left; `.price-list` right). `.dots` is drawn as a hairline leader;
+  `p.note`, `p.tier-head` and `.level-legend` render as bracket lines.
+- **Stamped values** (never type these): `data-range`, `data-from`,
+  `data-unit="slay-aesthetics.html#botox"` ("$12/unit") and
+  `data-level-price="salon.html#cuts-women" data-level="Senior"` ("$48").
+- **Booking band:** stamped at the end of every page by the bottom partial, or
+  wherever a page places `<!-- partial:band:start --><!-- partial:band:end -->`
+  (home). There is no mobile bottom bar: Book lives in the sticky bronze header.
