@@ -1,9 +1,33 @@
 {
-  "_readme": "Design branches shown on the GitHub Pages preview (tools/preview.py). Order = order on the chooser page.",
-  "designs": [
-    {"branch": "main", "slug": "a", "label": "Option A", "name": "Editorial menu (current)", "blurb": "The design the team likes: printed-menu typography, the 28-portrait hero, gold only for booking."},
-    {"branch": "design-b", "slug": "b", "label": "Option B", "name": "Inspired by The Lane", "blurb": "In progress."},
-    {"branch": "design-c", "slug": "c", "label": "Option C", "name": "Inspired by Yukie Natori New York", "blurb": "In progress."},
-    {"branch": "design-d", "slug": "d", "label": "Option D", "name": "Inspired by Element Salon", "blurb": "In progress."}
-  ]
+ "_readme": "Design branches shown on the GitHub Pages preview (tools/preview.py). Order = order on the chooser page.",
+ "designs": [
+  {
+   "branch": "main",
+   "slug": "a",
+   "label": "Option A",
+   "name": "Editorial menu (current)",
+   "blurb": "The design the team likes: printed-menu typography, the 28-portrait hero, gold only for booking."
+  },
+  {
+   "branch": "design-b",
+   "slug": "b",
+   "label": "Option B",
+   "name": "House Light · inspired by The Lane",
+   "blurb": "Quiet and airy: framed portraits on a warm plaster wall, flared capitals, Book always in the sticky strip."
+  },
+  {
+   "branch": "design-c",
+   "slug": "c",
+   "label": "Option C",
+   "name": "Bronze & Sand · inspired by Yukie Natori New York",
+   "blurb": "Bold and graphic: full-width sand and bronze bands, one modern sans, arrow capsules, leader-line menus."
+  },
+  {
+   "branch": "design-d",
+   "slug": "d",
+   "label": "Option D",
+   "name": "Open Door · inspired by Element Salon",
+   "blurb": "Bright and friendly: gold-framed white pages, a two-door hero, a black-and-white team wall, \"who does what\"."
+  }
+ ]
 }
