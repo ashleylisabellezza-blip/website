@@ -280,6 +280,8 @@
     if (!wrap) return;
     var chips = $$('button[data-filter]', wrap);
     var items = $$('.team-item');
+    var blocks = $$('[data-team-block]');
+    var alsos = $$('[data-also]');
     var live = $('[data-filter-count]');
     function apply(key, fromHash) {
       var shown = 0;
@@ -289,6 +291,9 @@
         var on = key === 'all' || depts.indexOf(key) > -1;
         li.hidden = !on; if (on) shown++;
       });
+      /* a department block with no visible card is hidden; an "Also in ..." line shows only with its own filter or All */
+      blocks.forEach(function (b) { b.hidden = !b.querySelector('.team-item:not([hidden])'); });
+      alsos.forEach(function (p) { p.hidden = !(key === 'all' || p.getAttribute('data-also').split(' ').indexOf(key) > -1); });
       var chip = chips.filter(function (c) { return c.getAttribute('data-filter') === key; })[0];
       if (live) live.textContent = 'Showing ' + shown + ' ' + (key === 'all' ? 'people' : (chip ? chip.getAttribute('data-noun') || chip.textContent.trim().toLowerCase() : ''));
       if (!fromHash) history.replaceState(null, '', key === 'all' ? location.pathname : '#filter-' + key);
@@ -327,6 +332,19 @@
     targets.forEach(function (t) { io.observe(t); });
   }
 
+  /* ---------- a #hash that points into a closed <details> (a ⊕ row) opens it ---------- */
+  function initHashDetails() {
+    function open() {
+      var id = location.hash.slice(1), el = null;
+      if (!id) return;
+      try { el = doc.getElementById(decodeURIComponent(id)); } catch (err) { return; }
+      var d = el && el.closest && el.closest('details');
+      if (d && !d.open) { d.open = true; if (d !== el) el.scrollIntoView({ block: 'start' }); }
+    }
+    open();
+    window.addEventListener('hashchange', open);
+  }
+
   /* ---------- map facade ---------- */
   function initMaps() {
     $$('[data-map]').forEach(function (btn) {
@@ -355,7 +373,7 @@
   function ready(fn) { if (doc.readyState !== 'loading') fn(); else doc.addEventListener('DOMContentLoaded', fn); }
   ready(function () {
     [applyStatus, applySeasons, initHeader, initServicesNav, initDrawer, initBookbar, initFocusClearance,
-      initDialogs, initTeamFilters, initScrollspy, initMaps, initAnalytics].forEach(function (fn) {
+      initDialogs, initTeamFilters, initScrollspy, initHashDetails, initMaps, initAnalytics].forEach(function (fn) {
       try { fn(); } catch (err) { if (window.console) console.error(err); }
     });
   });

@@ -26,7 +26,10 @@ It also fills live values from the page content, so numbers never drift:
                                       level word from the our-team.html title, specialty tag
     <ol data-level-key="hair nails" data-level-price="spec spec" data-level-labels="a|b">
                                       level key: a cell per level with its price(s), then the
-                                      people whose title carries that level
+                                      people whose title carries that level; data-level-ids="level-"
+                                      gives each cell an id (level-jr-associate ...)
+    <div data-level-line="austyn">    bio dialog: "At Senior level" with the women's cut and
+                                      all-over color (or gel manicure) prices at that level
 and the /* config:start */ block in assets/js/site.js (hours, holidays, URLs).
 
 Data lives in tools/site.json (business facts) and tools/pages.json (titles,
@@ -407,9 +410,10 @@ def _and(names):
     return names[0] if len(names) == 1 else ', '.join(names[:-1]) + ' and ' + names[-1]
 
 
-def level_key(depts, specs, labels, first=False):
+def level_key(depts, specs, labels, first=False, ids=''):
     """<li> cells for an ol[data-level-key]: one square per level that has a price (level in
-    caps, example price), then 40px black-and-white squares of the people at that level."""
+    caps, example price), then 40px black-and-white squares of the people at that level.
+    ids: an id prefix ('level-') for each cell, so links such as new-guests.html#level-senior land."""
     depts, specs = depts.split(), specs.split()
     labels = [l.strip() for l in labels.split('|')] if labels else []
     out = []
@@ -438,7 +442,37 @@ def level_key(depts, specs, labels, first=False):
         if notes:
             text = notes[0]['note']
             note = f'<p class="lk-note">{esc(_and([p["first"] for p in notes]))} {"are" if len(notes) > 1 else "is"} {esc(text[0].lower() + text[1:])}.</p>'
-        out.append(f'<li><p class="lk-cell">{cell}</p>{"".join(groups)}{note}</li>')
+        lid = f' id="{ids}{lvl.lower().replace(" ", "-")}"' if ids else ''
+        out.append(f'<li{lid}><p class="lk-cell">{cell}</p>{"".join(groups)}{note}</li>')
+    return ''.join(out)
+
+
+# The level line in each bio dialog (D7): the anchor prices at that person's level, read from
+# the menus. Massage is priced by duration and Emma's and Mia's titles carry no level (owner
+# question 8), so they get no line.
+LEVEL_LINE = {
+    'hair': [('Women\u2019s cut & finish', 'salon.html#cuts-women'), ('All-over color', 'salon.html#color-all-over')],
+    'nails': [('Gel manicure, no removal', 'tips-and-toes.html#gel-manicure-without-removal')],
+}
+
+
+def level_line(slug):
+    """Inner HTML for a div[data-level-line=slug]: 'At Senior level' over dotted-leader rows."""
+    p = team().get(slug)
+    if not p:
+        return ''
+    out = []
+    for disc, rows in LEVEL_LINE.items():
+        lvl = p['levels'].get(disc)
+        if not lvl:
+            continue
+        items = [(label, level_price(f'{spec}|{lvl}')) for label, spec in rows]
+        lis = ''.join(f'<li><span>{esc(label)}</span><span class="dots"></span><b>{esc(val)}</b></li>'
+                      for label, val in items if val)
+        if lis:
+            out.append(f'<p class="bl-head">At {esc(lvl)} level</p><ul class="bl-rows">{lis}</ul>')
+    if out and p['note']:
+        out.append(f'<p class="bl-note">{esc(p["first"])} is {esc(p["note"][0].lower() + p["note"][1:])}.</p>')
     return ''.join(out)
 
 
@@ -453,9 +487,9 @@ def _balanced_end(text, start, tag):
 
 
 def fill_blocks(text):
-    """Regenerate the contents of ul[data-who] and ol[data-level-key] elements."""
+    """Regenerate the contents of ul[data-who], ol[data-level-key] and div[data-level-line] elements."""
     out, pos = [], 0
-    for m in re.finditer(r'<(ul|ol)\b([^>]*\bdata-(?:who|level-key)="[^"]*"[^>]*)>', text):
+    for m in re.finditer(r'<(ul|ol|div)\b([^>]*\bdata-(?:who|level-key|level-line)="[^"]*"[^>]*)>', text):
         if m.start() < pos:
             continue
         tag, attrs = m.group(1), html.unescape(m.group(2))
@@ -467,8 +501,11 @@ def fill_blocks(text):
         first = main >= 0 and '<img' not in text[main:m.start()]
         if 'data-who' in a:
             inner = who_row(a['data-who'], a.get('data-who-dept', ''), first)
+        elif 'data-level-line' in a:
+            inner = level_line(a['data-level-line'])
         else:
-            inner = level_key(a['data-level-key'], a.get('data-level-price', ''), a.get('data-level-labels', ''), first)
+            inner = level_key(a['data-level-key'], a.get('data-level-price', ''), a.get('data-level-labels', ''), first,
+                              a.get('data-level-ids', ''))
         out.append(text[pos:m.end()] + inner + f'</{tag}>')
         pos = end
     out.append(text[pos:])

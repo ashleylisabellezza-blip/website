@@ -208,6 +208,27 @@ hope, jesyca, emma, mia, shannon-francis, melissa, aubree, grace, aeriannah.
 - The range line is a `div.range-card` (sibling of the head's text `div`) holding `ul.range` rows:
   `<li><span>Classic manicure</span><span class="dots"></span><span data-range="…">$31–40</span></li>`.
 - Related services: `<ul class="doors-mini"><li><a href="…"><span class="lb-k">Label</span><span class="lb-s">Named price</span></a></li></ul>`.
+- `data-level-ids="level-"` on an `ol.level-key` gives each cell an id (`level-jr-associate` …); new-guests.html uses it
+  so the `new-guests.html#level-senior` links land.
+- `<div class="bio-level" data-level-line="austyn"></div>` in a bio dialog: "At Senior level" over dotted-leader rows
+  (women's cut & finish and all-over color for hair titles, gel manicure without removal for nail titles, plus
+  "Ashley is behind the chair one day a week" where it applies). Massage (priced by length) and titles without a
+  level (Emma, Mia) get no line.
+
+**Option D team page** (`our-team.html`, D7): `div.team-block` holds the sticky
+`section.team-filters[data-team-filters]`, the quiz strip and `div.team-wall`. The wall is one
+`section.team-dept[data-team-block]` per block (Leadership, then Hair · Nails · Skin & waxing ·
+Massage · Medical aesthetics · Front desk), each an `h2` (`.cat-rule`, or `.dept-head` inside
+`div.team-row` for the three small departments) and its own `ul.team-grid`. Every person has
+exactly one `li.team-item` (one id), in the original order, so the schema is unchanged; a person
+who belongs to a second department is named in a `p.team-also[data-also="hair"]` line ("Also in
+hair: Ashley, Lisa and Devon, above"). `site.js` hides a block with no visible card and shows an
+"Also in" line only for All or its own filter. On the card: `button.card-bio` ("Bio & booking",
+stretched over the card), then `a[data-book]` and `a.card-ig` above it; `ul.tags` and `p.creds`
+stay in the card, visually hidden. In `dialog.bio` the first `<p>` after `span.role` is still the
+bio (the schema reads it); `p.bio-hook` (the credential line), `ul.bio-tags`, `div.bio-level`,
+`div.bio-actions` (gold "Book · ask for {name}" + round `a.ig-round`) and `p.bio-links` follow it,
+and CSS moves the hook up under the role line.
 
 **Status line:** `<span data-status="name" hidden></span>` becomes "Open now · until
 8pm" etc.
@@ -233,7 +254,8 @@ optional fields labeled `<span class="opt">(optional)</span>`, required fields g
 `<p class="privacy-note">How we use this information: <a href="policies.html#privacy">privacy</a>.</p>`
 and `<button class="btn btn--strong" type="submit">Send inquiry</button>` (never "Submit").
 
-**Photo slot** (owner-only, never public): `<div class="ph" hidden aria-hidden="true" data-ph="03" data-ph-note="Gel application close-up, 4:5, min 1600px" style="--ar:4/5"></div>`.
+**Photo slot** (owner-only, never public): `<div class="ph" hidden aria-hidden="true" data-ph="03" data-ph-note="Gel application close-up, 4:5, min 1600px"></div>`
+(default 4:5; add `class="ph ph--3x2"` for 3:2; no inline `style`).
 
 ## 5. Available real images
 

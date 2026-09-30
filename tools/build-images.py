@@ -45,7 +45,10 @@ What it makes (all new files; no source image is modified or overwritten):
           1:1 crop from the top of gallery-3 that keeps the wall sign and both faces
           and drops the retail packaging and the counter card lower in the frame),
           and team/devon-720 (the expertise-split portrait at 2x, from the native
-          720px source)
+          720px source); team/stephanie-720 and team/janet-600 (the team page's
+          leadership row at 2x, native width); join/gallery-2-c80-{400,800} (the
+          centre 80% inside gallery-2's baked-in vignette) and native-width
+          join/{gallery-1-1200,join-2-1200,join-3-1200} (About, D7)
 
 Idempotent: an output is skipped when it exists and is newer than both its
 source(s) and this script. Every run ends with a table of every output path,
@@ -582,6 +585,30 @@ def build_optd() -> None:
             continue
         build_set(IMG / "team" / f"{slug}-720", [IMG / "team" / f"{slug}.jpg"],
                   lambda c=crop: resize_w(c, 720), "portrait-720")
+    # Team page leadership row (D7): Devon, Stephanie and Janet render at about 320px
+    # square, so each needs a 2x file up to its native width (Janet's source is 600 wide).
+    for slug in ("stephanie", "janet"):
+        crop = portrait(slug)
+        w = min(720, crop.width)
+        build_set(IMG / "team" / f"{slug}-{w}", [IMG / "team" / f"{slug}.jpg"],
+                  lambda c=crop, w=w: resize_w(c, w), "portrait-720")
+    # About (D7): the 3-up candid strip in color. gallery-2 has a white vignette baked in,
+    # so it is only used as its centre 80% (DESIGN-OPTIONS §0); gallery-1 and the two
+    # education photos (join-2, join-3) get a native-width file for 2x on wide layouts.
+    g2 = IMG / "join" / "gallery-2.jpg"
+
+    def centre80(w: int) -> Image.Image:
+        im = load_rgb(g2)
+        dx, dy = round(im.width * 0.1), round(im.height * 0.1)
+        return resize_w(im.crop((dx, dy, im.width - dx, im.height - dy)), w)
+
+    for w in (400, 800):
+        build_set(IMG / "join" / f"gallery-2-c80-{w}", [g2], lambda w=w: centre80(w))
+    for name in ("gallery-1", "join-2", "join-3"):
+        src = IMG / "join" / f"{name}.jpg"
+        native = Image.open(src).width
+        build_set(IMG / "join" / f"{name}-{native}", [src],
+                  lambda s=src, n=native: resize_w(load_rgb(s), n))
 
 
 GROUPS = {

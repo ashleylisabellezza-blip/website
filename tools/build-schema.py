@@ -421,7 +421,8 @@ def first_image(page):
     main = main_of(page)
     for src in IMG_SRC.findall(main):
         src = local_asset(src)
-        if src.startswith('assets/img/') and not src.startswith('assets/img/badge'):
+        if src.startswith('assets/img/') and not src.startswith('assets/img/badge') \
+                and not re.match(r'assets/img/team/[\w-]+-180\.', src):  # 40px level-key faces are not a page image
             return SITE + src
     return SITE + DEFAULT_IMAGE
 

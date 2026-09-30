@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/img/favicon.png?v=e1fdb5c9">
 <link rel="preload" href="assets/fonts/archivo-var-latin.woff2?v=fd045474" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/styles.css?v=19cc2337">
+<link rel="stylesheet" href="assets/css/styles.css?v=98e746df">
 <meta name="apple-itunes-app" content="app-id=1314312155">
 <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":{"pathname":"/*.html","search":""}},{"not":{"href_matches":["/brides.html","/pick-up-orders.html","/join-our-team.html"]}},{"not":{"selector_matches":"[data-no-prefetch]"}}]},"eagerness":"moderate"}]}</script>
 <!-- partial:head:end -->
@@ -157,7 +157,7 @@
   <div class="container grid-7-5">
     <div>
       <p class="eyebrow">New guests</p>
-      <h1 id="page-h">Your first visit</h1>
+      <h1 id="page-h" class="h1-caps">Your first visit</h1>
       <p class="lede">New to Bellezza? Here is how to choose who to see, how our prices work, how to book, and the few things we ask of every guest.</p>
       <div class="btn-row" data-hero-ctas>
         <a class="btn btn--book" href="https://login.meevo.com/bellezza/ob?locationId=103245" data-book data-cta="book" data-placement="head">Book an appointment</a>
@@ -165,172 +165,133 @@
       </div>
       <p class="microcopy">Book online 24/7 on our online booking page (Meevo), in the Bellezza app, or call us. Changes need 24 hours&rsquo; notice. <a href="policies.html#changes">Policies</a></p>
     </div>
-    <div class="ph" hidden aria-hidden="true" data-ph="13" data-ph-note="Front desk welcome (Client Services), 3:2, min 1600px wide" style="--ar:3/2"></div>
+    <div class="ph ph--3x2" hidden aria-hidden="true" data-ph="13" data-ph-note="Front desk welcome (Client Services), 3:2, min 1600px wide"></div>
   </div>
 </section>
 
-<nav class="jump-chips" aria-label="On this page"><div class="container"><span class="chips-label">On this page</span><ul class="chips"><li><a href="#choose">Choose who to see</a></li><li><a href="#levels">How pricing works</a></li><li><a href="#book">How to book</a></li><li><a href="#changes">Changes &amp; cancellations</a></li><li><a href="#etiquette">Salon etiquette</a></li><li><a href="#good-to-know">Good to know</a></li><li><a href="#faq">New guest questions</a></li></ul></div></nav>
+<nav class="jump-chips" aria-label="On this page"><div class="container"><span class="chips-label">On this page</span><ul class="chips"><li><a href="#steps">Three steps</a></li><li><a href="#levels">How pricing works</a></li><li><a href="#policies">Policies</a></li><li><a href="#faq">New guest questions</a></li></ul></div></nav>
 
-<section class="section section--tight" id="choose" aria-labelledby="choose-h">
+<!-- the three-step row: each step is a cell in an ink outline, numbered (steps, not section numbers) -->
+<section class="section section--after-chips" id="steps" aria-labelledby="steps-h">
   <div class="container">
-    <h2 id="choose-h">Choose who to see</h2>
-    <p>Every provider has a photo, title and bio on Meet the Team. Browse by specialty:</p>
-    <div class="grid-7-5 items-start">
-    <div>
-    <ul class="link-list link-list--single">
-      <li><a href="our-team.html#filter-hair">Hair stylists<small><span data-count="dept-hair">12</span> on the team</small></a></li>
-      <li><a href="our-team.html#filter-nails">Nail artists<small><span data-count="dept-nails">8</span> on the team</small></a></li>
-      <li><a href="our-team.html#filter-skin">Skin &amp; waxing<small><span data-count="dept-skin">2</span> on the team</small></a></li>
-      <li><a href="our-team.html#filter-massage">Massage<small><span data-count="dept-massage">1</span> on the team</small></a></li>
-      <li><a href="our-team.html#filter-makeup">Makeup<small><span data-count="dept-makeup">3</span> on the team</small></a></li>
-    </ul>
-    <p class="mt-5">Our front desk: <a href="our-team.html#melissa">Melissa</a>, <a href="our-team.html#aubree">Aubree</a>, <a href="our-team.html#grace">Grace</a> and <a href="our-team.html#aeriannah">Aeriannah</a>.</p>
+    <div class="section-head">
+      <h2 id="steps-h">Your first visit, in three steps</h2>
+      <p>Everything you need before you book, with nothing to sign up for.</p>
     </div>
-    <!-- OWNER: is the Mya match quiz live, and does it end with a booking link? (owner question 4). If not, remove this callout (keep its call line) and the quiz link in the first FAQ answer below. -->
-    <div class="quiz-callout">
-      <h3>Not sure who to book? Find your match.</h3>
-      <p>Tell the match quiz what you&rsquo;re looking for and it suggests who to book.</p>
-      <p><a class="btn btn--strong" href="https://app.joinmya.com/bellezza" data-cta="quiz" data-placement="guests-choose">Take the match quiz</a></p>
-      <p>Or call <a href="tel:+17403661604" data-cta="call" data-placement="guests-choose">740-366-1604</a> and our front desk will match you.</p>
-    </div>
-    </div>
-  </div>
-</section>
-
-<section class="section section--tight" id="levels" aria-labelledby="levels-h">
-  <div class="container">
-    <h2 id="levels-h">How pricing works</h2>
-    <div class="grid-7-5 items-start">
-    <div>
-    <p>Most services are priced by your provider&rsquo;s level. Hair has five levels: Jr Associate, Associate, Senior, Expert and Master. Nails and skin have three: Associate, Senior and Expert.</p>
-    <p><strong>Levels set the price. Book the level that fits your budget.</strong></p>
-    <!-- OWNER: may we add "Levels reflect experience. Every level is fully trained."? (owner question 23). Nothing else is said about what a level means until you confirm it. -->
-    <!-- OWNER: the example prices below are copied from salon.html (Women's Haircut & Finish) and tips-and-toes.html (Gel Manicure without removal). Update them here whenever those menus change. -->
-    <p>Most of our stylists and nail artists have their level in their title on <a href="our-team.html">Meet the Team</a>, for example Austyn, Senior Hair Stylist. See the full menus for <a href="salon.html#cuts-women">haircuts</a> and <a href="tips-and-toes.html#manicures">manicures</a>, or <a href="services.html">all services &amp; prices</a>.</p>
-    </div>
-    <div>
-    <div class="table-scroll">
-      <table class="hours level-prices">
-        <caption>Example prices by level</caption>
-        <thead>
-          <tr><th scope="col">Level</th><th scope="col">Women&rsquo;s haircut &amp; finish</th><th scope="col">Gel manicure without removal</th></tr>
-        </thead>
-        <tbody>
-          <tr id="level-jr-associate"><th class="nowrap" scope="row">Jr Associate</th><td>$37</td><td><span aria-hidden="true">&mdash;</span><span class="sr-only">Hair level only</span></td></tr>
-          <tr id="level-associate"><th class="nowrap" scope="row">Associate</th><td>$40</td><td>$44</td></tr>
-          <tr id="level-senior"><th class="nowrap" scope="row">Senior</th><td>$48</td><td>$49</td></tr>
-          <tr id="level-expert"><th class="nowrap" scope="row">Expert</th><td>$50</td><td>$53</td></tr>
-          <tr id="level-master"><th class="nowrap" scope="row">Master</th><td>$60</td><td><span aria-hidden="true">&mdash;</span><span class="sr-only">Hair level only</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="microcopy">Jr Associate and Master are hair levels only.</p>
-    <time class="asof" data-asof datetime="2026-09">Prices as of September 2026</time>
-    </div>
-    </div>
-  </div>
-</section>
-
-<section class="section section--tight" id="book" aria-labelledby="book-h">
-  <div class="container">
-    <h2 id="book-h">How to book</h2>
-    <div class="trio mt-6">
-      <div>
-        <h3>Online, any time</h3>
-        <p>Choose your service, provider and time on our online booking page (Meevo). <a href="book-online.html">How online booking works</a></p>
-        <div class="btn-row"><a class="btn btn--book" href="https://login.meevo.com/bellezza/ob?locationId=103245" data-book data-cta="book" data-placement="guests-how">Book online</a></div>
-      </div>
-      <div>
-        <h3>In the Bellezza app</h3>
+    <ol class="first-steps first-steps--full">
+      <li id="choose">
+        <h3>Choose your provider</h3>
+        <p>Every provider has a photo, title and bio on <a href="our-team.html">Meet the Team</a>. Browse by specialty:</p>
+        <ul class="step-links">
+          <li><a href="our-team.html#filter-hair"><span>Hair stylists</span><span class="dots"></span><span><span data-count="dept-hair">12</span></span></a></li>
+          <li><a href="our-team.html#filter-nails"><span>Nail artists</span><span class="dots"></span><span><span data-count="dept-nails">8</span></span></a></li>
+          <li><a href="our-team.html#filter-skin"><span>Skin &amp; waxing</span><span class="dots"></span><span><span data-count="dept-skin">2</span></span></a></li>
+          <li><a href="our-team.html#filter-massage"><span>Massage</span><span class="dots"></span><span><span data-count="dept-massage">1</span></span></a></li>
+          <li><a href="our-team.html#filter-makeup"><span>Makeup</span><span class="dots"></span><span><span data-count="dept-makeup">3</span></span></a></li>
+        </ul>
+        <p class="step-note">Our front desk: <a href="our-team.html#melissa">Melissa</a>, <a href="our-team.html#aubree">Aubree</a>, <a href="our-team.html#grace">Grace</a> and <a href="our-team.html#aeriannah">Aeriannah</a>.</p>
+      </li>
+      <li id="book">
+        <h3>Book your time</h3>
+        <p><strong>Online, any time:</strong> choose your service, provider and time on our online booking page (Meevo). <a href="book-online.html">How online booking works</a></p>
+        <p><a class="step-link" href="https://login.meevo.com/bellezza/ob?locationId=103245" data-book data-cta="book" data-placement="guests-how">Book online</a></p>
         <!-- OWNER: the app listings are still named "Bellezza Salon & Day Spa" (owner question 26). Remove the second sentence below once they are renamed to "Bellezza & Co.". -->
-        <p>Book from your phone on iPhone or Android. In the app stores it is still listed as Bellezza Salon &amp; Day Spa.</p>
-        <div class="btn-row">
-        <a href="https://apps.apple.com/us/app/bellezza-salon-day-spa/id1314312155"><img src="assets/img/badge-app-store.jpg" alt="Download the Bellezza app on the App Store" width="135" height="48" decoding="async"></a>
-        <a href="https://play.google.com/store/apps/details?id=com.webappclouds.bellezzaspa"><img src="assets/img/badge-google-play.png" alt="Get the Bellezza app on Google Play" width="164" height="48" loading="lazy" decoding="async"></a>
+        <p><strong>In the Bellezza app:</strong> book from your phone on iPhone or Android. In the app stores it is still listed as Bellezza Salon &amp; Day Spa.</p>
+        <div class="app-badges btn-row">
+          <a href="https://apps.apple.com/us/app/bellezza-salon-day-spa/id1314312155"><img src="assets/img/badge-app-store.jpg" alt="Download the Bellezza app on the App Store" width="135" height="48" decoding="async"></a>
+          <a href="https://play.google.com/store/apps/details?id=com.webappclouds.bellezzaspa"><img src="assets/img/badge-google-play.png" alt="Get the Bellezza app on Google Play" width="164" height="48" loading="lazy" decoding="async"></a>
         </div>
-      </div>
+        <p><strong>By phone:</strong> call us during opening hours and our front desk will book you in. <a href="tel:+17403661604" data-cta="call" data-placement="guests-how">740-366-1604</a> · <a href="contact-us.html">Hours &amp; directions</a></p>
+      </li>
+      <li id="changes">
+        <h3>Need a change?</h3>
+        <p>Please give us at least 24 hours&rsquo; notice to change, reschedule or cancel. It lets us offer your time to another guest and respects your provider&rsquo;s schedule.</p>
+        <p>Cancelling or rescheduling within 24 hours of your appointment counts as a same-day cancellation. <a href="#no-shows">What happens after a no-show</a></p>
+      </li>
+    </ol>
+    <p class="steps-after">Treating someone else? <a href="gift-cards.html">Send a Bellezza <span class="nocase">e</span>Gift card</a>.</p>
+    <!-- OWNER: is the Mya match quiz live, and does it end with a booking link? (owner question 4). If not, remove this callout (keep its call line) and the quiz link in the first FAQ answer below. -->
+    <div class="quiz-strip">
       <div>
-        <h3>By phone</h3>
-        <p>Call us during opening hours and our front desk will book you in. <a href="contact-us.html">Hours &amp; directions</a></p>
-        <div class="btn-row"><a class="btn btn--outline" href="tel:+17403661604" data-cta="call" data-placement="guests-how">Call 740-366-1604</a></div>
+        <h3 id="quiz-h">Not sure who to book? Find your match.</h3>
+        <p>Tell the match quiz what you&rsquo;re looking for and it suggests who to book.</p>
+      </div>
+      <div class="qs-act">
+        <a class="btn btn--strong" href="https://app.joinmya.com/bellezza" data-cta="quiz" data-placement="guests-choose">Take the match quiz</a>
+        <p>Or call <a href="tel:+17403661604" data-cta="call" data-placement="guests-choose">740-366-1604</a> and our front desk will match you.</p>
       </div>
     </div>
-    <p class="mt-7 mb-0">Treating someone else? <a href="gift-cards.html">Send a Bellezza eGift card</a>.</p>
   </div>
 </section>
 
-<section class="section section--tight" id="changes" aria-labelledby="changes-h">
-  <div class="container sec-split">
-    <div>
-      <h2 id="changes-h">Changes &amp; cancellations</h2>
-      <p>Please give us at least 24 hours&rsquo; notice to change, reschedule or cancel. It lets us offer your time to another guest and respects your provider&rsquo;s schedule.</p>
-      <p>Cancelling or rescheduling within 24 hours of your appointment counts as a same-day cancellation. After a no-show or a same-day cancellation:</p>
-    </div>
-    <div>
-      <ol class="steps">
-        <li><span><strong>First time:</strong> a friendly reminder of our policy is noted in your account.</span></li>
-        <li><span><strong>Second time:</strong> a 50% deposit is required to book future services.</span></li>
-        <li><span><strong>Third time:</strong> full prepayment (100%) is required to book future appointments.</span></li>
-      </ol>
-      <p>Deposits are non-refundable without 24 hours&rsquo; notice. Deposit and prepayment requirements stay in place until a consistent appointment history is re-established. <a href="policies.html#no-shows">Read the full policy</a></p>
+<!-- the level key with A's examples (a women's haircut & finish, a gel manicure without removal); prices and faces are stamped by tools/build.py from the menus and the our-team.html titles -->
+<section class="section section--flush-top no-rule" id="levels" aria-labelledby="levels-h">
+  <div class="container">
+    <div class="level-block level-block--page">
+      <h2 id="levels-h">How pricing works</h2>
+      <p class="level-intro">Most services are priced by your provider&rsquo;s level. Hair has five levels: Jr Associate, Associate, Senior, Expert and Master. Nails and skin have three: Associate, Senior and Expert.</p>
+      <!-- OWNER: may we add "Levels reflect experience. Every level is fully trained."? (owner question 23). Nothing else is said about what a level means until you confirm it. -->
+      <ol class="level-key" data-level-key="hair nails" data-level-price="salon.html#cuts-women tips-and-toes.html#gel-manicure-without-removal" data-level-labels="Women’s cut|Gel manicure" data-level-ids="level-"><li id="level-jr-associate"><p class="lk-cell"><span class="lk-lvl">Jr Associate</span> <span class="lk-row">Women’s cut <b>$37</b></span></p><p class="lk-dept">Hair</p><ul class="lk-people"><li><a href="our-team.html#mya"><picture><source type="image/avif" srcset="assets/img/team/mya-180.avif"><source type="image/webp" srcset="assets/img/team/mya-180.webp"><img src="assets/img/team/mya-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Mya</span></a></li><li><a href="our-team.html#kat"><picture><source type="image/avif" srcset="assets/img/team/kat-180.avif"><source type="image/webp" srcset="assets/img/team/kat-180.webp"><img src="assets/img/team/kat-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Kat</span></a></li></ul></li><li id="level-associate"><p class="lk-cell"><span class="lk-lvl">Associate</span> <span class="lk-row">Women’s cut <b>$40</b></span> <span class="lk-row">Gel manicure <b>$44</b></span></p><p class="lk-dept">Hair</p><ul class="lk-people"><li><a href="our-team.html#lizbeth"><picture><source type="image/avif" srcset="assets/img/team/lizbeth-180.avif"><source type="image/webp" srcset="assets/img/team/lizbeth-180.webp"><img src="assets/img/team/lizbeth-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Lizbeth</span></a></li><li><a href="our-team.html#taylor-f"><picture><source type="image/avif" srcset="assets/img/team/taylor-f-180.avif"><source type="image/webp" srcset="assets/img/team/taylor-f-180.webp"><img src="assets/img/team/taylor-f-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Taylor F</span></a></li></ul><p class="lk-dept">Nails</p><ul class="lk-people"><li><a href="our-team.html#raegan"><picture><source type="image/avif" srcset="assets/img/team/raegan-180.avif"><source type="image/webp" srcset="assets/img/team/raegan-180.webp"><img src="assets/img/team/raegan-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Raegan</span></a></li><li><a href="our-team.html#rissa"><picture><source type="image/avif" srcset="assets/img/team/rissa-180.avif"><source type="image/webp" srcset="assets/img/team/rissa-180.webp"><img src="assets/img/team/rissa-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Rissa</span></a></li><li><a href="our-team.html#hope"><picture><source type="image/avif" srcset="assets/img/team/hope-180.avif"><source type="image/webp" srcset="assets/img/team/hope-180.webp"><img src="assets/img/team/hope-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Hope</span></a></li></ul></li><li id="level-senior"><p class="lk-cell"><span class="lk-lvl">Senior</span> <span class="lk-row">Women’s cut <b>$48</b></span> <span class="lk-row">Gel manicure <b>$49</b></span></p><p class="lk-dept">Hair</p><ul class="lk-people"><li><a href="our-team.html#austyn"><picture><source type="image/avif" srcset="assets/img/team/austyn-180.avif"><source type="image/webp" srcset="assets/img/team/austyn-180.webp"><img src="assets/img/team/austyn-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Austyn</span></a></li><li><a href="our-team.html#cherish"><picture><source type="image/avif" srcset="assets/img/team/cherish-180.avif"><source type="image/webp" srcset="assets/img/team/cherish-180.webp"><img src="assets/img/team/cherish-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Cherish</span></a></li><li><a href="our-team.html#liv"><picture><source type="image/avif" srcset="assets/img/team/liv-180.avif"><source type="image/webp" srcset="assets/img/team/liv-180.webp"><img src="assets/img/team/liv-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Liv</span></a></li></ul><p class="lk-dept">Nails</p><ul class="lk-people"><li><a href="our-team.html#madison"><picture><source type="image/avif" srcset="assets/img/team/madison-180.avif"><source type="image/webp" srcset="assets/img/team/madison-180.webp"><img src="assets/img/team/madison-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Madison</span></a></li><li><a href="our-team.html#shelbi"><picture><source type="image/avif" srcset="assets/img/team/shelbi-180.avif"><source type="image/webp" srcset="assets/img/team/shelbi-180.webp"><img src="assets/img/team/shelbi-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Shelbi</span></a></li></ul></li><li id="level-expert"><p class="lk-cell"><span class="lk-lvl">Expert</span> <span class="lk-row">Women’s cut <b>$50</b></span> <span class="lk-row">Gel manicure <b>$53</b></span></p><p class="lk-dept">Hair</p><ul class="lk-people"><li><a href="our-team.html#emilie"><picture><source type="image/avif" srcset="assets/img/team/emilie-180.avif"><source type="image/webp" srcset="assets/img/team/emilie-180.webp"><img src="assets/img/team/emilie-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Emilie</span></a></li></ul><p class="lk-dept">Nails</p><ul class="lk-people"><li><a href="our-team.html#stephanie"><picture><source type="image/avif" srcset="assets/img/team/stephanie-180.avif"><source type="image/webp" srcset="assets/img/team/stephanie-180.webp"><img src="assets/img/team/stephanie-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Stephanie</span></a></li><li><a href="our-team.html#paige"><picture><source type="image/avif" srcset="assets/img/team/paige-180.avif"><source type="image/webp" srcset="assets/img/team/paige-180.webp"><img src="assets/img/team/paige-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Paige</span></a></li></ul></li><li id="level-master"><p class="lk-cell"><span class="lk-lvl">Master</span> <span class="lk-row">Women’s cut <b>$60</b></span></p><p class="lk-dept">Hair</p><ul class="lk-people"><li><a href="our-team.html#ashley-basham"><picture><source type="image/avif" srcset="assets/img/team/ashley-basham-180.avif"><source type="image/webp" srcset="assets/img/team/ashley-basham-180.webp"><img src="assets/img/team/ashley-basham-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Ashley</span></a></li><li><a href="our-team.html#lisa-jeffries"><picture><source type="image/avif" srcset="assets/img/team/lisa-jeffries-180.avif"><source type="image/webp" srcset="assets/img/team/lisa-jeffries-180.webp"><img src="assets/img/team/lisa-jeffries-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Lisa</span></a></li><li><a href="our-team.html#devon"><picture><source type="image/avif" srcset="assets/img/team/devon-180.avif"><source type="image/webp" srcset="assets/img/team/devon-180.webp"><img src="assets/img/team/devon-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Devon</span></a></li><li><a href="our-team.html#moriah"><picture><source type="image/avif" srcset="assets/img/team/moriah-180.avif"><source type="image/webp" srcset="assets/img/team/moriah-180.webp"><img src="assets/img/team/moriah-180.jpg" width="180" height="240" alt="" loading="lazy" decoding="async"></picture><span>Moriah</span></a></li></ul><p class="lk-note">Ashley and Lisa are behind the chair one day a week.</p></li></ol>
+      <p class="level-note">Levels set the price. Book the level that fits your budget.</p>
+      <p class="level-more">A women&rsquo;s cut is a Women&rsquo;s Haircut &amp; Finish; a gel manicure is without removal. Jr Associate and Master are hair levels only. Most of our stylists and nail artists have their level in their title on <a href="our-team.html">Meet the Team</a>, for example Austyn, Senior Hair Stylist. See the full menus for <a href="salon.html#cuts-women">haircuts</a> and <a href="tips-and-toes.html#manicures">manicures</a>, or <a href="services.html">all services &amp; prices</a>.</p>
+      <time class="asof" data-asof datetime="2026-09">Prices as of September 2026</time>
     </div>
   </div>
 </section>
 
-<section class="section section--tight" id="etiquette" aria-labelledby="etiquette-h">
-  <div class="container sec-split">
-    <div>
-      <h2 id="etiquette-h">Salon etiquette</h2>
-      <p>To keep the salon and spa relaxing for everyone, we ask every guest to:</p>
+<!-- the policies and the FAQ as ⊕ rows, on sheen -->
+<section class="section sheen" id="policies" aria-labelledby="policies-h">
+  <div class="container container--narrow">
+    <div class="section-head">
+      <h2 id="policies-h">Policies, in short</h2>
+      <p>The few things we ask of every guest. <a href="policies.html">Read our full policies</a></p>
     </div>
-    <div>
-      <ul class="rule-list">
-        <li>Turn off or silence your phone ringer.</li>
-        <li>Skip speakerphone while you&rsquo;re in the salon or spa.</li>
-        <li>Speak quietly in shared spaces.</li>
-        <li>Arrange childcare while you&rsquo;re here for your own services.</li>
-      </ul>
-      <!-- OWNER: do you take children as clients, and for which services? (owner question 19; Tiny Tips and Tiny Toes are on the nail menu). Add that answer here and to the FAQ once confirmed. -->
-      <p class="mt-5"><a href="policies.html#etiquette">Our etiquette policy</a></p>
+    <div class="faq">
+      <details id="no-shows" name="policies-new-guests"><summary>No-shows and same-day cancellations</summary><div>
+        <p>After a no-show or a same-day cancellation:</p>
+        <ol class="steps">
+          <li><span><strong>First time:</strong> a friendly reminder of our policy is noted in your account.</span></li>
+          <li><span><strong>Second time:</strong> a 50% deposit is required to book future services.</span></li>
+          <li><span><strong>Third time:</strong> full prepayment (100%) is required to book future appointments.</span></li>
+        </ol>
+        <p>Deposits are non-refundable without 24 hours&rsquo; notice. Deposit and prepayment requirements stay in place until a consistent appointment history is re-established. <a href="policies.html#no-shows">Read the full policy</a></p>
+      </div></details>
+      <details id="etiquette" name="policies-new-guests"><summary>Salon etiquette</summary><div>
+        <p>To keep the salon and spa relaxing for everyone, we ask every guest to:</p>
+        <ul class="rule-list">
+          <li>Turn off or silence your phone ringer.</li>
+          <li>Skip speakerphone while you&rsquo;re in the salon or spa.</li>
+          <li>Speak quietly in shared spaces.</li>
+          <li>Arrange childcare while you&rsquo;re here for your own services.</li>
+        </ul>
+        <!-- OWNER: do you take children as clients, and for which services? (owner question 19; Tiny Tips and Tiny Toes are on the nail menu). Add that answer here and to the FAQ once confirmed. -->
+        <p><a href="policies.html#etiquette">Our etiquette policy</a></p>
+      </div></details>
+      <details id="good-to-know" name="policies-new-guests"><summary>Good to know: deposits, gift cards and weddings</summary><div>
+        <ul class="rule-list">
+          <li><strong>Keratin:</strong> the GK Keratin Smoothing Treatment needs a consultation and a $50 deposit before scheduling, and 48 hours&rsquo; notice to cancel without losing your deposit. <a href="salon.html#texture">Texture services</a></li>
+          <li><strong>Consultation first:</strong> Platinum Card Color needs a consultation and a deposit before booking. Fantasy color and specialty braiding are priced at a consultation. <a href="salon.html#color-platinum">Platinum Card Color</a> · <a href="salon.html#fantasy">Fantasy color</a></li>
+          <li><strong>Gift cards:</strong> Bellezza gift cards are not accepted at Slay Aesthetics. <a href="gift-cards.html">Gift cards</a></li>
+          <li><strong>Slay Aesthetics:</strong> Shannon Francis, CNP, of Slay Aesthetics offers treatments at Bellezza &amp; Co. on Fridays, 10am&ndash;6pm. <a href="slay-aesthetics.html">Slay Aesthetics at Bellezza</a></li>
+          <li><strong>Weddings:</strong> our bridal travel team can do your hair and makeup on location, for a fee. <a href="brides.html">Bridal hair &amp; makeup</a></li>
+        </ul>
+        <!-- OWNER: answers needed before these go on the page (owner question 19): are walk-ins accepted, and for which services? Payment methods? Gratuity policy? Wheelchair access? Children as clients? How early should a new guest arrive? -->
+        <!-- OWNER: parking and arrival guidance for new guests goes here once you confirm it (owner question 5). -->
+      </div></details>
     </div>
-  </div>
-</section>
 
-<section class="section section--tight" id="good-to-know" aria-labelledby="good-h">
-  <div class="container sec-split">
-    <div>
-      <h2 id="good-h">Good to know</h2>
-    </div>
-    <div>
-      <ul class="rule-list">
-        <li><strong>Keratin:</strong> the GK Keratin Smoothing Treatment needs a consultation and a $50 deposit before scheduling, and 48 hours&rsquo; notice to cancel without losing your deposit. <a href="salon.html#texture">Texture services</a></li>
-      <li><strong>Consultation first:</strong> Platinum Card Color needs a consultation and a deposit before booking. Fantasy color and specialty braiding are priced at a consultation. <a href="salon.html#color-platinum">Platinum Card Color</a> · <a href="salon.html#fantasy">Fantasy color</a></li>
-      <li><strong>Gift cards:</strong> Bellezza gift cards are not accepted at Slay Aesthetics. <a href="gift-cards.html">Gift cards</a></li>
-      <li><strong>Slay Aesthetics:</strong> Shannon Francis, CNP, of Slay Aesthetics offers treatments at Bellezza &amp; Co. on Fridays, 10am&ndash;6pm. <a href="slay-aesthetics.html">Slay Aesthetics at Bellezza</a></li>
-      <li><strong>Weddings:</strong> our bridal travel team can do your hair and makeup on location, for a fee. <a href="brides.html">Bridal hair &amp; makeup</a></li>
-    </ul>
-      <!-- OWNER: answers needed before these go on the page (owner question 19): are walk-ins accepted, and for which services? Payment methods? Gratuity policy? Wheelchair access? Children as clients? How early should a new guest arrive? -->
-      <!-- OWNER: parking and arrival guidance for new guests goes here once you confirm it (owner question 5). -->
-    </div>
-  </div>
-</section>
-
-<section class="section section--tight" id="faq" aria-labelledby="faq-h">
-  <div class="container sec-split">
-    <div>
+    <div class="section-head section-head--sub" id="faq">
       <h2 id="faq-h">New guest questions</h2>
     </div>
-    <div>
     <div class="faq">
       <details name="faq-new-guests"><summary>How do I choose who to book?</summary><div><p>Browse <a href="our-team.html">Meet the Team</a> by specialty: every provider has a photo, title and bio. Or take the <a href="https://app.joinmya.com/bellezza" data-cta="quiz" data-placement="guests-faq">match quiz</a>, or call <a href="tel:+17403661604" data-cta="call" data-placement="guests-faq">740-366-1604</a> and our front desk will match you.</p></div></details>
-      <details name="faq-new-guests"><summary>Why do prices differ between providers?</summary><div><p>Most services are priced by the provider&rsquo;s level: Jr Associate, Associate, Senior, Expert and Master for hair, and Associate, Senior and Expert for nails and skin. For example, a women&rsquo;s haircut &amp; finish is $37 with a Jr Associate and $60 with a Master. Levels set the price. Book the level that fits your budget. <a href="#levels">How pricing works</a></p></div></details>
+      <details name="faq-new-guests"><summary>Why do prices differ between providers?</summary><div><p>Most services are priced by the provider&rsquo;s level: Jr Associate, Associate, Senior, Expert and Master for hair, and Associate, Senior and Expert for nails and skin. For example, a women&rsquo;s haircut &amp; finish is <span data-level="salon.html#cuts-women|Jr Associate">$37</span> with a Jr Associate and <span data-level="salon.html#cuts-women|Master">$60</span> with a Master. Levels set the price. Book the level that fits your budget. <a href="#levels">How pricing works</a></p></div></details>
       <details name="faq-new-guests"><summary>How do I book?</summary><div><p>Online 24/7 on our online booking page (Meevo), in the Bellezza app for iPhone or Android, or by calling 740-366-1604 during opening hours. <a href="#book">How to book</a></p></div></details>
       <details name="faq-new-guests"><summary>How much notice do I need to give to change or cancel?</summary><div><p>At least 24 hours&rsquo; notice for any appointment change, reschedule or cancellation. <a href="policies.html#changes">Changes policy</a></p></div></details>
       <details name="faq-new-guests"><summary>What happens after a no-show or same-day cancellation?</summary><div><p>The first time, a friendly reminder of our policy is noted in your account. The second time, a 50% deposit is required to book future services. The third time, full prepayment (100%) is required to book future appointments. <a href="policies.html#no-shows">No-show policy</a></p></div></details>
       <details name="faq-new-guests"><summary>Can I bring my kids to my appointment?</summary><div><p>We ask that childcare arrangements be made while you are here for your own services, so that all guests can enjoy a relaxing visit. <a href="policies.html#etiquette">Etiquette policy</a></p></div></details>
       <details name="faq-new-guests"><summary>Do any services need a consultation or a deposit?</summary><div><p>The GK Keratin Smoothing Treatment needs a consultation and a $50 deposit before scheduling. Platinum Card Color needs a consultation and a deposit before booking. Fantasy color and specialty braiding are priced at a consultation. <a href="policies.html#deposits">Deposits</a></p></div></details>
       <details name="faq-new-guests"><summary>Can I use a Bellezza gift card at Slay Aesthetics?</summary><div><p>No. Bellezza gift cards are not accepted at Slay Aesthetics. <a href="policies.html#gift-cards">Gift card policy</a></p></div></details>
-    </div>
     </div>
   </div>
 </section>
@@ -368,7 +329,7 @@
 </div>
 </footer>
 <nav class="bookbar" aria-label="Menu, call and book" data-bookbar="always" data-hidden="false"><a class="tb-cell tb-menu" href="#footer-nav" data-menu-toggle><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg><span>Menu</span></a><a class="tb-cell tb-call" href="tel:+17403661604" data-cta="call" data-placement="bookbar" data-call-label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Call</span></a><a class="btn btn--book tb-book" href="https://login.meevo.com/bellezza/ob?locationId=103245" data-book data-cta="book" data-placement="bookbar"><span class="bl-long">Book an appointment</span><span class="bl-short">Book now</span></a></nav>
-<script src="assets/js/site.js?v=944caef1" defer></script>
+<script src="assets/js/site.js?v=1f0c74ec" defer></script>
 <!-- partial:bottom:end -->
 </body>
 </html>
