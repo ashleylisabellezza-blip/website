@@ -16,12 +16,21 @@
 <!-- partial:breadcrumb:start -->
 <!-- partial:breadcrumb:end -->
 
-<section class="page-head" aria-labelledby="page-h">
-  <div class="container grid-7-5">
-    <div>
-      <p class="eyebrow">Eyebrow label</p>
-      <h1 id="page-h">Page heading</h1>
-      <p class="lede">One or two sentences.</p>
+<!-- Option C head (no-image variant): the ghost word behind the floating card.
+     Add ul.head-range leader rows (see docs/PAGE-GUIDE.md section 6), or
+     head-card--duo on the card for lede left, actions right. -->
+<section class="svc-head" aria-labelledby="page-h">
+  <div class="container">
+    <div class="ghost-card ghost-card--head">
+      <span class="ghost" aria-hidden="true">Ghost</span>
+      <div class="float-card head-card head-card--duo">
+        <p class="eyebrow">Eyebrow label</p>
+        <h1 id="page-h">Page heading</h1>
+        <p class="lede">One or two sentences.</p>
+        <div class="head-actions">
+          <div class="btn-row" data-hero-ctas><a class="btn btn--strong" href="services.html">Primary action</a></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

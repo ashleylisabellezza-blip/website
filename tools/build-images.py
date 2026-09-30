@@ -34,6 +34,7 @@ What it makes (all new files; no source image is modified or overwritten):
   about   assets/img/about/team-group-{560,1120}.{avif,webp,jpg}  (from join-1.jpg,
           4:3, gentle de-vignette + clarity reduction)
   join    assets/img/join/{join-2,join-3,gallery-1..4}-{400,800}.{avif,webp,jpg}
+          (join-2 and join-3 also -1200, their native width, for Option C careers)
   brows   assets/img/work/brows-{before,after}-{400,470}.{avif,webp,jpg}
           (the two photos cut out of services/bella-brows.png without the baked
           text; the source only has ~470px of clean width, so the large variant
@@ -494,7 +495,10 @@ def build_join() -> None:
     print("join / gallery photos")
     for name in ("join-2", "join-3", "gallery-1", "gallery-2", "gallery-3", "gallery-4"):
         src = IMG / "join" / f"{name}.jpg"
-        for w in (400, 800):
+        # Option C careers (C4 flush split, 3x2 gallery): the two 1200px-wide class photos
+        # also get their native width, so a half-viewport cell still has ~2x
+        widths = (400, 800, 1200) if name in ("join-2", "join-3") else (400, 800)
+        for w in widths:
             build_set(IMG / "join" / f"{name}-{w}", [src],
                       lambda s=src, w=w: resize_w(load_rgb(s), w))
 

@@ -365,3 +365,42 @@ level key, the extensions split and the keratin ritual.
   `section#holidays` with the stamped holiday table, and the other ways to reach us.
 - **Chip rows** scroll sideways on their own (`revealChip` in `site.js`); the scrollspy never
   calls `scrollIntoView()`, which cancelled smooth scrolls to far sections.
+
+### 6.3 Every other page (boutique, specials, gifts, booking, careers, policies, 404, thank-you)
+
+- **No-image heads** reuse the service head: `section.svc-head` > `.ghost-card.ghost-card--head` >
+  `span.ghost` + `.float-card.head-card`. The range area takes `ul.head-range` leader rows
+  (`head-range--links` when each row jumps to an anchor, as on specials and policies),
+  `ul.perks` (careers benefits as bracket lines) or `nav.head-nav` (404, thank-you links).
+  Without any of them use `head-card--duo` (lede left, actions right: gift cards, job pages).
+  One ghost card per page.
+- **`products.html`:** the head card, then `ul.brand-index` of `a.brand-card` sand tiles (logo on
+  white, `h3.brand-name`, `span.brand-cat` in brackets, a bronze arrow; the card inverts to bronze
+  on hover). `build-schema.py` reads each card's heading and first image, so the logo stays the
+  first `<img>`. Then the bronze 2022 `story-band`, the sand `pickup-sec` (`ol.steps`) and
+  `ul.line-cards--2` for the two brands used in services.
+- **`products-*.html`:** `section.brand-head > .brand-head-grid`: `.brand-copy` (logo mark,
+  eyebrow with the category in brackets, `h1`, lede, Order for pickup + the gold Book, microcopy)
+  and `figure.brand-stage.brackets` (a sand stage, max 34rem, with `ul.stage-grid` of four product
+  shots contained on white, or `.stage-logo` when the brand has no shots). The stage keeps
+  `dermalogica-1` under 180 CSS px at every width. Then `h2#about-h` in a 4/8 `.about-body`
+  (the schema reads its `<p>`s as the Brand description, so keep links out of those paragraphs),
+  the sand pick-up band, the brand-in-services 4/8 (Dermalogica, Lakmé) and
+  `ul.brand-index.brand-index--more` with `aria-current` on this brand.
+- **`specials.html`:** one full-bleed sand `offers-band`; each `article.offer[data-ends]` is a 4/8:
+  `.offer-head` (title, `[kind]`, `p.dates`, `p.offer-actions` text links) and `.offer-body`
+  (summary, `ul.offer-rows`). Each row keeps the offer text as written, with the discount wrapped:
+  `<span class="or-val">25% off</span> <span class="or-name">…</span>` plus a `.lr-rule`; CSS
+  draws the discount at the right end. Below 1024 the links follow the body. No struck prices.
+- **`gift-cards.html`:** no gold anywhere (the override). The ideas sit on sand (`gift gift-c`),
+  the Slay rule in `.rule-block`.
+- **`pick-up-orders.html`, `book-online.html`:** the process is a bronze `.ritual-block` (verified
+  steps only); the form or the ways to book follow (`form-split`, or `.duo` on sand).
+- **Careers:** `join-our-team.html` has the roles as `ul.job-list` 4/8 rows on sand (row ids kept),
+  the bronze `careers-edu` split (`fs-wide--2x1`, join-3 up to its native 1200px), the 3x2 candid
+  gallery in brackets (gallery-3 only as its 1:1 top crop) and the apply form. Job pages:
+  `.job-layout` puts `aside.job-aside` ("At a glance", sticky) left and `article.job > h2` right;
+  the article markup is unchanged for the JobPosting. Then the bronze `people-split` portrait and
+  `ul.job-list--stack` of the other roles.
+- **`policies.html`:** 4/8 `doc-row`s; the no-show steps sit in their own sand section as
+  `ol.escalate` (three cells).
