@@ -264,6 +264,14 @@ h1:has(.hl){text-transform:uppercase}
   .cell-menu{padding-left:10px}
   .chrome-book .bk-long{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 }
+/* 320-359px: logo, Book and Menu can't all fit with the word "Menu", so the menu and close
+   toggles keep their icon in a 48px target and their word as the accessible name only */
+@media (max-width:359.98px){
+  .bar,.drawer-bar{padding-inline:12px}
+  .cell-book{padding-inline:8px}
+  .menu-toggle{justify-content:center;gap:0;padding:0}
+  .menu-toggle span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
 @media (max-height:31.25rem){.brand img{height:28px}}
 @media (min-width:1024px){
   .cell-brand{padding-right:var(--s5)}
@@ -287,7 +295,9 @@ h1:has(.hl){text-transform:uppercase}
 /* override pages (Slay, gift cards) carry a longer chrome label: the phone gives way */
 .site-header:has(.chrome-book:not([data-book])) .header-tel{display:none!important}
 @media (min-width:1024px) and (max-width:1279.98px){.chrome-book[data-cta="gift"] .bk-long{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
-@media (min-width:1360px){.header-tel{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--white);font-weight:600;font-size:1rem;text-decoration:none}.header-tel svg{width:18px;height:18px}.header-tel:hover{color:var(--white);text-decoration:underline;text-underline-offset:.3em}}
+@media (min-width:1280px){.header-tel{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--white);font-weight:600;font-size:1rem;text-decoration:none}.header-tel svg{width:18px;height:18px}.header-tel:hover{color:var(--white);text-decoration:underline;text-underline-offset:.3em}}
+/* 1280-1359: the phone joins the bar (C5), so the cells tighten to make room for it */
+@media (min-width:1280px) and (max-width:1359.98px){.cell-brand{padding-right:var(--s4)}.nav-main{padding-inline:var(--s4)}.nav-main>ul{gap:16px}.cell-book{padding-left:var(--s4);gap:16px}.header-tel{gap:6px}.header-tel svg{width:16px;height:16px}}
 /* the Services & prices disclosure */
 .nav-services{display:flex;align-items:center}
 .nav-services .chev{display:inline-flex;align-items:center;justify-content:center;width:32px;min-height:44px;margin-left:2px;padding:0;border:0;background:none;color:var(--white)}
@@ -344,9 +354,10 @@ body:has(dialog[open]){overflow:hidden}
 
 /* ==== home: hero (C6 #1) ==== */
 .hero{display:grid;grid-template-columns:minmax(0,1fr);background:var(--white);container-type:inline-size}
-.hero-copy{padding:var(--s5) var(--side) var(--s6)}
-.hero-copy .eyebrow{margin-bottom:var(--s3)}
+.hero-head{padding:var(--s5) var(--side) 0}
+.hero-head .eyebrow{margin-bottom:var(--s3)}
 .hero h1{margin-bottom:var(--s4);font-size:min(var(--c-display),10.5cqi)}
+.hero-copy{padding:0 var(--side) var(--s6)}
 .hero .lede{margin-bottom:var(--s5);max-width:34ch}
 .hero-door{margin:var(--s4) 0 0}
 .hero-status{margin:var(--s2) 0 0;min-height:1.6em}
@@ -354,12 +365,27 @@ body:has(dialog[open]){overflow:hidden}
 .hero-media img{width:100%;aspect-ratio:1/1;object-fit:cover;object-position:50% 0}
 @media (min-width:768px){
   .hero{grid-template-columns:min(44vw,35rem) minmax(0,1fr)}
-  .hero-media{grid-column:1;grid-row:1;align-self:start}
-  .hero-copy{grid-column:2;grid-row:1;align-self:center;padding-block:var(--s6);padding-inline:var(--s7) max(var(--side),calc((100cqi - var(--max)) / 2))}
-  .hero h1{font-size:min(var(--c-display),6cqi)}
+  .hero-head{grid-area:head}
+  .hero-copy{grid-area:copy}
+  .hero-media{grid-area:media;align-self:start}
 }
-@media (min-width:768px) and (max-width:1023.98px){.hero-copy{padding-left:var(--s6)}}
-@media (min-width:768px) and (max-width:1199.98px){.hero-copy{align-self:start;padding-top:var(--s5)}}
+/* tablets: a 1:1 photo is much shorter than the full copy beside it, so the headline
+   spans the top and the photo sits flush left beside the rest of the copy */
+@media (min-width:768px) and (max-width:1199.98px){
+  .hero{grid-template-areas:"head head" "media copy"}
+  .hero-head{padding-bottom:var(--s5)}
+  .hero h1{margin-bottom:0;font-size:var(--c-display)}
+  .hero-copy{align-self:center;padding:var(--s4) var(--side) var(--s4) var(--s6)}
+}
+/* desktop: the headline and copy sit beside the photo, centred on it as one group */
+@media (min-width:1200px){
+  .hero{grid-template-rows:1fr auto auto 1fr;grid-template-areas:"media ." "media head" "media copy" "media ."}
+  .hero-head,.hero-copy{padding-inline:var(--s7) max(var(--side),calc((100cqi - var(--max)) / 2))}
+  .hero-head{padding-top:var(--s6)}
+  .hero-copy{padding-bottom:var(--s6)}
+  /* keeps "Beauty & relaxation," on one line beside the photo (72px from about 1470) */
+  .hero h1{font-size:min(var(--c-display),4.9cqi)}
+}
 
 /* ==== home: service tiles (C6 #3) ==== */
 .tiles{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0 0 var(--s6);padding:0;list-style:none}
@@ -420,7 +446,9 @@ body:has(dialog[open]){overflow:hidden}
 /* treatment-as-ritual steps (Yukie's head spa) */
 .ritual{margin:0 0 var(--s5);padding:0;list-style:none;border-top:1px solid var(--rule-bronze)}
 .ritual li{display:grid;grid-template-columns:6.5rem minmax(0,1fr);gap:var(--s3);align-items:baseline;padding:var(--s4) 0;border-bottom:1px solid var(--rule-bronze)}
-.ritual .step-n{font-size:var(--c-eyebrow);color:var(--sand)}
+.ritual .step-n{display:flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:var(--c-eyebrow);line-height:1.4;color:var(--sand)}
+/* Yukie's ritual rows: the step number as a large light numeral under its label */
+.ritual .step-num{font:400 clamp(2.25rem,1.95rem + 1.1vw,3rem)/.9 var(--sans);letter-spacing:-.02em;color:var(--sand);font-variant-numeric:lining-nums}
 .ritual .step-t{font:600 var(--c-row)/1.3 var(--sans);color:var(--white)}
 .section--white .ritual,.ritual--light{border-top-color:var(--leader)}
 
@@ -488,6 +516,7 @@ body:has(dialog[open]){overflow:hidden}
 .detail-rows .hours th,.detail-rows .hours td{padding-block:6px}
 .map-panel{margin:14px}
 .map-panel .map-facade{min-height:clamp(20rem,16rem + 10vw,28rem)}
+@media (min-width:1024px){.visit-grid>.map-panel{display:grid;align-self:stretch;margin-block:calc(var(--s6) + 14px) 14px}.visit-grid>.map-panel .map-facade{height:100%}}
 
 /* ==== hours, holidays, map ==== */
 .addr{font-style:normal;font-size:var(--c-row);line-height:1.4;color:var(--ink);margin-bottom:var(--s4)}
@@ -519,6 +548,7 @@ body:has(dialog[open]){overflow:hidden}
 .first-visit .split-head h2{max-width:16ch}
 .ritual .step-d{grid-column:2;font-size:var(--c-small);line-height:1.5;color:var(--sand)}
 .ritual li:has(.step-d){row-gap:4px}
+.ritual li:has(.step-d) .step-n{grid-row:span 2}
 .front-desk{margin:var(--s4) 0 var(--s6)}
 .levels--key .float-card>p{max-width:62ch}
 .levels--key .float-card .asof{margin-top:var(--s4)}
@@ -588,6 +618,7 @@ body:has(dialog[open]){overflow:hidden}
 .footer-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s6) var(--gap)}
 .footer-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--gap)}
 @media (min-width:768px){.footer-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:768px) and (max-width:1023.98px){.footer-grid{grid-template-columns:minmax(0,1fr) auto}.footer-nav{grid-column:1/-1}.footer-logo{grid-column:2;grid-row:1;justify-self:end}}
 @media (min-width:1024px){.footer-grid{grid-template-columns:minmax(0,3.2fr) minmax(0,7fr) auto}}
 /* 1024-1279: the hours table needs ~17rem, so the logo moves under the link columns */
 @media (min-width:1024px) and (max-width:1279.98px){.footer-grid{grid-template-columns:minmax(17rem,3.2fr) minmax(0,7fr)}.footer-logo{grid-column:2}}
@@ -622,7 +653,7 @@ body:has(dialog[open]){overflow:hidden}
 
 /* ==== service pages (C7): ghost-word head ==== */
 /* white band, the category name behind the floating card; the card's range sits in bronze */
-.svc-head{padding-block:var(--s5) var(--section);background:var(--white);overflow-x:clip}
+.svc-head{padding-block:var(--s5) var(--s7);background:var(--white);overflow-x:clip}
 .ghost-card--head{padding-top:calc(var(--c-ghost) * .5)}
 .head-card{display:grid;grid-template-columns:minmax(0,1fr);column-gap:var(--s6)}
 .head-card>*{min-width:0}
@@ -687,18 +718,30 @@ body:has(dialog[open]){overflow:hidden}
 .lk-who:empty{display:none}
 .lk-note{margin:0 0 var(--s4);font-size:var(--c-small);color:var(--text)}
 .level-key thead th:first-child{width:auto}
-@media (min-width:768px){.level-key thead th+th,.level-key td{width:11.5rem}}
-/* below 600px each level becomes a block: level and names on top, labelled prices below
-   (the labels are visual only; the table roles keep the column headers for screen readers) */
-@media (max-width:599.98px){
+/* the key sizes to its card (a container), not the viewport */
+.float-card:has(.level-key){container-type:inline-size}
+@container (min-width:640px){.level-key thead th+th,.level-key td{width:11.5rem}}
+@container (min-width:760px){.level-key--3 thead th+th,.level-key--3 td{width:10rem}}
+/* in a narrow card each level becomes a block: level and names on top, labelled prices below
+   (the labels are visual only; the table roles keep the column headers for screen readers).
+   Two price columns stack below 520px of card; three below 760px. */
+@container (max-width:519.98px){
   .level-key thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .level-key tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s4);row-gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
-  .level-key--3 tbody tr{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}
   .level-key tbody :is(th,td){display:block;width:auto;padding:0;border:0;text-align:left}
   .level-key tbody th{grid-column:1/-1}
   .level-key td{display:flex!important;flex-direction:column;justify-content:space-between;font-size:1.125rem}
   .level-key td::before{content:attr(data-label);content:attr(data-label) / "";display:block;margin-bottom:2px;font:400 13px/1.3 var(--sans);color:var(--text);white-space:normal}
   .lk-level{font-size:1.1875rem}
+}
+@container (max-width:759.98px){
+  .level-key--3 thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .level-key--3 tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3);row-gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .level-key--3 tbody :is(th,td){display:block;width:auto;padding:0;border:0;text-align:left}
+  .level-key--3 tbody th{grid-column:1/-1}
+  .level-key--3 td{display:flex!important;flex-direction:column;justify-content:space-between;font-size:1.125rem}
+  .level-key--3 td::before{content:attr(data-label);content:attr(data-label) / "";display:block;margin-bottom:2px;font:400 13px/1.3 var(--sans);color:var(--text);white-space:normal}
+  .level-key--3 .lk-level{font-size:1.1875rem}
 }
 
 /* ==== service pages: one or two providers as a bronze flush split (people and story) ==== */
@@ -832,13 +875,16 @@ a.lk-level:hover{color:var(--bronze);text-decoration-thickness:2px}
 @media (max-width:1023.98px){.artists:not(.artists--few) ul{margin-inline:calc(-1 * var(--side));padding-inline:var(--side);scroll-padding-inline:var(--side)}}
 
 /* ==== jump chips (C7): 44px sand capsules, sticky under the header ==== */
-.jump-chips{position:sticky;top:var(--header-h);z-index:50;margin-bottom:var(--s6);background:var(--white);border-bottom:1px solid var(--line)}
-.jump-chips .container{display:flex;align-items:center;gap:var(--s3)}
+.jump-chips{position:sticky;top:var(--header-h);z-index:50;margin-bottom:var(--s6);background:var(--white);border-bottom:1px solid var(--line);container-type:inline-size}
+/* the label sits on the container line; the chip row runs on to the right viewport edge (a flush
+   edge, like the splits), so long rows fit at desktop widths and only scroll where they must */
+.jump-chips .container{display:flex;align-items:center;gap:var(--s3);max-width:none;padding-right:0;padding-left:max(var(--side),calc((100cqi - var(--max)) / 2))}
+.jump-chips .chips{flex:1 1 auto;min-width:0;padding-right:max(var(--side),32px)}
 .jump-chips .chips-label{flex:none;font-size:var(--c-small);color:var(--text)}
 @media (max-height:31.25rem){.jump-chips,.team-filters{position:static}}
 .chips{display:flex;gap:var(--s2);margin:0;padding:10px 32px 10px 2px;scroll-padding-inline-end:40px;list-style:none;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
 .chips::-webkit-scrollbar{display:none}
-.chips a,.chips button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;border:0;border-radius:999px;background:var(--sand);color:var(--ink);font:600 15px/1 var(--sans);text-decoration:none;white-space:nowrap}
+.chips a,.chips button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--sand);color:var(--ink);font:600 15px/1 var(--sans);text-decoration:none;white-space:nowrap}
 .chips a:hover,.chips button:hover{background:#e6dfd2;color:var(--ink)}
 .chips a:focus-visible,.chips button:focus-visible{outline-offset:-4px}
 .chips [aria-current="true"],.chips [aria-pressed="true"]{background:var(--bronze);color:var(--white)}
@@ -1390,7 +1436,7 @@ a.lk-level:hover{color:var(--bronze);text-decoration-thickness:2px}
 .field label,.field legend,.fieldset legend{font:600 15px/1.3 var(--sans);color:var(--ink)}
 .field .opt{font-weight:400;color:var(--text)}
 .field .hint,.fieldset>.hint{font-size:14px;color:var(--text);margin:0}
-.field input,.field select,.field textarea{width:100%;min-height:52px;padding:12px 16px;border:1px solid rgb(28 28 28/.35);border-radius:0;background:var(--white);color:var(--ink);font-size:16px;line-height:1.4}
+.field input,.field select,.field textarea{width:100%;min-height:52px;padding:12px 16px;border:1px solid rgb(28 28 28/.6);border-radius:0;background:var(--white);color:var(--ink);font-size:16px;line-height:1.4}
 .field input:hover,.field select:hover,.field textarea:hover{border-color:var(--bronze)}
 .field textarea{min-height:140px;resize:vertical}
 .field input[type=date]{height:calc(1.4em + 28px)}

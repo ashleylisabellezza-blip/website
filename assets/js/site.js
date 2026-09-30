@@ -314,20 +314,29 @@
     var links = $$('a[href^="#"]', nav).filter(function (a) { return a.getAttribute('href').length > 1; });
     var targets = links.map(function (a) { return doc.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
     root.style.setProperty('--chips-h', nav.offsetHeight + 'px');
-    var current = null;
-    var io = new IntersectionObserver(function () {
+    var current = null, ticking = false;
+    function update() {
+      ticking = false;
       var line = window.innerHeight * 0.35, next = null;
       var best = -Infinity; targets.forEach(function (t) { var top = t.getBoundingClientRect().top; if (top <= line && top > best) { best = top; next = t.id; } });
       if (next === current) return;
       current = next;
+      /* back above the first section: show the row from its start again */
+      if (!current) { var row = $('.chips', nav); if (row) row.scrollLeft = 0; }
       links.forEach(function (a) {
         if (a.getAttribute('href') === '#' + current) {
           a.setAttribute('aria-current', 'true');
           revealChip(a);
         } else a.removeAttribute('aria-current');
       });
-    }, { rootMargin: '-35% 0px -60% 0px' });
+    }
+    var io = new IntersectionObserver(update, { rootMargin: '-35% 0px -60% 0px' });
     targets.forEach(function (t) { io.observe(t); });
+    /* a long jump (Home, End, a back-to-top link) can cross the observer band between frames
+       without an intersection change, so a throttled scroll check keeps the chip honest */
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+    }, { passive: true });
   }
 
   /* ---------- map facade ---------- */
