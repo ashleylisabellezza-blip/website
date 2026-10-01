@@ -53,7 +53,7 @@ def copy_site(src, dst):
                    and not (base == src and (d in SKIP_DIRS or d.startswith('.')))]
         rel = os.path.relpath(base, src)
         for f in files:
-            if base == src and (f in SKIP_FILES or f.startswith('_qa')):
+            if base == src and (f in SKIP_FILES or f.startswith(('_qa', '.'))):  # '.git' is a file in a worktree
                 continue
             os.makedirs(os.path.join(dst, rel), exist_ok=True)
             shutil.copy2(os.path.join(base, f), os.path.join(dst, rel, f))
@@ -124,6 +124,8 @@ def main():
     ap.add_argument('--base', default='/website/', help='URL path the preview site is served from')
     ap.add_argument('--no-build', action='store_true')
     a = ap.parse_args()
+    # absolute paths: each build runs with its own folder as the working directory
+    a.src_root, a.out = os.path.abspath(a.src_root), os.path.abspath(a.out)
     designs = [d for d in json.load(open(a.designs, encoding='utf-8'))['designs']
                if os.path.isdir(os.path.join(a.src_root, d['slug']))]
     if os.path.exists(a.out):
