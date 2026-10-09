@@ -43,7 +43,8 @@ What it makes (all new files; no source image is modified or overwritten):
           so no 540), assets/img/slay/slay-logo-{240,480}.{png,webp}
   home    assets/img/home/hero-{800,1448} (2:1), hero-m-{600,900} (4:3), tile-{hair,spa,
           nails,massage,medical}-{400,640} (5:4), stations-{800,1448} (16:9),
-          pedicure-{800,1400} (3:2), exterior-{600,1000} (3:2), all .{avif,webp,jpg};
+          pedicure-{800,1400} (3:2), exterior-{600,1000} (3:2), bridal-480, giftcard-480
+          (the owners' 480x265 previews), all .{avif,webp,jpg};
           assets/img/brand/monogram-gold-{320,560}.{avif,webp,jpg},
           award-2026-{160,320}.{png,webp}, logo-header.png (112px tall, ink)
   og      assets/img/og-image.jpg (1200x630)
@@ -598,6 +599,13 @@ def build_home() -> None:
     for w in (600, 1000):  # footer: 3:2, anchored left so the sign stays in frame
         build_set(HOME / f"exterior-{w}", [src],
                   lambda w=w: resize_w(crop_to_ratio(load_rgb(src), 3, 2, anchor_x=0.0), w))
+
+    # HP-09 bridal and HP-10 gift card: the 480x265 previews from the owners' design
+    # doc, as temporary stand-ins until the Bridal and Gift Card page photos arrive
+    # (native size only; never upscaled)
+    for name in ("bridal", "giftcard"):
+        psrc = HOME / f"hp{'09' if name == 'bridal' else '10'}-{name}-preview.jpg"
+        build_set(HOME / f"{name}-480", [psrc], lambda s=psrc: load_rgb(s))
 
     src = BRAND / "monogram-gold-src.jpg"
     for w in (320, 560):  # gift-card panel (white ground)

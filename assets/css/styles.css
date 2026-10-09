@@ -292,23 +292,22 @@ main:focus{outline:none}
 
 /* 05 bridal + gift cards: two compact editorial panels */
 .h-features{display:grid;border-block:var(--rule);background:var(--white)}
-.h-feature{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);align-items:center}
+.h-feature{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center}
 .h-feature + .h-feature{border-top:var(--rule)}
 .h-feature figure{align-self:stretch;margin:0;min-height:15rem}
-.h-feature figure img{width:100%;height:100%;object-fit:cover}
-.h-feature--gift{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
-.h-feature--gift figure{order:2;display:grid;place-items:center;background:var(--white)}
-.h-feature--gift figure picture{height:auto;display:contents}
-.h-feature--gift figure img{width:min(78%,16rem);height:auto;aspect-ratio:1;object-fit:contain}
+.h-feature figure img{width:100%;height:100%;object-fit:cover;object-position:35% 50%}
+.h-feature--gift{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+.h-feature--gift figure{order:2}
+.h-feature--gift figure img{object-position:45% 50%}
 .h-feature-copy{padding:var(--s-6) var(--s-5)}
-.h-feature-copy h2{margin-bottom:var(--s-3);font-size:var(--step-3)}
+.h-feature-copy h2{margin-bottom:var(--s-3);font-size:var(--step-2)}
 .h-feature-copy p{font-size:15px;max-width:38ch}
 .h-feature-copy .btn{margin-top:var(--s-2)}
-@media (max-width:559.98px){.h-feature{grid-template-columns:1fr}.h-feature figure{min-height:0;aspect-ratio:4/3}.h-feature--gift figure{order:0;aspect-ratio:auto;padding:var(--s-5) 0 0}.h-feature--gift figure img{width:10rem}}
+@media (max-width:559.98px){.h-feature{grid-template-columns:1fr}.h-feature figure{min-height:0;aspect-ratio:16/9}.h-feature--gift figure{order:0}}
 @media (min-width:1024px){
   .h-features{grid-template-columns:1fr 1fr}
   .h-feature + .h-feature{border-top:0;border-left:var(--rule)}
-  .h-feature-copy{padding:var(--s-7) var(--s-6)}
+  .h-feature-copy{padding:var(--s-6) var(--s-6)}
 }
 @media (min-width:1024px) and (max-width:1279.98px){.h-feature-copy{padding:var(--s-6) var(--s-5)}}
 
