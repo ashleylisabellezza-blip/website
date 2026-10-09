@@ -3,11 +3,12 @@
 Usage (from the project root, after `python tools/build-fonts.py`):
 
     python tools/font-metrics.py              # print a table + paste-ready CSS
-    python tools/font-metrics.py --opsz 36    # measure Bodoni Moda at another optical size
+    python tools/font-metrics.py --opsz 36    # measure at another optical size (variable fonts with opsz only)
 
-Brief section 2.2: 'Bodoni Fallback' (Georgia), 'Bodoni Fallback Italic'
-(Georgia Italic) and 'Hanken Fallback' (Arial), each with size-adjust and the
-ascent / descent / line-gap overrides, computed rather than guessed.
+'Italiana Fallback' (Georgia) and 'Montserrat Fallback' (Arial, plus Arial Bold for
+600), each with size-adjust and the ascent / descent / line-gap overrides, computed
+rather than guessed. (Brief section 2.2 method; the typefaces changed to the owners'
+homepage design lock on 2026-10-08.)
 
 Method (the one used by Next.js next/font and Capsize):
   * Measure the average advance width, in em, of a representative lowercase
@@ -19,15 +20,13 @@ Method (the one used by Next.js next/font and Capsize):
         descent-override = |web_descent| / (web_upm * size-adjust)
         line-gap-override= web_lineGap / (web_upm * size-adjust)
     The web font's ascent/descent come from OS/2 typo metrics when its
-    USE_TYPO_METRICS bit is set, otherwise from hhea (for Bodoni Moda and Hanken
-    Grotesk hhea, typo and win values are identical, so there is no platform
-    ambiguity).
+    USE_TYPO_METRICS bit is set, otherwise from hhea.
 
 Web fonts are measured from the shipped WOFF2 files in assets/fonts/ (falling back
 to the source TTFs in tools/font-src/). The variable fonts are measured at the
-default wght 400 (Hanken also at 600, against Arial Bold); Bodoni Moda is measured at a heading optical size (opsz 48 by
+default wght 400 (Montserrat also at 600, against Arial Bold); a font with an opsz axis is measured at a heading optical size (opsz 48 by
 default, since it is only used for display text; widths move ~1.5% across 11-96).
-Fallback metrics are read from C:\\Windows\\Fonts\\georgia.ttf, georgiai.ttf,
+Fallback metrics are read from C:\\Windows\\Fonts\\georgia.ttf,
 arial.ttf and arialbd.ttf (override the folder with the WINFONTS environment variable).
 
 tools/build-fonts.py imports compute() and css() from this file to generate the
@@ -61,20 +60,13 @@ SAMPLE = (
 PAIRS = [
     # (fallback family name, web font file, source file, web wght measured,
     #  fallback local() names, fallback file, css font-style, css font-weight)
-    ("Bodoni Fallback", "bodoni-moda-roman-latin.woff2", "BodoniModa[opsz,wght].ttf", 400,
+    ("Italiana Fallback", "italiana-latin.woff2", "Italiana-Regular.ttf", 400,
      ["Georgia"], "georgia.ttf", "normal", "400"),
-    ("Bodoni Fallback Italic", "bodoni-moda-italic-latin.woff2", "BodoniModa-Italic[opsz,wght].ttf", 400,
-     ["Georgia Italic", "Georgia-Italic"], "georgiai.ttf", "italic", "400"),
-    # The same italic face again inside 'Bodoni Fallback', so that an italic run set in
-    # the plain display stack (without 'Bodoni Fallback Italic') still falls back to
-    # the real Georgia Italic instead of a slanted, synthesized Georgia Regular.
-    ("Bodoni Fallback", "bodoni-moda-italic-latin.woff2", "BodoniModa-Italic[opsz,wght].ttf", 400,
-     ["Georgia Italic", "Georgia-Italic"], "georgiai.ttf", "italic", "400"),
-    ("Hanken Fallback", "hanken-grotesk-latin.woff2", "HankenGrotesk[wght].ttf", 400,
+    ("Montserrat Fallback", "montserrat-latin.woff2", "Montserrat[wght].ttf", 400,
      ["Arial", "ArialMT"], "arial.ttf", "normal", "400"),
-    # Buttons use Hanken 600. CSS weight matching sends a 600 request to this 700
+    # Buttons use Montserrat 600. CSS weight matching sends a 600 request to this 700
     # face (and 500 to the 400 face), so the fallback never synthesizes a fake bold.
-    ("Hanken Fallback", "hanken-grotesk-latin.woff2", "HankenGrotesk[wght].ttf", 600,
+    ("Montserrat Fallback", "montserrat-latin.woff2", "Montserrat[wght].ttf", 600,
      ["Arial Bold", "Arial-BoldMT"], "arialbd.ttf", "normal", "700"),
 ]
 
@@ -179,7 +171,7 @@ def main():
     if "--opsz" in sys.argv:
         opsz = float(sys.argv[sys.argv.index("--opsz") + 1])
     rows = compute(opsz)
-    print("Sample: %d chars; Bodoni measured at opsz %g, wght 400\n" % (len(SAMPLE), opsz))
+    print("Sample: %d chars; opsz fonts measured at opsz %g, wght 400\n" % (len(SAMPLE), opsz))
     print("%-24s %-38s %-12s %8s %8s %8s %8s %8s %8s" % (
         "fallback", "web font @wght", "vs", "web em", "fb em", "size", "ascent", "descent", "gap"))
     for r in rows:
@@ -188,9 +180,6 @@ def main():
             pct(r["size_adjust"]), pct(r["ascent"]), pct(r["descent"]), pct(r["line_gap"])))
     print()
     print(css(rows))
-    print()
-    print("Note: 'Bodoni Fallback' has an italic face too (same values as 'Bodoni Fallback Italic'),")
-    print("so an italic run set in the plain display stack never gets a synthesized oblique.")
 
 
 if __name__ == "__main__":

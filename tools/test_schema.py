@@ -354,6 +354,7 @@ TEAM_PAGE = page('Meet the Team | Bellezza &amp; Co.', crumbs(('Home', 'index.ht
   <h2 id="bio-devon-h">Devon</h2>
   <span class="role">Salon Manager</span>
   <p class="bio-text">Devon leads education at the salon.</p>
+  <ul class="creds-list"><li data-school="American School of Hair Design">American School of Hair Design, 2004</li><li>Providing services since 2004</li><li data-license="COSA.047959" data-license-type="Advanced Cosmetologist" data-board="Ohio State Cosmetology and Barber Board">Ohio Advanced Cosmetologist license COSA.047959</li><li data-cert="Regional Lakmé Brand Educator">Training: Regional Lakmé Brand Educator</li><li data-specialties="Hand-sewn extensions; Blonding">Specialties: Hand-sewn extensions, Blonding</li><li data-languages="English, Spanish">Speaks English and Spanish</li></ul>
 </dialog>
 </main>''')
 
@@ -366,6 +367,10 @@ JOB_PAGE = page('Massage Therapist | Careers | Bellezza &amp; Co.', crumbs(
   <a href="#apply" class="btn btn--gold">Apply</a>
 </article>
 </main>''')
+
+JOB_BENEFITS_PAGE = page('New Talent | Careers | Bellezza &amp; Co.', '''<main><h1>New Talent</h1>
+<article class="job" id="new-talent"><h2>New Talent Stylist</h2><p>Train with us.</p>
+<ul class="benefits"><li>Paid training and assisting program</li><li>Paid vacation and a 401(k) once eligible</li></ul></article></main>''')
 
 JOIN_PAGE = page('Careers | Bellezza &amp; Co.', '''<main><h1>Careers at Bellezza</h1>
 <article class="job" id="massage-therapist"><h2>Massage Therapist</h2><p>x</p></article></main>''')
@@ -494,6 +499,15 @@ class Fixtures(unittest.TestCase):
         self.assertEqual(devon['image'], SITE + 'assets/img/team/devon-540.webp')
         self.assertEqual(devon['description'], 'Devon leads education at the salon.')
         self.assertEqual(devon['sameAs'], ['https://www.instagram.com/devonsabo_hairartist/'])
+        self.assertEqual(devon['alumniOf'], {'@type': 'EducationalOrganization', 'name': 'American School of Hair Design'})
+        lic, cert = devon['hasCredential']
+        self.assertEqual((lic['credentialCategory'], lic['identifier'], lic['recognizedBy']['name']),
+                         ('license', 'COSA.047959', 'Ohio State Cosmetology and Barber Board'))
+        self.assertEqual(lic['name'], 'Ohio Advanced Cosmetologist license COSA.047959')
+        self.assertEqual((cert['credentialCategory'], cert['name']), ('certificate', 'Regional Lakmé Brand Educator'))
+        self.assertEqual(devon['knowsAbout'], ['Hand-sewn extensions', 'Blonding'])
+        self.assertEqual(devon['knowsLanguage'], ['English', 'Spanish'])
+        self.assertNotIn('hasCredential', melissa)
         self.assertEqual(melissa['jobTitle'], 'Client Services')
         self.assertEqual(shannon['jobTitle'], 'Certified Nurse Practitioner')
         biz = self.node(g, **{'@id': BIZ_ID})
@@ -508,8 +522,16 @@ class Fixtures(unittest.TestCase):
         self.assertEqual(jobs[0]['@id'], SITE + 'job-massage-therapist.html#massage-therapist')
         self.assertEqual(jobs[0]['description'], '<p>Join our spa team.</p>')
         self.assertEqual(jobs[0]['employmentType'], ['FULL_TIME', 'PART_TIME'])
+        posted = datetime.date.fromisoformat(jobs[0]['datePosted'])
+        self.assertEqual(jobs[0]['validThrough'], (posted + datetime.timedelta(days=90)).isoformat())
+        self.assertNotIn('jobBenefits', jobs[0])
         bc = self.node(g, **{'@type': 'BreadcrumbList'})
         self.assertEqual(bc['itemListElement'][1]['item'], SITE + 'join-our-team.html')
+
+    def test_job_benefits(self):
+        g = self.graph('job-new-talent.html', JOB_BENEFITS_PAGE)
+        job = self.node(g, **{'@type': 'JobPosting'})
+        self.assertEqual(job['jobBenefits'], 'Paid training and assisting program; Paid vacation and a 401(k) once eligible')
 
     def test_no_posting_on_list_page(self):
         g = self.graph('join-our-team.html', JOIN_PAGE)
@@ -551,12 +573,17 @@ class Fixtures(unittest.TestCase):
         g = self.graph('index.html', INDEX_PAGE)
         biz = self.node(g, **{'@id': BIZ_ID})
         self.assertEqual(biz['name'], 'Bellezza & Co.')
-        self.assertEqual(biz['slogan'], 'Salon · Spa · Boutique')
+        self.assertEqual(biz['slogan'], 'Beauty and relaxation tailored to you.')
         self.assertEqual(biz['alternateName'], 'Bellezza Salon and Day Spa')
-        self.assertNotIn('award', biz)
+        self.assertEqual(biz['legalName'], 'Bellezza Salon & Day Spa')
+        self.assertEqual(len(biz['award']), 2)
+        self.assertTrue(all("Licking County Community's Choice Awards" in a for a in biz['award']))
         self.assertNotIn('Voted', biz['description'])
-        self.assertEqual(biz['image'], [SITE + 'assets/img/team/contact-sheet-1540.jpg',
-                                        SITE + 'assets/img/about/team-group-1120.jpg', SITE + 'assets/img/logo.png'])
+        self.assertEqual(biz['image'], [SITE + 'assets/img/team/contact-sheet-1540.jpg', SITE + 'assets/img/logo.png'])
+        self.assertEqual(biz['hasCredential']['identifier'], '091084')
+        self.assertIn('https://g.page/r/CUqbhUZs2e36EBM', biz['sameAs'])
+        self.assertFalse([s for s in biz['sameAs'] if 'apps.apple.com' in s or 'play.google.com' in s])
+        self.assertTrue(biz['amenityFeature']['value'])
         self.assertEqual(biz['potentialAction']['target']['urlTemplate'], self.mod.BOOKING)
         site = self.node(g, **{'@type': 'WebSite'})
         self.assertEqual(site['alternateName'], 'Bellezza Salon and Day Spa')
@@ -567,11 +594,14 @@ class Fixtures(unittest.TestCase):
             self.assertNotIn(banned, text)
 
     def test_award_constant(self):
-        self.mod.AWARD = 'Test award'
+        saved = self.mod.AWARD
+        self.mod.AWARD = None
         try:
+            self.assertNotIn('award', self.mod.business_full())
+            self.mod.AWARD = 'Test award'
             self.assertEqual(self.mod.business_full()['award'], 'Test award')
         finally:
-            self.mod.AWARD = None
+            self.mod.AWARD = saved
 
     def test_holidays(self):
         specs = [s for s in self.mod.business_full()['openingHoursSpecification'] if 'validFrom' in s]

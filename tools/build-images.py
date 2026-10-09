@@ -8,7 +8,7 @@ Usage (from the project root):
     python tools/build-images.py --strict   # exit 1 if a portrait's outer 8px
                                             # mean luma is above 3% (brief 2.6)
 
-Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, og
+Groups (for --only): team, sheets, owners, brand, about, join, brows, slay, home, og
 
 What it makes (all new files; no source image is modified or overwritten):
 
@@ -26,7 +26,8 @@ What it makes (all new files; no source image is modified or overwritten):
           report names each offending edge and whether it looks like subject
           or backdrop (anything brighter than luma 40 within 24px of that
           edge counts as subject; a lifted grey backdrop can trip this).
-  sheets  assets/img/team/contact-sheet-{1540,1100}.{avif,webp,jpg}  (7x4, all 28)
+  sheets  assets/img/team/contact-sheet-{1540,1100}.{avif,webp,jpg}  (7x4: the whole
+          team; any cell left over stays black)
           assets/img/team/contact-sheet-800.{avif,webp,jpg}         (4x3, 12 people)
   owners  assets/img/team/{ashley-basham,lisa-jeffries}-720.{avif,webp,jpg}
   brand   assets/img/brand/wordmark.png, wordmark-on-dark.png (56px tall = 2x of
@@ -40,6 +41,11 @@ What it makes (all new files; no source image is modified or overwritten):
           is 470w rather than 800w; nothing is upscaled)
   slay    assets/img/slay/shannon-{360,497}.{avif,webp,jpg} (source is 497 wide,
           so no 540), assets/img/slay/slay-logo-{240,480}.{png,webp}
+  home    assets/img/home/hero-{800,1448} (2:1), hero-m-{600,900} (4:3), tile-{hair,spa,
+          nails,massage,medical}-{400,640} (5:4), stations-{800,1448} (16:9),
+          pedicure-{800,1400} (3:2), exterior-{600,1000} (3:2), all .{avif,webp,jpg};
+          assets/img/brand/monogram-gold-{320,560}.{avif,webp,jpg},
+          award-2026-{160,320}.{png,webp}, logo-header.png (112px tall, ink)
   og      assets/img/og-image.jpg (1200x630)
 
 Idempotent: an output is skipped when it exists and is newer than both its
@@ -70,7 +76,7 @@ PAPER = (0xFA, 0xF8, 0xF5)
 # Default team order (brief 5.4).
 TEAM_ORDER = [
     "ashley-basham", "lisa-jeffries", "devon", "stephanie", "janet", "moriah",
-    "emilie", "austyn", "lizbeth", "cherish", "liv", "taylor-f", "mya", "kat",
+    "emilie", "austyn", "lizbeth", "cherish", "liv", "mya", "kat",
     "paige", "madison", "shelbi", "raegan", "rissa", "hope", "jesyca", "emma",
     "mia", "shannon-francis", "melissa", "aubree", "grace", "aeriannah",
 ]
@@ -255,7 +261,7 @@ def team_slugs() -> list[str]:
 # skipped (and reported) if any pixel in its band is brighter than
 # FADE_MAX_LUMA, which would mean it reaches the subject.
 EDGE_FADES = {
-    "taylor-f": {"top": 64},
+    "taylor-f": {"top": 64},  # (former team member; kept so an old source still builds)
     "lisa-jeffries": {"top": 32},
 }
 FADE_MAX_LUMA = 72
@@ -368,6 +374,8 @@ def compose_sheet(slugs: list[str], cols: int, rows: int, width: int,
         c, r = i % cols, i // cols
         tw, th = xs[c + 1] - xs[c], ys[r + 1] - ys[r]
         sheet.paste(cover(portrait(slug), tw, th), (xs[c], ys[r]))
+    # A team smaller than the grid leaves the last cell(s) black, like the backdrop
+    # (the desktop hero crops the right edge, so anything placed there would be cut).
     return sheet
 
 
@@ -526,6 +534,101 @@ def build_slay() -> None:
 
 
 # --------------------------------------------------------------------------
+# g) home page (owners' homepage design, 2026-10-08; photo codes HP-01..HP-12)
+# --------------------------------------------------------------------------
+
+HOME = IMG / "home"
+BRAND = IMG / "brand"
+INK = (0x1C, 0x1C, 0x1C)
+# hp01/hp02/hp03/hp07/hp12 are the owners' AI-edited versions of real rooms
+# (temporary stand-ins until the original photos arrive); hp08 is an original.
+# Nails and massage tiles use the real room photos from the old site, and the
+# medical tile uses Shannon's headshot, until the owners send HP-04..HP-06.
+HOME_TILES = {
+    "hair": (HOME / "hp02-styling-stations.jpg", 0.55, 0.3),
+    "spa": (HOME / "hp03-facial-room.jpg", 0.6, 0.5),
+    "nails": (IMG / "services" / "mani-room.jpg", 0.6, 0.5),
+    "massage": (IMG / "services" / "massage.jpg", 1.0, 0.5),
+    "medical": (IMG / "team" / "shannon-francis.jpg", 0.08, 0.5),
+}
+LOGO_HEADER_H = 112  # 2x of the 56px desktop header lockup
+
+
+def warm(im: Image.Image, r: float = 1.03, b: float = 0.96) -> Image.Image:
+    """A gentle white-balance shift toward warm (HP-08: 'adjust warmth')."""
+    rr, gg, bb = im.split()
+    return Image.merge("RGB", (rr.point(lambda v: min(255, round(v * r))), gg,
+                               bb.point(lambda v: round(v * b))))
+
+
+def trimmed_alpha(path: Path, pad: int = 0) -> Image.Image:
+    a = Image.open(path).convert("RGBA").getchannel("A")
+    x0, y0, x1, y1 = a.point(lambda v: 255 if v > 8 else 0).getbbox()
+    return a.crop((max(0, x0 - pad), max(0, y0 - pad), x1 + pad, y1 + pad))
+
+
+def build_home() -> None:
+    print("home page")
+    src = HOME / "hp01-reception.jpg"
+    for w in (800, 1448):  # wide hero, 2:1, desk and wall sign kept right of centre
+        build_set(HOME / f"hero-{w}", [src],
+                  lambda w=w: resize_w(crop_to_ratio(load_rgb(src), 2, 1, anchor_y=0.5), w))
+    for w in (600, 900):  # phones and tablets: the full 4:3 frame
+        build_set(HOME / f"hero-m-{w}", [src], lambda w=w: resize_w(load_rgb(src), w))
+
+    for name, (tsrc, ay, ax) in HOME_TILES.items():
+        for w in (400, 640):  # service tiles, 5:4
+            build_set(HOME / f"tile-{name}-{w}", [tsrc],
+                      lambda s=tsrc, ay=ay, ax=ax, w=w: resize_w(
+                          crop_to_ratio(load_rgb(s), 5, 4, anchor_y=ay, anchor_x=ax), w))
+
+    src = HOME / "hp07-styling-stations.jpg"
+    for w in (800, 1448):  # matchmaker split image, 16:9
+        build_set(HOME / f"stations-{w}", [src],
+                  lambda w=w: resize_w(crop_to_ratio(load_rgb(src), 16, 9, anchor_y=0.6), w))
+
+    src = HOME / "hp08-pedicure-room.jpg"
+    # 1512x2016 portrait: a 3:2 band from y 560 keeps the B&Co sign, all four chairs
+    # and the windows, and drops most of the ceiling glare.
+    for w in (800, 1400):
+        build_set(HOME / f"pedicure-{w}", [src],
+                  lambda w=w: resize_w(warm(load_rgb(src).crop((0, 560, 1512, 1568))), w))
+
+    src = HOME / "hp12-exterior.jpg"
+    for w in (600, 1000):  # footer: 3:2, anchored left so the sign stays in frame
+        build_set(HOME / f"exterior-{w}", [src],
+                  lambda w=w: resize_w(crop_to_ratio(load_rgb(src), 3, 2, anchor_x=0.0), w))
+
+    src = BRAND / "monogram-gold-src.jpg"
+    for w in (320, 560):  # gift-card panel (white ground)
+        build_set(BRAND / f"monogram-gold-{w}", [src], lambda w=w: resize_w(load_rgb(src), w))
+
+    # official 2026 Community's Choice award artwork, trimmed of its white margin
+    src = BRAND / "community-choice-2026-src.png"
+    for w in (160, 320):
+        png = BRAND / f"award-2026-{w}.png"
+        webp = png.with_suffix(".webp")
+        if not up_to_date([png, webp], [src]):
+            im = Image.open(src).convert("RGBA")
+            im = im.crop(im.getchannel("A").point(lambda v: 255 if v > 8 else 0).getbbox())
+            im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+            im.save(png, "PNG", optimize=True)
+            im.save(webp, "WEBP", quality=90, method=6)
+            print(f"  wrote {rel(png)} + .webp")
+        record(png)
+        record(webp)
+
+    # header lockup: the owners' logo without the box, one ink colour
+    src = BRAND / "logo-no-box-src.png"
+    out = BRAND / "logo-header.png"
+    if not up_to_date([out], [src]):
+        a = trimmed_alpha(src)
+        a = a.resize((round(a.width * LOGO_HEADER_H / a.height), LOGO_HEADER_H), Image.LANCZOS)
+        mono_png(a, INK, out)
+    record(out)
+
+
+# --------------------------------------------------------------------------
 # h) OG image
 # --------------------------------------------------------------------------
 
@@ -562,7 +665,7 @@ def build_og() -> None:
 GROUPS = {
     "team": build_team, "sheets": build_sheets, "owners": build_owners,
     "brand": build_brand, "about": build_about, "join": build_join,
-    "brows": build_brows, "slay": build_slay, "og": build_og,
+    "brows": build_brows, "slay": build_slay, "home": build_home, "og": build_og,
 }
 
 

@@ -15,11 +15,14 @@
 /team-member/ashley-basham/*  /our-team.html#ashley-basham 301
 /team-member/lisa-jeffries/*  /our-team.html#lisa-jeffries 301
 /team-member/alivia/*         /our-team.html#liv           301
-/team-member/taylor-2/*       /our-team.html#taylor-f      301
+/team-member/taylor-2/*       /our-team.html               301
 /team-member/shannon-francis-cpn/* /slay-aesthetics.html   301
 /team-member/:name/*          /our-team.html#:name         301
 /jobs/*                       /join-our-team.html#apply    301
 /jobs.html                    /join-our-team.html#apply    301
+# Closed roles (owner update 2026-10-05): send old links to the open-roles list
+/job-nail-therapist.html      /join-our-team.html#roles    301
+/job-internship.html          /join-our-team.html#roles    301
 /about-me/*                   /about.html                  301
 /brides/*                     /brides.html                 301
 /salon/*                      /salon.html                  301

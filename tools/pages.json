@@ -5,10 +5,9 @@
    "file": "index.html",
    "nav": "home",
    "title": "Hair Salon & Day Spa in Newark, Ohio | Bellezza & Co.",
-   "description": "Hair, nails, facials, massage and bridal in Newark, OH, from a 28-person team family-owned since 2009. Prices listed by level. Book online anytime.",
+   "description": "Hair, nails, facials, massage and bridal in Newark, OH. Voted Best Spa and Best Hair Salon in Licking County, 2026. Prices by level. Book online anytime.",
    "crumbs": null,
-   "bookLabel": "Book an appointment",
-   "italic": true
+   "bookLabel": "Book an appointment"
   },
   {
    "file": "services.html",
@@ -145,17 +144,17 @@
    "file": "slay-aesthetics.html",
    "nav": "services",
    "title": "Botox & Fillers in Newark, OH | Slay Aesthetics at Bellezza",
-   "description": "Botox, Xeomin, dermal filler and medication-assisted weight loss by Shannon Francis, CNP, of Slay Aesthetics. Fridays 10-6 inside Bellezza & Co. in Newark.",
+   "description": "Botox, fillers, peels, microneedling, HRT and medical weight loss with Shannon Francis, CNP, of Slay Aesthetics. Mondays and Fridays at Bellezza in Newark.",
    "crumbs": [
     {
      "label": "Services & Prices",
      "href": "services.html"
     }
    ],
-   "bookLabel": "Book with Slay Aesthetics",
+   "bookLabel": "Book with Shannon",
    "bookOverride": {
-    "href": "https://www.slay-aesthetics.com",
-    "label": "Book with Slay Aesthetics",
+    "href": "https://login.meevo.com/bellezza/ob?locationId=103245&empId=294fbc73-53ca-4f93-a5dc-af9d012e4fe8&empEntityId=10034",
+    "label": "Book with Shannon",
     "cta": "slay",
     "external": true
    }
@@ -172,7 +171,7 @@
    "file": "book-online.html",
    "nav": "plan",
    "title": "Book a Salon or Spa Appointment Online | Bellezza & Co.",
-   "description": "Book hair, nails, facials, massage and more online 24/7, in the Bellezza app or by phone at 740-366-1604. What to expect, and our 24-hour change policy.",
+   "description": "Book hair, nails, facials, massage and more online 24/7, in the MeGo Client app or by phone at 740-366-1604. What to expect, and our 24-hour change policy.",
    "crumbs": [],
    "bookLabel": "Book an appointment"
   },
@@ -180,7 +179,7 @@
    "file": "products.html",
    "nav": "plan",
    "title": "Dermalogica, Olaplex & More in Newark, OH | Bellezza & Co.",
-   "description": "Shop Dermalogica, Olaplex, REF, Lakme, Smashbox, VOESH, Calecim and ECRU New York at our Newark boutique. Order online for in-salon or curbside pickup.",
+   "description": "Shop Dermalogica, Olaplex, REF, Lakme, Smashbox, VOESH, Calecim, ECRU New York and O&M at our Newark boutique. Call to order for pickup.",
    "crumbs": [],
    "bookLabel": "Book an appointment"
   },
@@ -266,7 +265,7 @@
    "file": "products-calecim.html",
    "nav": "plan",
    "title": "Calecim Hair Serum in Newark, OH | Bellezza & Co.",
-   "description": "Calecim Professional hair serum is now available at Bellezza & Co. in Newark, OH. Ask your stylist whether it suits your hair, or order for pickup.",
+   "description": "Calecim Professional hair serum and in-salon treatments at Bellezza & Co. in Newark, OH. Ask your stylist whether Calecim suits your hair, or call to order.",
    "crumbs": [
     {
      "label": "The Boutique",
@@ -289,10 +288,23 @@
    "bookLabel": "Book hair"
   },
   {
+   "file": "products-om.html",
+   "nav": "plan",
+   "title": "O&M Hair Care & Styling in Newark, OH | Bellezza & Co.",
+   "description": "O&M (Original & Mineral) hair care and styling from Australia, now at Bellezza & Co. in Newark, OH. Ask your stylist, or call to order for pickup.",
+   "crumbs": [
+    {
+     "label": "The Boutique",
+     "href": "products.html"
+    }
+   ],
+   "bookLabel": "Book hair"
+  },
+  {
    "file": "our-team.html",
    "nav": "team",
    "title": "Our Stylists, Nail Artists & Therapists | Bellezza & Co.",
-   "description": "Meet the 28-person team at Bellezza & Co. in Newark, OH: stylists, nail artists, skin and massage therapists, with training, specialties and levels.",
+   "description": "Meet the Bellezza & Co. team in Newark, OH: licensed stylists, nail artists, skin and massage therapists, with schools, Ohio licenses and specialties.",
    "crumbs": [],
    "bookLabel": "Book an appointment"
   },
@@ -300,10 +312,9 @@
    "file": "about.html",
    "nav": "about",
    "title": "Our Story: Two Sisters, Newark Since 2009 | Bellezza & Co.",
-   "description": "Sisters Lisa Jeffries and Ashley Basham grew a Newark house into a 5,500 sq ft salon, spa and boutique. Both still work behind the chair one day a week.",
+   "description": "Sisters Lisa Jeffries and Ashley Basham grew a Newark house into a 5,500 sq ft salon, spa and boutique, voted Licking County's Best Spa every year since 2016.",
    "crumbs": [],
-   "bookLabel": "Book an appointment",
-   "italic": true
+   "bookLabel": "Book an appointment"
   },
   {
    "file": "new-guests.html",
@@ -317,7 +328,7 @@
    "file": "join-our-team.html",
    "nav": "about",
    "title": "Salon & Spa Jobs in Newark, OH | Bellezza & Co. Careers",
-   "description": "Careers at Bellezza & Co. in Newark, OH: stylists, nail and massage therapists, new talent and cosmetology interns. See open roles and apply online.",
+   "description": "Careers at Bellezza & Co. in Newark, OH: experienced hair stylists, new talent and massage therapists. Paid training, paid vacation and 401(k). Apply online.",
    "crumbs": [],
    "bookLabel": "Book an appointment"
   },
@@ -325,20 +336,7 @@
    "file": "job-massage-therapist.html",
    "nav": "about",
    "title": "Massage Therapist Job in Newark, OH | Bellezza & Co.",
-   "description": "Massage therapist role at Bellezza & Co., a 28-person salon and day spa in Newark, OH, family-owned since 2009. Read the role details and apply online.",
-   "crumbs": [
-    {
-     "label": "Careers",
-     "href": "join-our-team.html"
-    }
-   ],
-   "bookLabel": "Book an appointment"
-  },
-  {
-   "file": "job-nail-therapist.html",
-   "nav": "about",
-   "title": "Nail Therapist Job in Newark, OH | Bellezza & Co.",
-   "description": "Nail therapist role at Bellezza & Co., a 28-person salon and day spa in Newark, OH, family-owned since 2009. Read the role details and apply online.",
+   "description": "Massage therapist role at Bellezza & Co., a salon and day spa in Newark, OH, family-owned since 2009. Paid vacation and 401(k) once eligible. Apply online.",
    "crumbs": [
     {
      "label": "Careers",
@@ -351,7 +349,7 @@
    "file": "job-experienced-hair-stylist.html",
    "nav": "about",
    "title": "Hair Stylist Job in Newark, OH | Bellezza & Co.",
-   "description": "Experienced hair stylist role at Bellezza & Co., a 28-person salon with a Director of Education in Newark, OH. Ohio cosmetology license required. Apply.",
+   "description": "Experienced hair stylist role at Bellezza & Co. in Newark, OH, with a Director of Education. Ohio cosmetology license required. Paid vacation and 401(k).",
    "crumbs": [
     {
      "label": "Careers",
@@ -364,20 +362,7 @@
    "file": "job-new-talent.html",
    "nav": "about",
    "title": "New Talent Stylist Position in Newark, OH | Bellezza & Co.",
-   "description": "New Talent stylist role at Bellezza & Co., a 28-person salon and day spa in Newark, OH. Ohio cosmetology license required. Read the details and apply.",
-   "crumbs": [
-    {
-     "label": "Careers",
-     "href": "join-our-team.html"
-    }
-   ],
-   "bookLabel": "Book an appointment"
-  },
-  {
-   "file": "job-internship.html",
-   "nav": "about",
-   "title": "Cosmetology Internship in Newark, OH | Bellezza & Co.",
-   "description": "For cosmetology students with 750 hours completed. Earn hours toward your program alongside our team at Bellezza & Co. in Newark, OH. Apply online.",
+   "description": "New Talent stylist role at Bellezza & Co. in Newark, OH: a paid training and assisting program for licensed new stylists. Ohio cosmetology license required.",
    "crumbs": [
     {
      "label": "Careers",
@@ -412,7 +397,7 @@
    "file": "pick-up-orders.html",
    "nav": "plan",
    "title": "Order Products for Pickup or Curbside | Bellezza & Co.",
-   "description": "Request salon products online, pay by link and pick up in the salon or curbside at 206 Deo Drive, Newark. Allow 24 hours for processing.",
+   "description": "Order salon products by phone at 740-366-1604 and pick them up in the salon or curbside at 206 Deo Drive, Newark. Allow 24 hours for processing.",
    "crumbs": [
     {
      "label": "The Boutique",

@@ -142,7 +142,8 @@ BANNED = [
     ("restore youthful", _phrase("restore youthful")),
     ("refreshed look", _phrase("refreshed look")),
     ("visible results", _phrase("visible results")),
-    ("semaglutide", _phrase("semaglutide")),
+    # "semaglutide" was banned until Slay confirmed its medications (owner question 11,
+    # answered 2026-10-05); the Slay page now names them with their compounded status.
 ]
 BANNED_RE = [(label, re.compile(rx, re.I)) for label, rx in BANNED]
 OWNER_COMMENT_RE = re.compile(r"<!--\s*OWNER:.*?-->", re.S)

@@ -2,7 +2,10 @@
   "_readme": "Single source of truth for business facts. Edit here, then run: python tools/build.py",
   "name": "Bellezza & Co.",
   "formerly": "Bellezza Salon and Day Spa",
+  "legalName": "Bellezza Salon & Day Spa",
+  "salonLicense": "091084",
   "tagline": "Salon • Spa • Boutique",
+  "slogan": "Beauty and relaxation tailored to you.",
   "founded": 2009,
   "phone": "740-366-1604",
   "tel": "tel:+17403661604",
@@ -25,11 +28,24 @@
     "slay": "https://www.slay-aesthetics.com",
     "facebook": "https://www.facebook.com/BellezzaSpaOnline",
     "instagram": "https://instagram.com/bellezza_newark",
-    "ios": "https://apps.apple.com/us/app/bellezza-salon-day-spa/id1314312155",
-    "android": "https://play.google.com/store/apps/details?id=com.webappclouds.bellezzaspa",
-    "iosAppId": "1314312155"
+    "ios": "https://apps.apple.com/us/app/mego-client/id1592427775",
+    "android": "https://play.google.com/store/apps/details?id=com.meevoonlinebooking",
+    "iosAppId": "1592427775",
+    "googleProfile": "https://g.page/r/CUqbhUZs2e36EBM",
+    "googleReview": "https://g.page/r/CUqbhUZs2e36EBM/review",
+    "slayBook": "https://login.meevo.com/bellezza/ob?locationId=103245&empId=294fbc73-53ca-4f93-a5dc-af9d012e4fe8&empEntityId=10034",
+    "licenseLookup": "https://elicense.ohio.gov/oh_verifylicense",
+    "awardResults": "https://newarkadvocate.gannettcontests.com/2026-Licking-County-Communitys-Choice-Awards/gallery/"
   },
-  "award": "Voted the Number 1 spa in Licking County every year since 2016",
+  "award": {
+    "name": "Licking County Community's Choice Awards",
+    "organizer": "The Newark Advocate (Gannett)",
+    "formerly": "Best of Licking County",
+    "spa": "Voted Best Spa in Licking County every year the award has been held since 2016",
+    "salon": "Voted Best Hair Salon in Licking County every year the award has been held since 2016, with one Runner-Up year",
+    "latest": "2026 Winner: Best Spa and Best Hair Salon",
+    "latestYear": 2026
+  },
   "hours": [
     {"day": "Monday", "short": "Mon", "opens": "09:00", "closes": "20:00"},
     {"day": "Tuesday", "short": "Tue", "opens": "09:00", "closes": "20:00"},
@@ -51,43 +67,85 @@
     {"name": "December 26", "month": 12, "day": 26, "closed": true},
     {"name": "New Year's Eve", "month": 12, "day": 31, "closes": "12:00"}
   ],
-  "trickOrTreat": {},
+  "trickOrTreat": {
+    "2026": "2026-10-29"
+  },
   "giftSeasons": [
     {"from": "11-01", "to": "12-24"},
     {"from": "02-01", "to": "02-14"},
     {"rule": "mothers-day", "daysBefore": 14}
   ],
-  "specials": [
-    {
-      "id": "treatment-bar",
-      "title": "The Treatment Bar is now open",
-      "summary": "Custom hair treatments, mixed just for you: bond and repair, detox and metal removal, scalp therapy, moisture and frizz control, and express smoothing.",
-      "offers": ["25% off any custom treatment when you add it to a hair service", "25% off select at-home care when you receive a treatment"],
-      "link": "salon.html#treatments",
-      "linkLabel": "See treatment prices",
-      "ends": null
-    },
-    {
-      "id": "lakme-leave-in",
-      "title": "25% off Lakmé leave-in treatments",
-      "summary": "Lakmé leave-in treatments, including the L2 instant detangling conditioners: Classic L2 for all hair types, L2 Blonde for lightened hair, and L2 Care for curls or for dry, damaged hair.",
-      "offers": ["25% off Lakmé leave-in treatments"],
-      "link": "products-lakme.html",
-      "linkLabel": "About Lakmé",
-      "ends": null
-    },
-    {
-      "id": "calecim",
-      "title": "Calecim Professional is now at Bellezza",
-      "summary": "Calecim Professional hair serum is now available in our boutique. Ask your stylist whether it suits your hair.",
-      "offers": [],
-      "link": "products-calecim.html",
-      "linkLabel": "About Calecim",
-      "ends": null
-    }
+  "specials": [],
+  "allowedNumbers": [
+    "(718) 921-6100"
   ],
-  "allowedNumbers": ["(718) 921-6100"],
-  "pricesConfirmed": "2026-09",
-  "teamUpdated": "2026-09",
-  "ownerAnswers": {}
+  "pricesConfirmed": "2026-10",
+  "teamUpdated": "2026-10",
+  "ownerAnswers": {
+    "_readme": "Answers from \"What We Need From You\" (completed 2026-10-05). Missing or false = still open; check.py warns.",
+    "1": "2026-10-05: Licking County Community's Choice Awards (The Newark Advocate); 2026 winner",
+    "2": "2026-10-05: GBP access, 4.8 / 761 as of 2026-10-01, review link, 6 reviews (4 permitted)",
+    "11": "2026-10-05: separate business, physician named, consult, medications, Meevo booking (license number intentionally not published)",
+    "12": "2026-10-05: New Talent, Massage Therapist, Experienced Hair Stylist open; no pay; apply to Lisa",
+    "16": "2026-10-05: Netlify and Plausible approved; routing and retention set. Still open: domain registrar access"
+  },
+  "reviews": {
+    "_readme": "Google rating and count shown with an as-of date (warned by check.py after 90 days). Quotes are word for word; only those with publish: true appear on the site, and those with home: true also appear on the home page. Never add star graphics or Review/aggregateRating schema.",
+    "rating": 4.8,
+    "count": 761,
+    "asOf": "2026-10-01",
+    "quotes": [
+      {
+        "name": "Samantha G.",
+        "date": "2026-07",
+        "service": "Hair",
+        "publish": true,
+        "home": true,
+        "permission": "confirmed by email",
+        "text": "Liz cut my hair yesterday and I couldn't be happier. She worked patiently with the mess I had and brought me back to life 🥹 will certainly be going back."
+      },
+      {
+        "name": "Anna M.",
+        "date": "2016-08",
+        "service": "Hair",
+        "publish": false,
+        "permission": "confirmed by email",
+        "hold": "Date given as Aug. 2016, but the review names Cherish, who started at Bellezza in 2023. Confirm the date, then set publish: true.",
+        "text": "I always look forward to my visits at  Bellezza!! It's Beautiful inside and out!!  And Cherish is Wonderful!!! I feel so pampered when she takes care of me during my haircut and brow wax!!! Thank You for always making me feel special!!! :)"
+      },
+      {
+        "name": "Barbara G.",
+        "date": "2024-12",
+        "service": "Nails",
+        "publish": true,
+        "permission": "verbal; use approved by Bellezza 2026-10-06",
+        "text": "Bellezza is my go to place to get a manicure and pedicure.  I always feel welcome and special when I go to my appointments. Madison is a wonderful nail artist and my nails and toes always look very nice.There is a great choice of colors to choose from for your manicure and pedicure.  Everyone at Bellezza is friendly and welcoming.  Highly recommend."
+      },
+      {
+        "name": "Stephanie L.",
+        "date": "2025-07",
+        "service": "Nails",
+        "publish": true,
+        "home": true,
+        "permission": "verbal; use approved by Bellezza 2026-10-06",
+        "text": "The place is very welcoming and clean! Everyone was professional and friendly. Hope is fantastic and I love my nails!!"
+      },
+      {
+        "name": "Tami R.",
+        "date": "2025-08",
+        "service": "Facials",
+        "publish": true,
+        "permission": "confirmed by email",
+        "text": "I had several facials with derma plane by Emma. She is very professional and does a fabulous job. I am always so relaxed and my skin feels wonderful when I leave. 5 STARS 🌟🌟🌟🌟🌟"
+      },
+      {
+        "name": "Katelynn W.",
+        "date": "2023-10",
+        "service": "Bridal",
+        "publish": true,
+        "permission": "on file in signed bridal paperwork",
+        "text": "Austyn and the whole team were so amazing to me and my bridal party on my wedding day. They did an amazing job on our hair and makeup. The salon is so clean and beautiful and everyone is so incredibly nice and professional. I honestly cannot say enough about them."
+      }
+    ]
+  }
 }

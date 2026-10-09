@@ -2,6 +2,11 @@
 
 **30 September 2026 · for branches `design-b`, `design-c` and `design-d` · Option A = `main` (kept as is)**
 
+> **Archived 5 October 2026.** The owners chose Option A. B, C and D are kept for later
+> on their branches and on the tags `archive/option-b-house-light`,
+> `archive/option-c-bronze-sand` and `archive/option-d-open-door`. They do not include
+> the owners' 2026-10-05 content answers, which were applied to Option A only.
+
 Each option restyles and re-lays out the same site. These all carry over from A: the pages, copy, ids, `data-*` attributes, schema, forms, `site.js` behaviors (live status, hours and holidays, gift slot, disclosure menu, dialogs, filters, scrollspy) and the photo-slot owner view (`?photos=1`). What changes per branch is the tokens in `styles.css`, the header, footer and band partials stamped by `tools/build.py`, and the page templates.
 
 ---

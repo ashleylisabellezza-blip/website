@@ -5,7 +5,7 @@
   'use strict';
 
   /* config:start */
-  var CONFIG = {"tz": "America/New_York", "hours": {"Mon": ["09:00", "20:00"], "Tue": ["09:00", "20:00"], "Wed": ["12:00", "20:00"], "Thu": ["09:00", "20:00"], "Fri": ["09:00", "19:00"], "Sat": ["08:00", "15:00"], "Sun": null}, "holidays": [{"date": "2026-12-24", "name": "Christmas Eve", "closed": false, "closes": "12:00"}, {"date": "2026-12-25", "name": "Christmas", "closed": true, "closes": null}, {"date": "2026-12-26", "name": "December 26", "closed": true, "closes": null}, {"date": "2026-12-31", "name": "New Year's Eve", "closed": false, "closes": "12:00"}, {"date": "2027-01-01", "name": "New Year's Day", "closed": true, "closes": null}, {"date": "2027-05-31", "name": "Memorial Day", "closed": true, "closes": null}, {"date": "2027-07-03", "name": "July 3rd", "closed": false, "closes": "17:00"}, {"date": "2027-07-04", "name": "Independence Day", "closed": true, "closes": null}, {"date": "2027-09-06", "name": "Labor Day", "closed": true, "closes": null}], "giftSeasons": [["2026-11-01", "2026-12-24"], ["2026-02-01", "2026-02-14"], ["2026-04-26", "2026-05-10"], ["2027-11-01", "2027-12-24"], ["2027-02-01", "2027-02-14"], ["2027-04-25", "2027-05-09"]], "phone": "740-366-1604"};
+  var CONFIG = {"tz": "America/New_York", "hours": {"Mon": ["09:00", "20:00"], "Tue": ["09:00", "20:00"], "Wed": ["12:00", "20:00"], "Thu": ["09:00", "20:00"], "Fri": ["09:00", "19:00"], "Sat": ["08:00", "15:00"], "Sun": null}, "holidays": [{"date": "2026-10-29", "name": "Newark Trick-or-Treat night", "closed": false, "closes": "17:00"}, {"date": "2026-12-24", "name": "Christmas Eve", "closed": false, "closes": "12:00"}, {"date": "2026-12-25", "name": "Christmas", "closed": true, "closes": null}, {"date": "2026-12-26", "name": "December 26", "closed": true, "closes": null}, {"date": "2026-12-31", "name": "New Year's Eve", "closed": false, "closes": "12:00"}, {"date": "2027-01-01", "name": "New Year's Day", "closed": true, "closes": null}, {"date": "2027-05-31", "name": "Memorial Day", "closed": true, "closes": null}, {"date": "2027-07-03", "name": "July 3rd", "closed": false, "closes": "17:00"}, {"date": "2027-07-04", "name": "Independence Day", "closed": true, "closes": null}, {"date": "2027-09-06", "name": "Labor Day", "closed": true, "closes": null}], "giftSeasons": [["2026-11-01", "2026-12-24"], ["2026-02-01", "2026-02-14"], ["2026-04-26", "2026-05-10"], ["2027-11-01", "2027-12-24"], ["2027-02-01", "2027-02-14"], ["2027-04-25", "2027-05-09"]], "phone": "740-366-1604"};
   /* config:end */
 
   var doc = document;
@@ -140,13 +140,17 @@
     onScroll();
   }
 
-  /* ---------- services disclosure (APG pattern, no role=menu) ---------- */
-  function initServicesNav() {
-    var btn = $('.nav-services .chev');
-    var panel = $('#nav-services');
+  /* ---------- nav dropdowns: Services, About (APG disclosure pattern, no role=menu) ---------- */
+  function initNavDrops() {
+    $$('.nav-drop').forEach(initNavDrop);
+  }
+
+  function initNavDrop(li) {
+    var btn = $('.chev', li);
+    var panel = btn && doc.getElementById(btn.getAttribute('aria-controls'));
     if (!btn || !panel) return;
     btn.hidden = false;
-    var li = btn.parentNode, openTimer, closeTimer, suppressHover = false, byHover = false;
+    var openTimer, closeTimer, suppressHover = false, byHover = false;
     function set(open) {
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       panel.hidden = !open;
@@ -336,7 +340,7 @@
 
   function ready(fn) { if (doc.readyState !== 'loading') fn(); else doc.addEventListener('DOMContentLoaded', fn); }
   ready(function () {
-    [applyStatus, applySeasons, initHeader, initServicesNav, initDrawer, initBookbar, initFocusClearance,
+    [applyStatus, applySeasons, initHeader, initNavDrops, initDrawer, initBookbar, initFocusClearance,
       initDialogs, initTeamFilters, initScrollspy, initMaps, initAnalytics].forEach(function (fn) {
       try { fn(); } catch (err) { if (window.console) console.error(err); }
     });

@@ -2,8 +2,14 @@
 
 How to write or edit a page so it works with the build (`python tools/build.py`),
 the stylesheet and the structured-data generator. The full design rationale is
-in `REDESIGN-BRIEF.md`; this file is the practical contract. `index.html` is the
-reference implementation: copy its patterns.
+in `REDESIGN-BRIEF.md`; this file is the practical contract.
+
+**2026-10-08: the owners' homepage design** (`docs/LatestFromBellezza/`) replaced the
+header, nav, footer, fonts and home page: Italiana headings, Montserrat body and
+buttons (tracked caps), black booking buttons, ivory/tan/black with no pink. The
+owners are sending a design for each page in turn; until a page gets its own, keep
+its current layout. For inner pages copy an inner page's patterns (e.g. `salon.html`);
+the home page uses its own `.h-*` blocks.
 
 ## 1. Skeleton (every page)
 
@@ -48,20 +54,22 @@ reference implementation: copy its patterns.
 - **Facts only.** Use only facts in `REDESIGN-BRIEF.md` §10.2 and in the current
   page content. No invented reviews, stats, credentials, parking, response times,
   outcomes. Missing photo → leave it out (optionally add a hidden photo slot, §5).
-- **Gold = booking at Bellezza.** `.btn--book` only for links to the Meevo booking
+- **Booking buttons.** `.btn--book` only for links to the Meevo booking
   URL (`https://login.meevo.com/bellezza/ob?locationId=103245`) with
-  `data-book data-cta="book" data-placement="…"`. Other primary actions use
-  `.btn--strong` (ink). Secondary: `.btn--outline`. Never two gold buttons in one view.
+  `data-book data-cta="book" data-placement="…"`. It is black (tan on dark grounds),
+  like `.btn--strong`, which other primary actions use. Secondary: `.btn--outline`.
 - **Button labels:** sentence case, no arrows, never "Learn more", "Click here",
   "Submit". Call buttons show the digits: "Call 740-366-1604". Links to the phone are
   exactly `tel:+17403661604`.
 - **Headings:** exactly one `<h1>`; no skipped levels (h1 → h2 → h3). Eyebrows are
   `<p class="eyebrow">`, never headings. No `<em>` in headings (only 3 allowed
   site-wide and they are used on home and about).
-- **Nothing centered.** Left-aligned layouts only. No carousels, sliders, parallax,
-  scroll animation, icon rows, testimonials, stock photos, or the retired room
-  photos (`services/mani-room.jpg`, `manicure.jpg`, `facial-room.jpg`, `facial.jpg`,
-  `massage.jpg`, `derma.jpg`), `hero-*.jpg`, `tile-*.jpg`, `about-*.png`,
+- **Left-aligned by default** (the owners' design centers only the home service-tile
+  captions and the reviews label). No carousels, sliders, parallax,
+  scroll animation, icon rows, invented testimonials, stock photos, or the retired room
+  photos (`services/manicure.jpg`, `facial.jpg`, `derma.jpg`; `mani-room.jpg` and
+  `massage.jpg` stand in on the home tiles only until the owners send HP-04/HP-05),
+  `hero-*.jpg`, `tile-*.jpg`, `about-*.png`,
   `search-bg.jpg`, `footer-bg.jpg`, `banner-interior.jpg`.
 - **Images:** every `<img>` has `width`, `height` and `alt` (`alt=""` if decorative).
   First image in `<main>` is NOT `loading="lazy"`; all others are
@@ -73,7 +81,9 @@ reference implementation: copy its patterns.
   all skin types regardless of color or tone"; mother-to-be symptom list (keep "2nd
   and 3rd trimester; side-lying with supportive pillows"); "visible results";
   every Slay outcome phrase ("smooth away", "restore youthful contours",
-  "refreshed look", "effectively support") and the drug name "Semaglutide";
+  "refreshed look", "effectively support"). Slay's weight-loss medications are
+  named only as the owners confirmed them (2026-10-05), and compounded ones are
+  always labeled "not FDA-approved";
   "secure" in process descriptions. Fix "Brazillian" → "Brazilian".
 - Owner-facing notes go in HTML comments starting `<!-- OWNER: … -->`.
 
@@ -112,8 +122,10 @@ Sizes available for every team slug: `-180`, `-360`, `-540` in `.avif`, `.webp`,
 
 **Team slugs** (also the `id` of each card on `our-team.html`):
 ashley-basham, lisa-jeffries, devon, stephanie, janet, moriah, emilie, austyn,
-lizbeth, cherish, liv, taylor-f, mya, kat, paige, madison, shelbi, raegan, rissa,
-hope, jesyca, emma, mia, shannon-francis, melissa, aubree, grace, aeriannah.
+lizbeth, cherish, liv, mya, kat, paige, madison, shelbi, raegan, rissa (shown as
+Marissa), hope, jesyca, emma, mia, shannon-francis, melissa, aubree, grace, aeriannah.
+Taylor F has left (2026-10); her slug and images are gone. Lisa Jeffries no longer
+takes clients, so she is listed under leadership only and has no Book link.
 
 **Artists strip** (service pages):
 ```html

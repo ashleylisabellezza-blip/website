@@ -18,7 +18,9 @@ except that the holiday hours roll forward as dates pass. What each page gets:
   about.html         AboutPage about the business, with founders
   services.html      CollectionPage with an ItemList of the service pages
   service pages      Service + OfferCatalog built from the price lists
-  our-team.html      Person for each staff member, linked as employees
+  our-team.html      Person for each staff member, linked as employees, with school,
+                     Ohio license, certifications, specialties and languages read
+                     from the bio dialog
   job-*.html         one JobPosting per page (Google Jobs); none on join-our-team
   products.html      ItemList of brands from a.brand-card
   products-*.html    Brand (kept while those pages exist)
@@ -31,7 +33,8 @@ skipped. Set SCHEMA_TODAY=YYYY-MM-DD to pin "today" (tests).
 Parser contract (see docs/REDESIGN-BRIEF.md 3.3): .menu-group > h3,
 li.price-item > .price-head > span.name + span.price then the description <p>,
 .card with an h2-h4 name + span.role, dialog.bio#bio-SLUG, article.job#ID > h2,
-a.brand-card. Classes are matched as tokens and attributes in any order, so
+a.brand-card, and in a bio: ul.creds-list > li[data-school|data-license|
+data-cert|data-languages|data-specialties]. Classes are matched as tokens and attributes in any order, so
 ids, modifier classes and extra attributes do not change the output.
 Never emits aggregateRating or Review.
 """
@@ -52,20 +55,32 @@ BOOKING = 'https://login.meevo.com/bellezza/ob?locationId=103245'
 
 BIZ_NAME = 'Bellezza & Co.'
 BIZ_FORMERLY = 'Bellezza Salon and Day Spa'
-BIZ_SLOGAN = 'Salon · Spa · Boutique'
+BIZ_SLOGAN = 'Beauty and relaxation tailored to you.'
+BIZ_LEGAL = 'Bellezza Salon & Day Spa'
+SALON_LICENSE = '091084'  # Ohio Cosmetology and Barber Board
+LICENSE_LOOKUP = 'https://elicense.ohio.gov/oh_verifylicense'
+GOOGLE_PROFILE = 'https://g.page/r/CUqbhUZs2e36EBM'
+SLAY_BOOKING = ('https://login.meevo.com/bellezza/ob?locationId=103245'
+                '&empId=294fbc73-53ca-4f93-a5dc-af9d012e4fe8&empEntityId=10034')
 
-# The award claim is NOT emitted until the owner confirms who runs the vote and
-# the most recent year won (brief 10.4, owner question 1). Once confirmed, set:
-#   AWARD = 'Voted the Number 1 spa in Licking County every year since 2016'
-# and it is added as the business's `award`. Keep it out of descriptions.
-AWARD = None
+# Confirmed by the owners 2026-10-05 (owner question 1): the Licking County
+# Community's Choice Awards, run by The Newark Advocate (Gannett). Hair Salon had
+# one Runner-Up year, so only the spa claim says "every year".
+AWARD = [
+    "Best Spa in Licking County, Licking County Community's Choice Awards (The Newark Advocate), "
+    "every year the award has been held since 2016",
+    "Best Hair Salon in Licking County, Licking County Community's Choice Awards (The Newark Advocate), 2026",
+]
 
 # Default page image when a page's <main> has no image of its own.
 DEFAULT_IMAGE = 'assets/img/team/contact-sheet-1540.jpg'
 
 # Date the current job listings went up. Update when a posting changes:
 # Google treats postings with old dates as stale.
-JOBS_DATE_POSTED = '2026-09-29'
+JOBS_DATE_POSTED = '2026-10-05'
+# Recruiting is ongoing; the owners refresh postings on a 90-day cycle instead of
+# showing a false closing date. Bump JOBS_DATE_POSTED at each refresh.
+JOBS_VALID_DAYS = 90
 
 ADDRESS = {
     '@type': 'PostalAddress',
@@ -243,6 +258,7 @@ def business_full():
         '@type': ['DaySpa', 'HairSalon', 'NailSalon'],
         '@id': BIZ_ID,
         'name': BIZ_NAME,
+        'legalName': BIZ_LEGAL,
         'alternateName': BIZ_FORMERLY,
         'slogan': BIZ_SLOGAN,
         'description': ('Full-service salon, spa and boutique in Newark, Ohio offering hair, color and '
@@ -250,8 +266,7 @@ def business_full():
                         'makeup, spray tans and bridal services.'),
         'url': SITE,
         'logo': {'@type': 'ImageObject', 'url': SITE + 'assets/img/logo.png', 'width': 786, 'height': 257},
-        'image': [SITE + 'assets/img/team/contact-sheet-1540.jpg', SITE + 'assets/img/about/team-group-1120.jpg',
-                  SITE + 'assets/img/logo.png'],
+        'image': [SITE + 'assets/img/team/contact-sheet-1540.jpg', SITE + 'assets/img/logo.png'],
         'telephone': '+1-740-366-1604',
         'address': ADDRESS,
         'geo': {'@type': 'GeoCoordinates', 'latitude': 40.08631, 'longitude': -82.422132},
@@ -259,6 +274,13 @@ def business_full():
         'openingHoursSpecification': weekly_specs(site) + holiday_specs(site),
         'priceRange': '$$',
         'currenciesAccepted': 'USD',
+        'paymentAccepted': 'Cash, Visa, Mastercard, American Express, Discover, Bellezza gift cards',
+        'amenityFeature': {'@type': 'LocationFeatureSpecification', 'name': 'Wheelchair accessible', 'value': True},
+        'hasCredential': {
+            '@type': 'EducationalOccupationalCredential', 'credentialCategory': 'license',
+            'name': 'Ohio salon license ' + SALON_LICENSE, 'identifier': SALON_LICENSE, 'url': LICENSE_LOOKUP,
+            'recognizedBy': {'@type': 'Organization', 'name': 'Ohio State Cosmetology and Barber Board'},
+        },
         'foundingDate': '2009',
         'founder': [dict(f) for f in FOUNDERS],
         'areaServed': AREA_SERVED,
@@ -270,8 +292,7 @@ def business_full():
         'sameAs': [
             'https://www.facebook.com/BellezzaSpaOnline',
             'https://instagram.com/bellezza_newark',
-            'https://apps.apple.com/us/app/bellezza-salon-day-spa/id1314312155',
-            'https://play.google.com/store/apps/details?id=com.webappclouds.bellezzaspa',
+            GOOGLE_PROFILE,
         ],
         'potentialAction': {
             '@type': 'ReserveAction',
@@ -626,8 +647,46 @@ def team_people(page, url):
         ig = re.search(r'href="(https://www\.instagram\.com/[^"]+)"', card)
         if ig:
             person['sameAs'] = [ig.group(1)]
+        person.update(person_credentials(page, slug))
         people.append(person)
     return people
+
+
+def person_credentials(page, slug):
+    """alumniOf, hasCredential, knowsAbout and knowsLanguage from the person's bio
+    dialog: <li data-school="C-TEC">, <li data-license="COS.220278"
+    data-license-type="Cosmetologist" data-board="...">, <li data-cert="A; B">,
+    <li data-languages="English, Spanish"> and <li data-specialties="A; B">."""
+    out = {}
+    dlg = next((inner for _, _, inner in elements(page, 'dialog', 'bio', id='bio-' + slug)), '')
+    if not dlg:
+        return out
+    schools, creds, langs, knows = [], [], [], []
+    for _, a in tags(dlg, 'li'):
+        if a.get('data-school'):
+            schools.append({'@type': 'EducationalOrganization', 'name': a['data-school']})
+        if a.get('data-license'):
+            creds.append({'@type': 'EducationalOccupationalCredential', 'credentialCategory': 'license',
+                          'name': f"Ohio {a.get('data-license-type', 'professional')} license {a['data-license']}",
+                          'identifier': a['data-license'], 'url': LICENSE_LOOKUP,
+                          'recognizedBy': {'@type': 'Organization',
+                                           'name': a.get('data-board', 'Ohio State Cosmetology and Barber Board')}})
+        if a.get('data-cert'):
+            creds.extend({'@type': 'EducationalOccupationalCredential', 'credentialCategory': 'certificate',
+                          'name': c.strip()} for c in a['data-cert'].split(';') if c.strip())
+        if a.get('data-languages'):
+            langs = [lang.strip() for lang in a['data-languages'].split(',') if lang.strip()]
+        if a.get('data-specialties'):
+            knows = [k.strip() for k in a['data-specialties'].split(';') if k.strip()]
+    if schools:
+        out['alumniOf'] = schools if len(schools) > 1 else schools[0]
+    if creds:
+        out['hasCredential'] = creds
+    if knows:
+        out['knowsAbout'] = knows
+    if langs:
+        out['knowsLanguage'] = langs
+    return out
 
 
 # Only employment types the job copy actually states (the massage role says
@@ -646,12 +705,14 @@ def job_postings(page, url):
         desc_html = re.sub(r'<h2\b[^>]*>.*?</h2>|<a\b[^>]*class="[^"]*\bbtn\b[^"]*"[^>]*>.*?</a>', '', body,
                            flags=re.S)
         desc_html = re.sub(r'\s+', ' ', html.unescape(desc_html)).strip()
+        posted = datetime.date.fromisoformat(JOBS_DATE_POSTED)
         out.append({
             '@type': 'JobPosting',
             '@id': url + '#' + job_id,
             'title': text(m_title.group(1)),
             'description': desc_html,
             'datePosted': JOBS_DATE_POSTED,
+            'validThrough': (posted + datetime.timedelta(days=JOBS_VALID_DAYS)).isoformat(),
             'hiringOrganization': {'@type': 'Organization', 'name': BIZ_NAME, 'sameAs': SITE,
                                    'logo': SITE + 'assets/img/logo.png'},
             'jobLocation': {'@type': 'Place', 'address': ADDRESS},
@@ -661,6 +722,10 @@ def job_postings(page, url):
         })
         if job_id in JOB_TYPES:
             out[-1]['employmentType'] = JOB_TYPES[job_id]
+        benefits = re.search(r'<ul\b[^>]*class="[^"]*\bbenefits\b[^"]*"[^>]*>(.*?)</ul>', body, re.S)
+        if benefits:
+            out[-1]['jobBenefits'] = '; '.join(text(li) for li in re.findall(r'<li\b[^>]*>(.*?)</li>',
+                                                                              benefits.group(1), re.S))
     return out[:1]  # one JobPosting per job page
 
 
@@ -739,17 +804,18 @@ def build(fname, page):
                                 'target': {'@type': 'EntryPoint', 'urlTemplate': BOOKING}},
         }
         if fname == 'slay-aesthetics.html':
-            # Slay is its own medical business, operating inside Bellezza on Fridays.
-            # Facts only: no descriptions (YMYL, brief 5.3).
+            # Slay is its own medical business (a partner leasing space inside Bellezza),
+            # there Mondays and Fridays and booked through Bellezza's Meevo on Shannon's
+            # link (owner question 11, 2026-10-05). Facts only (YMYL, brief 5.3).
             service['provider'] = {
                 '@type': 'MedicalBusiness', '@id': 'https://www.slay-aesthetics.com/#business',
                 'name': 'Slay Aesthetics & Wellness', 'url': 'https://www.slay-aesthetics.com',
                 'address': ADDRESS,
                 'employee': {'@id': SITE + 'our-team.html#shannon-francis'},
-                'openingHoursSpecification': hours('Friday', '10:00', '18:00'),
+                'openingHoursSpecification': hours(['Monday', 'Friday'], '09:00', '18:00'),
             }
             service['broker'] = {'@id': BIZ_ID}
-            del service['potentialAction']
+            service['potentialAction']['target']['urlTemplate'] = SLAY_BOOKING
         if not service['description']:  # page without a meta description (head not stamped yet)
             del service['description']
         wp['mainEntity'] = {'@id': service['@id']}
@@ -797,7 +863,7 @@ def build(fname, page):
         if m_logo:
             brand['logo'] = SITE + m_logo
         # brand copy: the section headed h2#about-h (current pages), else the old centered block
-        m_about = re.search(r'<h2[^>]*id="about-h"[^>]*>.*?</h2>(.*?)</section>', page, re.S)
+        m_about = re.search(r'<h2\b[^>]*id="about-h"[^>]*>.*?</h2>(.*?)</section>', page, re.S)
         blocks = [m_about.group(1)] if m_about else             [inner for _, a, inner in elements(page, 'div', 'narrow') if has_class(a, 'center')]
         if blocks:
             about = ' '.join(text(p) for p in re.findall(r'<p\b[^>]*>(.*?)</p>', blocks[0], re.S) if '<a' not in p)

@@ -12,3 +12,9 @@ desktop.ini
 
 # Design branches checked out side by side (git worktree)
 .worktrees/
+
+# Raw material from Bellezza (questionnaires, photo drops, video): kept locally, never
+# published. The repo is public; the site uses copies under assets/img/.
+docs/LatestFromBellezza/
+docs/*.docx
+docs/*.pdf

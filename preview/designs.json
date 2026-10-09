@@ -5,29 +5,29 @@
    "branch": "main",
    "slug": "a",
    "label": "Option A",
-   "name": "Editorial menu (current)",
-   "blurb": "The design the team likes: printed-menu typography, the 28-portrait hero, gold only for booking."
+   "name": "The owners' design (chosen)",
+   "blurb": "Chosen by the owners on 5 October 2026. Home page, menu and footer rebuilt to the owners’ own homepage design on 8 October 2026 (Italiana and Montserrat, black booking buttons, new team portraits); other pages follow one at a time."
   },
   {
    "branch": "design-b",
    "slug": "b",
-   "label": "Option B",
+   "label": "Option B (archived)",
    "name": "House Light · inspired by The Lane",
-   "blurb": "Quiet and airy: framed portraits on a warm plaster wall, flared capitals, Book always in the sticky strip."
+   "blurb": "Archived 5 October 2026 and kept for reference; it does not include the owners’ latest content. Quiet and airy: framed portraits on a warm plaster wall, flared capitals, Book always in the sticky strip."
   },
   {
    "branch": "design-c",
    "slug": "c",
-   "label": "Option C",
+   "label": "Option C (archived)",
    "name": "Bronze & Sand · inspired by Yukie Natori New York",
-   "blurb": "Bold and graphic: full-width sand and bronze bands, one modern sans, arrow capsules, leader-line menus."
+   "blurb": "Archived 5 October 2026 and kept for reference; it does not include the owners’ latest content. Bold and graphic: full-width sand and bronze bands, one modern sans, arrow capsules, leader-line menus."
   },
   {
    "branch": "design-d",
    "slug": "d",
-   "label": "Option D",
+   "label": "Option D (archived)",
    "name": "Open Door · inspired by Element Salon",
-   "blurb": "Bright and friendly: gold-framed white pages, a two-door hero, a black-and-white team wall, \"who does what\"."
+   "blurb": "Archived 5 October 2026 and kept for reference; it does not include the owners’ latest content. Bright and friendly: gold-framed white pages, a two-door hero, a black-and-white team wall, \"who does what\"."
   }
  ]
 }

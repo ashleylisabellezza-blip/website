@@ -10,10 +10,10 @@ What it does:
   1. Makes sure the official variable TTFs from the google/fonts GitHub repo are in
      tools/font-src/ (downloads them from raw.githubusercontent.com if missing),
      together with each family's OFL.txt licence.
-  2. Instances them with fontTools.varLib.instancer, keeping the variable axes but
-     limiting their ranges:
-       Bodoni Moda roman + italic : opsz 11-96 (clamped to the font's range), wght 400-500
-       Hanken Grotesk roman       : wght 400-600
+  2. Instances the variable ones with fontTools.varLib.instancer, keeping the
+     variable axes but limiting their ranges:
+       Italiana (headings)        : static, one weight (400); no italic exists
+       Montserrat (body, buttons) : wght 400-600
   3. Subsets to Latin (the Google Fonts "latin" range plus a few extra punctuation
      code points) keeping only the OpenType features the site can use.
   4. Writes WOFF2 files to assets/fonts/ and copies the OFL licences next to them.
@@ -25,6 +25,9 @@ What it does:
      ?v=HASH, the same sha1[:8] content hash tools/build-partials.py puts on the font
      preloads, so preload and stylesheet request the same URL and each font downloads
      once. It also holds the metric-matched fallback faces computed by tools/font-metrics.py.
+
+Typefaces per the owners' homepage design lock (2026-10-08): Italiana for headings,
+Montserrat for body text and buttons. (Bodoni Moda + Hanken Grotesk until then.)
 
 Needs only Python 3 + fontTools + brotli. Idempotent: re-running overwrites the outputs
 with identical results.
@@ -48,11 +51,10 @@ OUT = ROOT / "assets" / "fonts"
 
 RAW = "https://raw.githubusercontent.com/google/fonts/main/ofl/"
 SOURCES = {
-    "BodoniModa[opsz,wght].ttf": RAW + "bodonimoda/BodoniModa%5Bopsz%2Cwght%5D.ttf",
-    "BodoniModa-Italic[opsz,wght].ttf": RAW + "bodonimoda/BodoniModa-Italic%5Bopsz%2Cwght%5D.ttf",
-    "HankenGrotesk[wght].ttf": RAW + "hankengrotesk/HankenGrotesk%5Bwght%5D.ttf",
-    "BodoniModa-OFL.txt": RAW + "bodonimoda/OFL.txt",
-    "HankenGrotesk-OFL.txt": RAW + "hankengrotesk/OFL.txt",
+    "Italiana-Regular.ttf": RAW + "italiana/Italiana-Regular.ttf",
+    "Montserrat[wght].ttf": RAW + "montserrat/Montserrat%5Bwght%5D.ttf",
+    "Italiana-OFL.txt": RAW + "italiana/OFL.txt",
+    "Montserrat-OFL.txt": RAW + "montserrat/OFL.txt",
 }
 
 # Google Fonts "latin" unicode-range, plus the extras the brief asks for.
@@ -65,35 +67,30 @@ UNICODE_RANGE = (
 
 # Features kept in the subset (only those present in each font survive anyway):
 # fontTools' default shaping set (ccmp, locl, mark, mkmk, calt, frac, ...) plus the
-# typographic features the site uses. Note: Hanken Grotesk has no tnum feature, but
-# its default figures are already tabular (all digits share one advance width).
+# typographic features the site uses (Montserrat has tnum for the price columns).
 EXTRA_FEATURES = ["kern", "liga", "lnum", "tnum", "onum", "pnum", "case"] + [
     "ss%02d" % i for i in range(1, 21)
 ]
 FEATURES = sorted(set(subset.Options().layout_features) | set(EXTRA_FEATURES))
 
 BUILDS = [
-    # (source, output, axis limits, budget in KB)
-    ("BodoniModa[opsz,wght].ttf", "bodoni-moda-roman-latin.woff2",
-     {"opsz": (11, 96), "wght": (400, 500)}, 70),
-    ("BodoniModa-Italic[opsz,wght].ttf", "bodoni-moda-italic-latin.woff2",
-     {"opsz": (11, 96), "wght": (400, 500)}, 45),
-    ("HankenGrotesk[wght].ttf", "hanken-grotesk-latin.woff2",
+    # (source, output, axis limits or None for a static font, budget in KB)
+    ("Italiana-Regular.ttf", "italiana-latin.woff2", None, 30),
+    ("Montserrat[wght].ttf", "montserrat-latin.woff2",
      {"wght": (400, 600)}, 45),
 ]
 
 LICENCES = [
-    ("BodoniModa-OFL.txt", "bodoni-moda-OFL.txt"),
-    ("HankenGrotesk-OFL.txt", "hanken-grotesk-OFL.txt"),
+    ("Italiana-OFL.txt", "italiana-OFL.txt"),
+    ("Montserrat-OFL.txt", "montserrat-OFL.txt"),
 ]
 
 TEST_STRING = "Beauty & relaxation, tailored to you. $37–60 • é"
 
 # (output file, CSS family, font-style, font-weight range)
 FACES = [
-    ("bodoni-moda-roman-latin.woff2", "Bodoni Moda", "normal", "400 500"),
-    ("bodoni-moda-italic-latin.woff2", "Bodoni Moda", "italic", "400 500"),
-    ("hanken-grotesk-latin.woff2", "Hanken Grotesk", "normal", "400 600"),
+    ("italiana-latin.woff2", "Italiana", "normal", "400"),
+    ("montserrat-latin.woff2", "Montserrat", "normal", "400 600"),
 ]
 
 
@@ -140,10 +137,12 @@ def clamp_limits(font, limits):
 
 def build_one(src_name, out_name, limits):
     font = TTFont(SRC / src_name)
-    axis_limits = clamp_limits(font, limits)
-    font = instancer.instantiateVariableFont(
-        font, axis_limits, updateFontNames=False, optimize=True
-    )
+    axis_limits = None
+    if limits is not None:  # static fonts (Italiana) are subset as they are
+        axis_limits = clamp_limits(font, limits)
+        font = instancer.instantiateVariableFont(
+            font, axis_limits, updateFontNames=False, optimize=True
+        )
     # Round-trip through bytes so the subsetter sees fully compiled tables
     # (subsetting the in-memory instancer result trips over lazy gvar data).
     tmp = io.BytesIO()
