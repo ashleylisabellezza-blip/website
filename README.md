@@ -73,8 +73,9 @@ completed answers (docs/"What We Need From You", 2026-10-05) are in the pages an
   every page) are AI-edited versions supplied by the owners. HP-01 and HP-12 show
   "Est. 2016" signage (Bellezza opened in 2009). Replace each `assets/img/home/hp*.jpg`
   with the original photo and run `python tools/build-images.py --only home`. Still
-  to come: HP-04 nails, HP-05 massage, HP-06 Slay (tiles use stand-ins), HP-09 bridal
-  (Devon's portrait stands in), HP-10 gift card (the gold monogram stands in).
+  to come: HP-04 nails, HP-05 massage, HP-06 Slay (tiles use stand-ins). HP-09 bridal
+  and HP-10 gift card use the owners' 480px previews from their design doc (soft on
+  sharp screens; the gift card also shows "Est. 2016") until full-size photos arrive.
 - The vector logo (`New logo 3.pdf`) and the owners' signature images are not in the
   repo yet. (The 2026 award artwork and the PNG logos arrived 2026-10-08:
   `assets/img/brand/*-src.png`.)
